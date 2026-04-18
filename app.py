@@ -34,7 +34,7 @@ if source is not None:
     img = Image.open(source)
     
     # Run YOLOv8
-    results = model.predict(img, conf=0.3)
+    results = model.predict(img, conf=0.25)
     
     # UI Columns
     col1, col2 = st.columns(2)

@@ -30,36 +30,21 @@ else:
 
 # --- INFERENCE ---
 if source is not None:
-    # Convert file to PIL Image
     img = Image.open(source)
     
-    # Run YOLOv8
-    results = model.predict(img, conf=0.25)
+    # Convert PIL to numpy array
+    img_array = np.array(img)
     
-    # UI Columns
-    col1, col2 = st.columns(2)
+    # Run prediction
+    results = model.predict(img_array, conf=0.25)
     
-    with col1:
-        st.subheader("Analysis")
-        # Plot results on the image
-        res_plotted = results[0].plot()
-        st.image(res_plotted, channels="BGR", use_column_width=True)
+    # Debugging: Show in the app how many things were found
+    num_found = len(results[0].boxes)
+    st.write(f"Debug: Found {num_found} objects")
 
-    with col2:
-        st.subheader("Result")
-        if len(results[0].boxes) > 0:
-            for box in results[0].boxes:
-                cls_id = int(box.cls[0])
-                label = model.names[cls_id]
-                conf = float(box.conf[0])
-                
-                is_recyclable = label in RECYCLABLE_CLASSES
-                
-                if is_recyclable:
-                    st.success(f"**{label.upper()}** ({conf:.1%})")
-                    st.info("✅ This is **Recyclable**!")
-                else:
-                    st.warning(f"**{label.upper()}** ({conf:.1%})")
-                    st.error("❌ This is **Non-Recyclable**.")
-        else:
-            st.info("No waste detected. Try a clearer angle!")
+    if num_found > 0:
+        res_plotted = results[0].plot()
+        st.image(res_plotted, caption="Detected Waste", use_column_width=True)
+    else:
+        st.warning("Still nothing? Try lowering the 'conf' parameter in your code to 0.1.")
+ 

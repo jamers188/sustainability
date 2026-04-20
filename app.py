@@ -1,6 +1,3 @@
-import os
-
-streamlit_code = '''
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
@@ -120,17 +117,7 @@ FRIENDLY = {
 # ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    try:
-        absolute_model_path = "/content/drive/MyDrive/waste_project/waste_final_best.pt."
-        st.sidebar.write(f"Attempting to load model from: {absolute_model_path}") # Debugging line in sidebar
-        model = YOLO(absolute_model_path)
-        st.sidebar.success("Model loaded successfully!")
-        if hasattr(model, 'names'):
-            st.sidebar.write(f"Model classes recognized: {list(model.names.values())}") # Debugging line
-        return model
-    except Exception as e:
-        st.sidebar.error(f"Error loading model: {e}. Please ensure the model path is correct and accessible.")
-        return None
+    return YOLO("waste_final_best.pt")
 
 model = load_model()
 
@@ -295,9 +282,3 @@ with right:
 
         st.download_button("Download annotated image", data=r["annotated_bytes"],
                            file_name="wastelens_result.png", mime="image/png", use_container_width=True)
-'''
-
-with open("app.py", "w") as f:
-    f.write(streamlit_code)
-
-print("Streamlit app.py saved!")

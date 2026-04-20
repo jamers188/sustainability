@@ -152,7 +152,8 @@ if "last_result" not in st.session_state:
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
-    conf_thresh = st.slider("Confidence threshold", 0.05, 0.90, 0.25, 0.05,
+    # Modified confidence threshold slider range
+    conf_thresh = st.slider("Confidence threshold", 0.01, 0.90, 0.25, 0.01,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
                             help="Controls overlap suppression")

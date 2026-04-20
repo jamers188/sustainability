@@ -13,37 +13,28 @@ import requests
 #  on Streamlit Cloud, so we pull it from
 #  Google Drive at startup if not present.
 # ─────────────────────────────────────────
-MODEL_PATH = "waste_final_v2_best.pt"
-# Paste your Google Drive FILE ID below.
-# To get it: open the file in Drive → Share → Copy link
-# The link looks like: https://drive.google.com/file/d/FILE_ID_HERE/view
-# Copy only the FILE_ID_HERE part and paste it below.
+MODEL_PATH = "waste_final_best.pt"
+# Paste ONLY the file ID from your Google Drive share link.
+# Share link looks like: https://drive.google.com/file/d/1ABC123xyz.../view
+# Copy ONLY the bold part:   
 GDRIVE_FILE_ID = "1cPShIOc70HPUEIb06fN4q0CcN9Ffw5n4"
 
-def download_model_from_gdrive(file_id: str, dest: str):
-    """Download a file from Google Drive (public sharing link)."""
-    URL = "https://drive.google.com/uc?export=download"
-    session = requests.Session()
-    response = session.get(URL, params={"id": file_id}, stream=True)
-    # Handle the virus-scan warning page Google shows for large files
-    token = None
-    for key, value in response.cookies.items():
-        if key.startswith("download_warning"):
-            token = value
-            break
-    if token:
-        response = session.get(URL, params={"id": file_id, "confirm": token}, stream=True)
-    with open(dest, "wb") as f:
-        for chunk in response.iter_content(chunk_size=32768):
-            if chunk:
-                f.write(chunk)
+def download_model(file_id: str, dest: str):
+    import subprocess, sys
+    subprocess.run([sys.executable, "-m", "pip", "install", "gdown", "-q"], check=True)
+    import gdown
+    gdown.download(id=file_id, output=dest, quiet=False, fuzzy=True)
 
-if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
-    if GDRIVE_FILE_ID == "https://drive.google.com/file/d/1cPShIOc70HPUEIb06fN4q0CcN9Ffw5n4/view?usp=sharing":
-        st.error("Model file not found. Open app.py and set your GDRIVE_FILE_ID.")
+model_ok = os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000
+if not model_ok:
+    if GDRIVE_FILE_ID == "PASTE_YOUR_FILE_ID_HERE":
+        st.error("Set your GDRIVE_FILE_ID in app.py")
         st.stop()
-    with st.spinner("Downloading model... (first run only, ~6MB)"):
-        download_model_from_gdrive(GDRIVE_FILE_ID, MODEL_PATH)
+    with st.spinner("Downloading model weights... (~6MB, first run only)"):
+        download_model(GDRIVE_FILE_ID, MODEL_PATH)
+    if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
+        st.error("Download failed — check GDRIVE_FILE_ID and that the file is shared publicly.")
+        st.stop()
 
 
 # ─────────────────────────────────────────
@@ -270,8 +261,24 @@ with right:
     elif run:
         with st.spinner("Running detection..."):
             t0 = time.time()
-            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
+            img_array = np.array(source_image)
+            results = model.predict(img_array, conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
             elapsed = time.time() - t0
+
+        # ── DEBUG PANEL — shows exactly what's happening ──────────────
+        with st.expander("Debug info (expand to diagnose)", expanded=True):
+            model_size = os.path.getsize(MODEL_PATH) / 1e6
+            st.write(f"**Model file:** `{MODEL_PATH}` — `{model_size:.2f} MB` {'OK' if model_size > 1 else 'PROBLEM: file too small!'}")
+            st.write(f"**Model classes:** `{model.names}`")
+            st.write(f"**Image:** size={source_image.size} mode={source_image.mode}")
+            st.write(f"**Detections at your conf={conf_thresh}:** `{len(results[0].boxes)}`")
+
+            st.write("**Scanning at conf=0.01 (lowest) across image sizes:**")
+            for sz in [640, 1280, 416]:
+                r2 = model.predict(np.array(source_image), conf=0.01, iou=0.45, imgsz=sz, verbose=False)
+                hits = [(model.names[int(b.cls[0])], round(float(b.conf[0]),3)) for b in r2[0].boxes]
+                st.write(f"  imgsz={sz} → {len(r2[0].boxes)} detection(s): {hits}")
+        # ── END DEBUG ─────────────────────────────────────────────────
 
         boxes = results[0].boxes
         names = results[0].names

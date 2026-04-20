@@ -1,12 +1,50 @@
-import os
-
-streamlit_code = '''
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 import time
 import io
+import os
+import requests
+
+# ─────────────────────────────────────────
+#  MODEL DOWNLOAD (for Streamlit Cloud)
+#  The .pt file is too large for Git LFS
+#  on Streamlit Cloud, so we pull it from
+#  Google Drive at startup if not present.
+# ─────────────────────────────────────────
+MODEL_PATH = "waste_final_best.pt"
+# Paste your Google Drive FILE ID below.
+# To get it: open the file in Drive → Share → Copy link
+# The link looks like: https://drive.google.com/file/d/FILE_ID_HERE/view
+# Copy only the FILE_ID_HERE part and paste it below.
+GDRIVE_FILE_ID = "PASTE_YOUR_FILE_ID_HERE"
+
+def download_model_from_gdrive(file_id: str, dest: str):
+    """Download a file from Google Drive (public sharing link)."""
+    URL = "https://drive.google.com/uc?export=download"
+    session = requests.Session()
+    response = session.get(URL, params={"id": file_id}, stream=True)
+    # Handle the virus-scan warning page Google shows for large files
+    token = None
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            token = value
+            break
+    if token:
+        response = session.get(URL, params={"id": file_id, "confirm": token}, stream=True)
+    with open(dest, "wb") as f:
+        for chunk in response.iter_content(chunk_size=32768):
+            if chunk:
+                f.write(chunk)
+
+if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
+    if GDRIVE_FILE_ID == "https://drive.google.com/file/d/1cPShIOc70HPUEIb06fN4q0CcN9Ffw5n4/view?usp=sharing":
+        st.error("Model file not found. Open app.py and set your GDRIVE_FILE_ID.")
+        st.stop()
+    with st.spinner("Downloading model... (first run only, ~6MB)"):
+        download_model_from_gdrive(GDRIVE_FILE_ID, MODEL_PATH)
+
 
 # ─────────────────────────────────────────
 #  PAGE CONFIG  (must be first Streamlit call)
@@ -102,40 +140,40 @@ html, body, [class*="css"], p, div, span, label {
 # ─────────────────────────────────────────
 #  CONSTANTS
 # ─────────────────────────────────────────
-RECYCLABLE_CLASSES = {"cans", "glass", "paperwaste", "plasticbottles"}
+# These are matched against model.names dynamically — see build_class_maps() below
+RECYCLABLE_KEYWORDS = ["can", "glass", "paper", "plastic", "cardboard", "bottle", "metal"]
+
 DISPOSAL_TIPS = {
     "cans":           "Rinse before recycling. Crush to save bin space.",
     "glass":          "Remove lids and sort by color if your facility requires it.",
     "paperwaste":     "Keep dry. Remove staples and any plastic film.",
     "plasticbottles": "Empty, rinse, and check the resin code on the base.",
+    "can":            "Rinse before recycling. Crush to save bin space.",
+    "paper":          "Keep dry. Remove any plastic film or tape.",
+    "plastic":        "Empty and rinse. Check the resin code on the base.",
+    "bottle":         "Empty, rinse, and check the resin code on the base.",
+    "cardboard":      "Flatten before recycling. Remove any tape.",
+    "metal":          "Rinse clean and place in metals recycling.",
 }
 DEFAULT_TIP = "Seal in a bag and place in the general waste bin."
-FRIENDLY = {
-    "cans": "Metal Cans", "glass": "Glass",
-    "paperwaste": "Paper / Cardboard", "plasticbottles": "Plastic Bottles",
-}
+
+def build_class_maps(model):
+    """Dynamically build recyclable set and friendly names from the model's actual class list."""
+    recyclable = set()
+    friendly = {}
+    for idx, name in model.names.items():
+        n = name.lower()
+        friendly[n] = name.replace("_", " ").replace("waste", "").strip().title()
+        if any(kw in n for kw in RECYCLABLE_KEYWORDS):
+            recyclable.add(n)
+    return recyclable, friendly
 
 # ─────────────────────────────────────────
 #  MODEL
 # ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    try:
-        # Path to your trained YOLOv8 model.
-        # IMPORTANT: When deploying, this file needs to be alongside your app.py in the deployment environment (e.g., GitHub repo).
-        model_path = "waste_final_best.pt"
-        
-        # Debugging: Print the exact path being used by Streamlit
-        print(f"[Streamlit Debug] Attempting to load model from: {model_path}")
-        st.sidebar.write(f"Attempting to load model from: {model_path}") # Debugging line in sidebar
-        model = YOLO(model_path)
-        st.sidebar.success("Model loaded successfully!")
-        if hasattr(model, 'names'):
-            st.sidebar.write(f"Model classes recognized: {list(model.names.values())}") # Debugging line
-        return model
-    except Exception as e:
-        st.sidebar.error(f"Error loading model: {e}. Please ensure the model path is correct and accessible in your deployment environment.")
-        return None
+    return YOLO("waste_final_best.pt")
 
 model = load_model()
 
@@ -152,8 +190,7 @@ if "last_result" not in st.session_state:
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
-    # Modified confidence threshold slider range
-    conf_thresh = st.slider("Confidence threshold", 0.01, 0.90, 0.25, 0.01,
+    conf_thresh = st.slider("Confidence threshold", 0.05, 0.90, 0.25, 0.05,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
                             help="Controls overlap suppression")
@@ -179,10 +216,12 @@ with st.sidebar:
         st.markdown('<p style="color:#4b5563;font-size:0.78rem">No scans yet.</p>', unsafe_allow_html=True)
 
     st.markdown('<br>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="tip-box"><b style="color:#9ca3af">Model</b><br>waste_final_best.pt<br><br>'
-        '<b style="color:#9ca3af">Classes</b><br>cans · glass · paper · plastic bottles</div>',
-        unsafe_allow_html=True)
+    with st.expander("Model debug info"):
+        st.markdown('<div class="wl-section">Actual model class names</div>', unsafe_allow_html=True)
+        for idx, name in model.names.items():
+            st.markdown(f'`{idx}` → `{name}`')
+        st.caption("If nothing detects, check these names match your waste objects.")
+
 
 # ─────────────────────────────────────────
 #  HEADER
@@ -229,38 +268,38 @@ with right:
             '</div>', unsafe_allow_html=True)
 
     elif run:
-        if model is None:
-            st.error("Model is not loaded. Please check error messages in the sidebar.")
-        else:
-            with st.spinner("Running detection..."):
-                t0 = time.time()
-                results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, verbose=False)
-                elapsed = time.time() - t0
+        with st.spinner("Running detection..."):
+            t0 = time.time()
+            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
+            elapsed = time.time() - t0
 
-            boxes = results[0].boxes
-            names = results[0].names
-            n_det = len(boxes)
-            detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
+        boxes = results[0].boxes
+        names = results[0].names
+        n_det = len(boxes)
+        detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
 
-            annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
-            rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
-            nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
-            verdict = (
-                "no-detection"   if n_det == 0 else
-                "recyclable"     if rec and not nonrec else
-                "non-recyclable" if nonrec and not rec else
-                "mixed"
-            )
+        # Build class maps dynamically from this model's actual names
+        RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
 
-            buf = io.BytesIO()
-            annotated_pil.save(buf, format="PNG")
+        annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
+        rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
+        nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
+        verdict = (
+            "no-detection"   if n_det == 0 else
+            "recyclable"     if rec and not nonrec else
+            "non-recyclable" if nonrec and not rec else
+            "mixed"
+        )
 
-            st.session_state.last_result = {
-                "annotated_bytes": buf.getvalue(), "annotated_pil": annotated_pil,
-                "detections": detections, "verdict": verdict, "elapsed": elapsed,
-                "n_det": n_det, "rec_count": len(rec), "nonrec_count": len(nonrec),
-            }
-            st.session_state.history.append({"count": n_det, "verdict": verdict})
+        buf = io.BytesIO()
+        annotated_pil.save(buf, format="PNG")
+
+        st.session_state.last_result = {
+            "annotated_bytes": buf.getvalue(), "annotated_pil": annotated_pil,
+            "detections": detections, "verdict": verdict, "elapsed": elapsed,
+            "n_det": n_det, "rec_count": len(rec), "nonrec_count": len(nonrec),
+        }
+        st.session_state.history.append({"count": n_det, "verdict": verdict})
 
     r = st.session_state.last_result
     if r and source_image is not None:
@@ -286,6 +325,7 @@ with right:
 
         if r["detections"]:
             st.markdown('<div class="wl-section" style="margin-top:0.8rem">Item breakdown</div>', unsafe_allow_html=True)
+            RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
             for d in r["detections"]:
                 is_rec   = d["class"] in RECYCLABLE_CLASSES
                 friendly = FRIENDLY.get(d["class"], d["class"].title())
@@ -304,9 +344,3 @@ with right:
 
         st.download_button("Download annotated image", data=r["annotated_bytes"],
                            file_name="wastelens_result.png", mime="image/png", use_container_width=True)
-'''
-
-with open("app.py", "w") as f:
-    f.write(streamlit_code)
-
-print("Streamlit app.py saved!")

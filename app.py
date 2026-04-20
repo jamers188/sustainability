@@ -153,6 +153,7 @@ html, body, [class*="css"], p, div, span, label {
 # ─────────────────────────────────────────
 # These are matched against model.names dynamically — see build_class_maps() below
 RECYCLABLE_KEYWORDS = ["can", "glass", "paper", "plastic", "cardboard", "bottle", "metal"]
+NON_RECYCLABLE_CLASSES = {"foodwaste", "food", "organic", "food_waste"}
 
 DISPOSAL_TIPS = {
     "cans":           "Rinse before recycling. Crush to save bin space.",
@@ -175,7 +176,7 @@ def build_class_maps(model):
     for idx, name in model.names.items():
         n = name.lower()
         friendly[n] = name.replace("_", " ").replace("waste", "").strip().title()
-        if any(kw in n for kw in RECYCLABLE_KEYWORDS):
+        if any(kw in n for kw in RECYCLABLE_KEYWORDS) and n not in NON_RECYCLABLE_CLASSES:
             recyclable.add(n)
     return recyclable, friendly
 
@@ -201,7 +202,7 @@ if "last_result" not in st.session_state:
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
-    conf_thresh = st.slider("Confidence threshold", 0.05, 0.90, 0.25, 0.05,
+    conf_thresh = st.slider("Confidence threshold", 0.01, 0.90, 0.05, 0.01,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
                             help="Controls overlap suppression")

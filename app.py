@@ -212,7 +212,7 @@ with right:
     elif run:
         with st.spinner("Running detection..."):
             t0 = time.time()
-            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, verbose=False)
+            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, imgsz=1280, verbose=False)
             elapsed = time.time() - t0
 
         boxes = results[0].boxes

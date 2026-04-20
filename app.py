@@ -20,10 +20,30 @@ MODEL_PATH = "waste_final_best.pt"
 GDRIVE_FILE_ID = "1cPShIOc70HPUEIb06fN4q0CcN9Ffw5n4"
 
 def download_model(file_id: str, dest: str):
-    import subprocess, sys
-    subprocess.run([sys.executable, "-m", "pip", "install", "gdown", "-q"], check=True)
-    import gdown
-    gdown.download(id=file_id, output=dest, quiet=False, fuzzy=True)
+    import requests
+    session = requests.Session()
+    # Step 1: hit the export URL
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    r = session.get(url, stream=True)
+    # Step 2: Google redirects large files through a confirm page
+    # The confirm token is now in the response URL or a cookie
+    token = None
+    for k, v in r.cookies.items():
+        if "download_warning" in k:
+            token = v
+    if token:
+        r = session.get(url + f"&confirm={token}", stream=True)
+    # Step 3: also handle the newer "confirm=t" style redirect
+    if "text/html" in r.headers.get("Content-Type", ""):
+        # parse confirm from HTML
+        import re
+        match = re.search(r'confirm=([0-9A-Za-z_\-]+)', r.text)
+        if match:
+            r = session.get(url + f"&confirm={match.group(1)}", stream=True)
+    with open(dest, "wb") as f:
+        for chunk in r.iter_content(chunk_size=65536):
+            if chunk:
+                f.write(chunk)
 
 model_ok = os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000
 if not model_ok:

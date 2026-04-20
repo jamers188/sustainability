@@ -202,7 +202,7 @@ if "last_result" not in st.session_state:
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
-    conf_thresh = st.slider("Confidence threshold", 0.01, 0.90, 0.05, 0.01,
+    conf_thresh = st.slider("Confidence threshold", 0.01, 0.50, 0.08, 0.01,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
                             help="Controls overlap suppression")
@@ -227,12 +227,6 @@ with st.sidebar:
     else:
         st.markdown('<p style="color:#4b5563;font-size:0.78rem">No scans yet.</p>', unsafe_allow_html=True)
 
-    st.markdown('<br>', unsafe_allow_html=True)
-    with st.expander("Model debug info"):
-        st.markdown('<div class="wl-section">Actual model class names</div>', unsafe_allow_html=True)
-        for idx, name in model.names.items():
-            st.markdown(f'`{idx}` → `{name}`')
-        st.caption("If nothing detects, check these names match your waste objects.")
 
 
 # ─────────────────────────────────────────
@@ -286,20 +280,7 @@ with right:
             results = model.predict(img_array, conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
             elapsed = time.time() - t0
 
-        # ── DEBUG PANEL — shows exactly what's happening ──────────────
-        with st.expander("Debug info (expand to diagnose)", expanded=True):
-            model_size = os.path.getsize(MODEL_PATH) / 1e6
-            st.write(f"**Model file:** `{MODEL_PATH}` — `{model_size:.2f} MB` {'OK' if model_size > 1 else 'PROBLEM: file too small!'}")
-            st.write(f"**Model classes:** `{model.names}`")
-            st.write(f"**Image:** size={source_image.size} mode={source_image.mode}")
-            st.write(f"**Detections at your conf={conf_thresh}:** `{len(results[0].boxes)}`")
 
-            st.write("**Scanning at conf=0.01 (lowest) across image sizes:**")
-            for sz in [640, 1280, 416]:
-                r2 = model.predict(np.array(source_image), conf=0.01, iou=0.45, imgsz=sz, verbose=False)
-                hits = [(model.names[int(b.cls[0])], round(float(b.conf[0]),3)) for b in r2[0].boxes]
-                st.write(f"  imgsz={sz} → {len(r2[0].boxes)} detection(s): {hits}")
-        # ── END DEBUG ─────────────────────────────────────────────────
 
         boxes = results[0].boxes
         names = results[0].names

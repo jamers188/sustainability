@@ -67,7 +67,7 @@ html, body, [class*="css"], p, div, span, label {
 .metric-val { font-family: 'Space Mono', monospace; font-size: 1.45rem; font-weight: 700; color: #ffffff; line-height: 1; }
 .metric-lbl { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
 
-.det-item { background: #0e0f11; border: 1px solid #252830; border-radius: 4px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; } 
+.det-item { background: #0e0f11; border: 1px solid #252830; border-radius: 4px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
 .det-name { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: #e8e6e1; margin-bottom: 2px; }
 .det-meta { font-size: 0.72rem; color: #6b7280; margin-bottom: 6px; }
 .conf-track { background: #252830; border-radius: 2px; height: 4px; }
@@ -82,7 +82,7 @@ html, body, [class*="css"], p, div, span, label {
     align-items: center; justify-content: center; text-align: center; padding: 2rem;
 }
 .await-bracket { font-family: 'Space Mono', monospace; font-size: 3rem; color: #252830; line-height: 1; margin-bottom: 0.8rem; }
-.await-text { font-size: 0.82rem; color: #4b5563; } 
+.await-text { font-size: 0.82rem; color: #4b5563; }
 
 .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid #1c1e24; font-size: 0.78rem; }
 .hist-item:last-child { border-bottom: none; }
@@ -94,7 +94,7 @@ html, body, [class*="css"], p, div, span, label {
 .tip-box { background: #0e1218; border: 1px dashed #252830; border-radius: 4px; padding: 0.7rem 0.9rem; font-size: 0.75rem; color: #6b7280; line-height: 1.7; }
 
 [data-testid="stRadio"] > label { display: none !important; }
-.stButton > button { font-family: 'Space Mono', monospace !important; font-size: 0.7rem !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; border-radius: 3px !important; } 
+.stButton > button { font-family: 'Space Mono', monospace !important; font-size: 0.7rem !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; border-radius: 3px !important; }
 [data-testid="stDownloadButton"] > button { font-family: 'Space Mono', monospace !important; font-size: 0.68rem !important; letter-spacing: 0.1em !important; text-transform: uppercase !important; border-radius: 3px !important; width: 100% !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -121,18 +121,20 @@ FRIENDLY = {
 @st.cache_resource
 def load_model():
     try:
-        # Ensure the model path is absolute if running in Colab and model is in Drive
-        absolute_model_path = "/content/drive/MyDrive/waste_project/waste_final_best.pt"
+        # Path to your trained YOLOv8 model.
+        # IMPORTANT: When deploying, this file needs to be alongside your app.py in the deployment environment (e.g., GitHub repo).
+        model_path = "waste_final_best.pt"
+        
         # Debugging: Print the exact path being used by Streamlit
-        print(f"[Streamlit Debug] Attempting to load model from: {absolute_model_path}")
-        st.sidebar.write(f"Attempting to load model from: {absolute_model_path}") # Debugging line in sidebar
-        model = YOLO(absolute_model_path)
+        print(f"[Streamlit Debug] Attempting to load model from: {model_path}")
+        st.sidebar.write(f"Attempting to load model from: {model_path}") # Debugging line in sidebar
+        model = YOLO(model_path)
         st.sidebar.success("Model loaded successfully!")
         if hasattr(model, 'names'):
             st.sidebar.write(f"Model classes recognized: {list(model.names.values())}") # Debugging line
         return model
     except Exception as e:
-        st.sidebar.error(f"Error loading model: {e}. Please ensure the model path is correct and accessible.")
+        st.sidebar.error(f"Error loading model: {e}. Please ensure the model path is correct and accessible in your deployment environment.")
         return None
 
 model = load_model()
@@ -226,35 +228,38 @@ with right:
             '</div>', unsafe_allow_html=True)
 
     elif run:
-        with st.spinner("Running detection..."):
-            t0 = time.time()
-            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, verbose=False)
-            elapsed = time.time() - t0
+        if model is None:
+            st.error("Model is not loaded. Please check error messages in the sidebar.")
+        else:
+            with st.spinner("Running detection..."):
+                t0 = time.time()
+                results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, verbose=False)
+                elapsed = time.time() - t0
 
-        boxes = results[0].boxes
-        names = results[0].names
-        n_det = len(boxes)
-        detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
+            boxes = results[0].boxes
+            names = results[0].names
+            n_det = len(boxes)
+            detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
 
-        annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
-        rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
-        nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
-        verdict = (
-            "no-detection"   if n_det == 0 else
-            "recyclable"     if rec and not nonrec else
-            "non-recyclable" if nonrec and not rec else
-            "mixed"
-        )
+            annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
+            rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
+            nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
+            verdict = (
+                "no-detection"   if n_det == 0 else
+                "recyclable"     if rec and not nonrec else
+                "non-recyclable" if nonrec and not rec else
+                "mixed"
+            )
 
-        buf = io.BytesIO()
-        annotated_pil.save(buf, format="PNG")
+            buf = io.BytesIO()
+            annotated_pil.save(buf, format="PNG")
 
-        st.session_state.last_result = {
-            "annotated_bytes": buf.getvalue(), "annotated_pil": annotated_pil,
-            "detections": detections, "verdict": verdict, "elapsed": elapsed,
-            "n_det": n_det, "rec_count": len(rec), "nonrec_count": len(nonrec),
-        }
-        st.session_state.history.append({"count": n_det, "verdict": verdict})
+            st.session_state.last_result = {
+                "annotated_bytes": buf.getvalue(), "annotated_pil": annotated_pil,
+                "detections": detections, "verdict": verdict, "elapsed": elapsed,
+                "n_det": n_det, "rec_count": len(rec), "nonrec_count": len(nonrec),
+            }
+            st.session_state.history.append({"count": n_det, "verdict": verdict})
 
     r = st.session_state.last_result
     if r and source_image is not None:

@@ -121,7 +121,7 @@ FRIENDLY = {
 @st.cache_resource
 def load_model():
     try:
-        absolute_model_path = "/content/drive/MyDrive/waste_project/improved_model/waste_final_best.pt"
+        absolute_model_path = "/content/drive/MyDrive/waste_project/waste_final_best.pt."
         st.sidebar.write(f"Attempting to load model from: {absolute_model_path}") # Debugging line in sidebar
         model = YOLO(absolute_model_path)
         st.sidebar.success("Model loaded successfully!")

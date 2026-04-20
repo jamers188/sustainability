@@ -13,12 +13,12 @@ import requests
 #  on Streamlit Cloud, so we pull it from
 #  Google Drive at startup if not present.
 # ─────────────────────────────────────────
-MODEL_PATH = "waste_final_best.pt"
+MODEL_PATH = "waste_final_v2_best.pt"
 # Paste your Google Drive FILE ID below.
 # To get it: open the file in Drive → Share → Copy link
 # The link looks like: https://drive.google.com/file/d/FILE_ID_HERE/view
 # Copy only the FILE_ID_HERE part and paste it below.
-GDRIVE_FILE_ID = "PASTE_YOUR_FILE_ID_HERE"
+GDRIVE_FILE_ID = "1cPShIOc70HPUEIb06fN4q0CcN9Ffw5n4"
 
 def download_model_from_gdrive(file_id: str, dest: str):
     """Download a file from Google Drive (public sharing link)."""

@@ -99,18 +99,33 @@ html, body, [class*="css"], p, div, span, label {
 # ─────────────────────────────────────────
 #  CONSTANTS
 # ─────────────────────────────────────────
-RECYCLABLE_CLASSES = {"cans", "glass", "paperwaste", "plasticbottles"}
+# These are matched against model.names dynamically — see build_class_maps() below
+RECYCLABLE_KEYWORDS = ["can", "glass", "paper", "plastic", "cardboard", "bottle", "metal"]
+
 DISPOSAL_TIPS = {
     "cans":           "Rinse before recycling. Crush to save bin space.",
     "glass":          "Remove lids and sort by color if your facility requires it.",
     "paperwaste":     "Keep dry. Remove staples and any plastic film.",
     "plasticbottles": "Empty, rinse, and check the resin code on the base.",
+    "can":            "Rinse before recycling. Crush to save bin space.",
+    "paper":          "Keep dry. Remove any plastic film or tape.",
+    "plastic":        "Empty and rinse. Check the resin code on the base.",
+    "bottle":         "Empty, rinse, and check the resin code on the base.",
+    "cardboard":      "Flatten before recycling. Remove any tape.",
+    "metal":          "Rinse clean and place in metals recycling.",
 }
 DEFAULT_TIP = "Seal in a bag and place in the general waste bin."
-FRIENDLY = {
-    "cans": "Metal Cans", "glass": "Glass",
-    "paperwaste": "Paper / Cardboard", "plasticbottles": "Plastic Bottles",
-}
+
+def build_class_maps(model):
+    """Dynamically build recyclable set and friendly names from the model's actual class list."""
+    recyclable = set()
+    friendly = {}
+    for idx, name in model.names.items():
+        n = name.lower()
+        friendly[n] = name.replace("_", " ").replace("waste", "").strip().title()
+        if any(kw in n for kw in RECYCLABLE_KEYWORDS):
+            recyclable.add(n)
+    return recyclable, friendly
 
 # ─────────────────────────────────────────
 #  MODEL
@@ -160,10 +175,12 @@ with st.sidebar:
         st.markdown('<p style="color:#4b5563;font-size:0.78rem">No scans yet.</p>', unsafe_allow_html=True)
 
     st.markdown('<br>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="tip-box"><b style="color:#9ca3af">Model</b><br>waste_final_best.pt<br><br>'
-        '<b style="color:#9ca3af">Classes</b><br>cans · glass · paper · plastic bottles</div>',
-        unsafe_allow_html=True)
+    with st.expander("Model debug info"):
+        st.markdown('<div class="wl-section">Actual model class names</div>', unsafe_allow_html=True)
+        for idx, name in model.names.items():
+            st.markdown(f'`{idx}` → `{name}`')
+        st.caption("If nothing detects, check these names match your waste objects.")
+
 
 # ─────────────────────────────────────────
 #  HEADER
@@ -212,13 +229,16 @@ with right:
     elif run:
         with st.spinner("Running detection..."):
             t0 = time.time()
-            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, imgsz=1280, verbose=False)
+            results = model.predict(np.array(source_image), conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
             elapsed = time.time() - t0
 
         boxes = results[0].boxes
         names = results[0].names
         n_det = len(boxes)
         detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
+
+        # Build class maps dynamically from this model's actual names
+        RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
 
         annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
         rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
@@ -264,6 +284,7 @@ with right:
 
         if r["detections"]:
             st.markdown('<div class="wl-section" style="margin-top:0.8rem">Item breakdown</div>', unsafe_allow_html=True)
+            RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
             for d in r["detections"]:
                 is_rec   = d["class"] in RECYCLABLE_CLASSES
                 friendly = FRIENDLY.get(d["class"], d["class"].title())

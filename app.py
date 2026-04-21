@@ -13,11 +13,11 @@ import requests
 #  on Streamlit Cloud, so we pull it from
 #  Google Drive at startup if not present.
 # ─────────────────────────────────────────
-MODEL_PATH = "waste_final_best.pt"
+MODEL_PATH = "waste_final_v4_best.pt"
 # Paste ONLY the file ID from your Google Drive share link.
 # Share link looks like: https://drive.google.com/file/d/1ABC123xyz.../view
-# Copy ONLY the bold part:       
-GDRIVE_FILE_ID = "d/1oV2jz3IDv1_8M_DNySn3dsMj3KyPyl2c"
+# Copy ONLY the bold part:                                  ^^^^^^^^^^^
+GDRIVE_FILE_ID = "1oV2jz3IDv1_8M_DNySn3dsMj3KyPyl2c"
 
 def download_model(file_id: str, dest: str):
     import requests
@@ -365,4 +365,3 @@ with right:
 
         st.download_button("Download annotated image", data=r["annotated_bytes"],
                            file_name="wastelens_result.png", mime="image/png", use_container_width=True)
- 

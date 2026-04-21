@@ -365,3 +365,4 @@ with right:
 
         st.download_button("Download annotated image", data=r["annotated_bytes"],
                            file_name="wastelens_result.png", mime="image/png", use_container_width=True)
+ 

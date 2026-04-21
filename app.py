@@ -202,7 +202,7 @@ if "last_result" not in st.session_state:
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
-    conf_thresh = st.slider("Confidence threshold", 0.01, 0.50, 0.08, 0.01,
+    conf_thresh = st.slider("Confidence threshold", 0.01, 0.50, 0.25, 0.01,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
                             help="Controls overlap suppression")
@@ -251,12 +251,21 @@ with left:
     if mode == "Upload image":
         uploaded = st.file_uploader("upload", type=["jpg","jpeg","png","webp","bmp"], label_visibility="collapsed")
         if uploaded:
-            source_image = Image.open(uploaded).convert("RGB")
+            # Save raw bytes to a temp file — avoids PIL conversion artifacts
+            tmp_path = f"/tmp/wastelens_upload_{uploaded.name}"
+            with open(tmp_path, "wb") as f:
+                f.write(uploaded.getvalue())
+            source_image = Image.open(tmp_path).convert("RGB")
+            st.session_state["img_path"] = tmp_path
     else:
         st.caption("Allow camera access in your browser, then click the shutter button.")
         cam = st.camera_input("camera", label_visibility="collapsed")
         if cam:
-            source_image = Image.open(cam).convert("RGB")
+            tmp_path = "/tmp/wastelens_camera.jpg"
+            with open(tmp_path, "wb") as f:
+                f.write(cam.getvalue())
+            source_image = Image.open(tmp_path).convert("RGB")
+            st.session_state["img_path"] = tmp_path
 
     if source_image:
         st.image(source_image, caption="Original image", use_column_width=True)
@@ -276,8 +285,11 @@ with right:
     elif run:
         with st.spinner("Running detection..."):
             t0 = time.time()
-            img_array = np.array(source_image)
-            results = model.predict(img_array, conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
+            # Pass the file path directly — identical to how Colab runs it
+            # This bypasses any PIL/numpy conversion quality loss
+            img_path = st.session_state.get("img_path")
+            predict_input = img_path if img_path and os.path.exists(img_path) else np.array(source_image)
+            results = model.predict(predict_input, conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
             elapsed = time.time() - t0
 
 

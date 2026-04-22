@@ -185,7 +185,7 @@ def build_class_maps(model):
 # ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    return YOLO("waste_final_best.pt")
+    return YOLO(MODEL_PATH)
 
 model = load_model()
 

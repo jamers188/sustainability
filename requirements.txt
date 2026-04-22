@@ -3,4 +3,3 @@ ultralytics
 Pillow
 numpy
 requests
-opencv-python-headless

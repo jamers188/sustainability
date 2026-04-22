@@ -17,7 +17,8 @@ MODEL_PATH = "waste_final_v4_best.pt"
 # Paste ONLY the file ID from your Google Drive share link.
 # Share link looks like: https://drive.google.com/file/d/1ABC123xyz.../view
 # Copy ONLY the bold part:                                  ^^^^^^^^^^^
-GDRIVE_FILE_ID = "1oV2jz3IDv1_8M_DNySn3dsMj3KyPyl2c"
+GDRIVE_FILE_ID = "1CUV34QVIuqh16Hjro0NWubjfneD9oE_-"
+                  
 
 def download_model(file_id: str, dest: str):
     import requests

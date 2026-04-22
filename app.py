@@ -71,83 +71,198 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
 
-html, body, [class*="css"], p, div, span, label {
-    font-family: 'DM Sans', sans-serif !important;
-}
+/* ── Base ── */
+html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
 #MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 1.8rem 2rem 4rem !important; max-width: 1280px !important; }
+.block-container { padding: 0 2rem 4rem !important; max-width: 1300px !important; }
 
+/* ── Sidebar ── */
+[data-testid="stSidebar"] {
+    background: #0a0a0a !important;
+    border-right: 1px solid #1f1f1f !important;
+}
+[data-testid="stSidebar"] * { color: #a0a0a0 !important; }
+
+/* ── Header ── */
+.wl-header {
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 .wl-wordmark {
-    font-family: 'Space Mono', monospace !important;
-    font-size: 1.75rem; font-weight: 700; color: #ffffff;
-    letter-spacing: -0.02em; margin: 0; line-height: 1;
+    font-family: 'Syne', sans-serif !important;
+    font-size: 2rem; font-weight: 800; color: #fff;
+    letter-spacing: -0.04em; line-height: 1; margin: 0;
 }
-.wl-tagline { font-size: 0.82rem; color: #6b7280; margin-top: 0.25rem; font-weight: 300; }
-.wl-badge {
-    display: inline-block; font-family: 'Space Mono', monospace;
-    font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
-    background: #1a2e22; color: #5a9e6f; border: 1px solid #2d4a38;
-    padding: 3px 9px; border-radius: 2px; vertical-align: middle; margin-left: 0.6rem;
-}
-.wl-divider { border: none; border-top: 1px solid #252830; margin: 1rem 0 1.6rem 0; }
-.wl-section {
-    font-family: 'Space Mono', monospace; font-size: 0.6rem;
-    letter-spacing: 0.2em; text-transform: uppercase; color: #6b7280;
-    margin-bottom: 0.75rem; margin-top: 0.25rem;
+.wl-dot { color: #22c55e; }
+.wl-tagline { font-size: 0.78rem; color: #525252; font-weight: 300; margin-top: 0.3rem; letter-spacing: 0.05em; }
+.wl-pill {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.55rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    background: #0f2d1a; color: #22c55e;
+    border: 1px solid #166534; padding: 4px 10px;
+    border-radius: 100px; margin-left: auto;
 }
 
-.verdict-recyclable {
-    background: #1a2e22; border: 1px solid #2d4a38; border-left: 3px solid #5a9e6f;
-    border-radius: 4px; padding: 0.9rem 1.1rem; color: #7ed4a0;
-    font-family: 'Space Mono', monospace; font-size: 0.8rem; margin-bottom: 1rem;
-}
-.verdict-nonrecyclable {
-    background: #2a1a1a; border: 1px solid #4a2d2d; border-left: 3px solid #c05050;
-    border-radius: 4px; padding: 0.9rem 1.1rem; color: #e07070;
-    font-family: 'Space Mono', monospace; font-size: 0.8rem; margin-bottom: 1rem;
-}
-.verdict-mixed {
-    background: #1e1e10; border: 1px solid #3a3520; border-left: 3px solid #c0a040;
-    border-radius: 4px; padding: 0.9rem 1.1rem; color: #d4b86a;
-    font-family: 'Space Mono', monospace; font-size: 0.8rem; margin-bottom: 1rem;
+/* ── Section label ── */
+.wl-label {
+    font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #3f3f3f; margin-bottom: 1rem;
+    font-family: 'Syne', sans-serif;
 }
 
-.metric-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.6rem; margin-bottom: 1.2rem; }
-.metric-box { background: #0e0f11; border: 1px solid #252830; border-radius: 4px; padding: 0.9rem 0.7rem; text-align: center; }
-.metric-val { font-family: 'Space Mono', monospace; font-size: 1.45rem; font-weight: 700; color: #ffffff; line-height: 1; }
-.metric-lbl { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+/* ── Upload zone ── */
+[data-testid="stFileUploadDropzone"] {
+    background: #0f0f0f !important;
+    border: 1px dashed #2a2a2a !important;
+    border-radius: 12px !important;
+    transition: border-color 0.2s !important;
+}
+[data-testid="stFileUploadDropzone"]:hover {
+    border-color: #22c55e !important;
+}
+[data-testid="stFileUploadDropzone"] p { color: #3f3f3f !important; }
 
-.det-item { background: #0e0f11; border: 1px solid #252830; border-radius: 4px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
-.det-name { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: #e8e6e1; margin-bottom: 2px; }
-.det-meta { font-size: 0.72rem; color: #6b7280; margin-bottom: 6px; }
-.conf-track { background: #252830; border-radius: 2px; height: 4px; }
-.det-tip { font-size: 0.72rem; color: #9ca3af; margin-top: 6px; border-top: 1px solid #1c1e24; padding-top: 5px; }
-.rec-chip { display: inline-block; font-size: 0.6rem; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; padding: 1px 6px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
-.chip-rec    { background:#1a2e22; color:#7ed4a0; border:1px solid #2d4a38; }
-.chip-nonrec { background:#2a1a1a; color:#e07070; border:1px solid #4a2d2d; }
+/* ── Analyse button ── */
+.stButton > button {
+    background: #22c55e !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    height: 2.8rem !important;
+    transition: all 0.15s ease !important;
+    box-shadow: 0 0 20px rgba(34,197,94,0.2) !important;
+}
+.stButton > button:hover {
+    background: #16a34a !important;
+    box-shadow: 0 0 30px rgba(34,197,94,0.35) !important;
+}
+.stButton > button:disabled {
+    background: #1a1a1a !important;
+    color: #3f3f3f !important;
+    box-shadow: none !important;
+}
 
+/* ── Download button ── */
+[data-testid="stDownloadButton"] > button {
+    background: #0f0f0f !important;
+    color: #22c55e !important;
+    border: 1px solid #1a3a24 !important;
+    border-radius: 8px !important;
+    font-family: 'Syne', sans-serif !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    width: 100% !important;
+    height: 2.5rem !important;
+}
+
+/* ── Await panel ── */
 .await-panel {
-    background: #13151a; border: 1px solid #252830; border-radius: 6px;
-    min-height: 280px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center; padding: 2rem;
+    background: #0a0a0a;
+    border: 1px dashed #1f1f1f;
+    border-radius: 16px;
+    min-height: 320px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2.5rem;
 }
-.await-bracket { font-family: 'Space Mono', monospace; font-size: 3rem; color: #252830; line-height: 1; margin-bottom: 0.8rem; }
-.await-text { font-size: 0.82rem; color: #4b5563; }
+.await-icon { font-size: 2.5rem; margin-bottom: 1rem; filter: grayscale(1) opacity(0.3); }
+.await-title { font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: #2a2a2a; margin-bottom: 0.5rem; }
+.await-text { font-size: 0.8rem; color: #303030; line-height: 1.6; }
 
-.hist-item { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid #1c1e24; font-size: 0.78rem; }
+/* ── Verdict banners ── */
+.verdict-recyclable {
+    background: linear-gradient(135deg, #0a1f12 0%, #0f2d1a 100%);
+    border: 1px solid #166534; border-radius: 10px;
+    padding: 1rem 1.2rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+}
+.verdict-recyclable .v-icon { font-size: 1.3rem; }
+.verdict-recyclable .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #22c55e; }
+.verdict-recyclable .v-sub { font-size: 0.72rem; color: #15803d; margin-top: 2px; }
+
+.verdict-nonrecyclable {
+    background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 100%);
+    border: 1px solid #7f1d1d; border-radius: 10px;
+    padding: 1rem 1.2rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+}
+.verdict-nonrecyclable .v-icon { font-size: 1.3rem; }
+.verdict-nonrecyclable .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #ef4444; }
+.verdict-nonrecyclable .v-sub { font-size: 0.72rem; color: #b91c1c; margin-top: 2px; }
+
+.verdict-mixed {
+    background: linear-gradient(135deg, #1a1500 0%, #2a2200 100%);
+    border: 1px solid #713f12; border-radius: 10px;
+    padding: 1rem 1.2rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+}
+.verdict-mixed .v-icon { font-size: 1.3rem; }
+.verdict-mixed .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #f59e0b; }
+.verdict-mixed .v-sub { font-size: 0.72rem; color: #b45309; margin-top: 2px; }
+
+/* ── Metrics ── */
+.metric-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+.metric-box {
+    background: #0a0a0a; border: 1px solid #1a1a1a;
+    border-radius: 10px; padding: 1rem 0.8rem; text-align: center;
+}
+.metric-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; }
+.metric-lbl { font-size: 0.6rem; color: #3f3f3f; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 5px; font-weight: 500; }
+
+/* ── Detection items ── */
+.det-item {
+    background: #0a0a0a; border: 1px solid #1a1a1a;
+    border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 0.6rem;
+    transition: border-color 0.15s;
+}
+.det-item:hover { border-color: #2a2a2a; }
+.det-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.det-name { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; color: #e5e5e5; }
+.det-conf { font-size: 0.7rem; color: #525252; font-weight: 500; }
+.conf-track { background: #1a1a1a; border-radius: 3px; height: 3px; margin-bottom: 8px; }
+.det-tip { font-size: 0.72rem; color: #525252; line-height: 1.6; }
+.chip-rec { display: inline-block; font-size: 0.58rem; font-weight: 700; font-family: 'Syne', sans-serif;
+    letter-spacing: 0.1em; padding: 2px 7px; border-radius: 100px; margin-left: 8px;
+    background: #0f2d1a; color: #22c55e; border: 1px solid #166534; vertical-align: middle; }
+.chip-nonrec { display: inline-block; font-size: 0.58rem; font-weight: 700; font-family: 'Syne', sans-serif;
+    letter-spacing: 0.1em; padding: 2px 7px; border-radius: 100px; margin-left: 8px;
+    background: #1a0a0a; color: #ef4444; border: 1px solid #7f1d1d; vertical-align: middle; }
+
+/* ── History ── */
+.hist-item { display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0; border-bottom: 1px solid #141414; font-size: 0.78rem; }
 .hist-item:last-child { border-bottom: none; }
-.sb-label {
-    font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
-    text-transform: uppercase; color: #5a9e6f; border-bottom: 1px solid #252830;
-    padding-bottom: 0.4rem; margin-bottom: 0.75rem; margin-top: 0.5rem;
-}
-.tip-box { background: #0e1218; border: 1px dashed #252830; border-radius: 4px; padding: 0.7rem 0.9rem; font-size: 0.75rem; color: #6b7280; line-height: 1.7; }
 
+/* ── Sidebar label ── */
+.sb-label { font-family: 'Syne', sans-serif; font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: #22c55e !important;
+    border-bottom: 1px solid #1a1a1a; padding-bottom: 0.5rem; margin-bottom: 0.8rem; }
+
+/* ── Radio ── */
 [data-testid="stRadio"] > label { display: none !important; }
-.stButton > button { font-family: 'Space Mono', monospace !important; font-size: 0.7rem !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; border-radius: 3px !important; }
-[data-testid="stDownloadButton"] > button { font-family: 'Space Mono', monospace !important; font-size: 0.68rem !important; letter-spacing: 0.1em !important; text-transform: uppercase !important; border-radius: 3px !important; width: 100% !important; }
+[data-testid="stRadio"] div[role="radiogroup"] { gap: 0.5rem !important; }
+
+/* ── Sliders ── */
+[data-testid="stSlider"] { padding: 0 !important; }
+
+/* ── Checkbox ── */
+[data-testid="stCheckbox"] label span { font-size: 0.82rem !important; color: #a0a0a0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -236,9 +351,11 @@ with st.sidebar:
 #  HEADER
 # ─────────────────────────────────────────
 st.markdown(
-    '<p class="wl-wordmark">WasteLens<span class="wl-badge">AI</span></p>'
-    '<p class="wl-tagline">Point, detect, sort correctly.</p>'
-    '<hr class="wl-divider">',
+    '<div class="wl-header">'
+    '<div><p class="wl-wordmark">Waste<span class="wl-dot">.</span>Lens</p>'
+    '<p class="wl-tagline">POINT &nbsp;·&nbsp; DETECT &nbsp;·&nbsp; SORT CORRECTLY</p></div>'
+    '<span class="wl-pill">AI Powered</span>'
+    '</div>',
     unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
@@ -247,7 +364,7 @@ st.markdown(
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    st.markdown('<div class="wl-section">Input source</div>', unsafe_allow_html=True)
+    st.markdown('<div class="wl-label">Input source</div>', unsafe_allow_html=True)
     mode = st.radio("Input", ["Upload image", "Use camera"], horizontal=True, label_visibility="collapsed")
     source_image = None
 
@@ -280,9 +397,9 @@ with right:
     if source_image is None:
         st.markdown(
             '<div class="await-panel">'
-            '<div class="await-bracket">[ ]</div>'
-            '<div class="wl-section" style="margin-bottom:0.4rem">Awaiting scan</div>'
-            '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse.</div>'
+            '<div class="await-icon">&#9707;</div>'
+            '<div class="await-title">Awaiting scan</div>'
+            '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse image.</div>'
             '</div>', unsafe_allow_html=True)
 
     elif run:
@@ -339,16 +456,16 @@ with right:
 
         v = r["verdict"]
         if v == "recyclable":
-            st.markdown('<div class="verdict-recyclable">RECYCLABLE — Place in the recycling bin.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="verdict-recyclable"><div class="v-icon">♻</div><div><div class="v-text">Recyclable</div><div class="v-sub">Place in the recycling bin</div></div></div>', unsafe_allow_html=True)
         elif v == "non-recyclable":
-            st.markdown('<div class="verdict-nonrecyclable">NON-RECYCLABLE — General waste bin.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="verdict-nonrecyclable"><div class="v-icon">✕</div><div><div class="v-text">Non-Recyclable</div><div class="v-sub">Place in the general waste bin</div></div></div>', unsafe_allow_html=True)
         elif v == "mixed":
-            st.markdown('<div class="verdict-mixed">MIXED WASTE — Separate items before disposal.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="verdict-mixed"><div class="v-icon">⚠</div><div><div class="v-text">Mixed Waste</div><div class="v-sub">Separate items before disposal</div></div></div>', unsafe_allow_html=True)
         else:
             st.warning("Nothing detected. Try lowering the confidence threshold in the sidebar.")
 
         if r["detections"]:
-            st.markdown('<div class="wl-section" style="margin-top:0.8rem">Item breakdown</div>', unsafe_allow_html=True)
+            st.markdown('<div class="wl-label" style="margin-top:1rem">Item breakdown</div>', unsafe_allow_html=True)
             RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
             for d in r["detections"]:
                 is_rec   = d["class"] in RECYCLABLE_CLASSES
@@ -360,9 +477,8 @@ with right:
                 pct      = d["conf"] * 100
                 st.markdown(
                     f'<div class="det-item">'
-                    f'<div class="det-name">{friendly}<span class="rec-chip {chip_cls}">{chip_lbl}</span></div>'
-                    f'<div class="det-meta">Confidence: {pct:.1f}%</div>'
-                    f'<div class="conf-track"><div style="height:4px;border-radius:2px;background:{fill_col};width:{pct:.1f}%"></div></div>'
+                    f'<div class="det-top"><span class="det-name">{friendly}<span class="rec-chip {chip_cls}">{chip_lbl}</span></span><span class="det-conf">{pct:.1f}%</span></div>'
+                    f'<div class="conf-track"><div style="height:3px;border-radius:3px;background:{fill_col};width:{pct:.1f}%"></div></div>'
                     f'<div class="det-tip">{tip}</div>'
                     f'</div>', unsafe_allow_html=True)
 

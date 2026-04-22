@@ -319,7 +319,10 @@ if "last_result" not in st.session_state:
 #  SIDEBAR
 # ─────────────────────────────────────────
 with st.sidebar:
-    st.markdown('<div class="sb-label">Settings</div>', unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.2em;
+        text-transform:uppercase;color:#22c55e;border-bottom:1px solid #1a1a1a;
+        padding-bottom:0.5rem;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
+        Settings</div>""", unsafe_allow_html=True)
     conf_thresh = st.slider("Confidence threshold", 0.01, 0.50, 0.25, 0.01,
                             help="Lower = more detections, more false positives")
     iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
@@ -327,7 +330,10 @@ with st.sidebar:
     show_labels  = st.checkbox("Show labels on image", value=True)
     show_conf_img= st.checkbox("Show confidence on image", value=True)
 
-    st.markdown('<div class="sb-label" style="margin-top:1.5rem">Detection History</div>', unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.2em;
+        text-transform:uppercase;color:#22c55e;border-bottom:1px solid #1a1a1a;
+        padding-bottom:0.5rem;margin-bottom:0.8rem;margin-top:1.5rem;font-family:'Syne',sans-serif;">
+        Detection History</div>""", unsafe_allow_html=True)
     if st.session_state.history:
         if st.button("Clear history"):
             st.session_state.history = []
@@ -350,13 +356,47 @@ with st.sidebar:
 # ─────────────────────────────────────────
 #  HEADER
 # ─────────────────────────────────────────
-st.markdown(
-    '<div class="wl-header">'
-    '<div><p class="wl-wordmark">Waste<span class="wl-dot">.</span>Lens</p>'
-    '<p class="wl-tagline">POINT &nbsp;·&nbsp; DETECT &nbsp;·&nbsp; SORT CORRECTLY</p></div>'
-    '<span class="wl-pill">AI Powered</span>'
-    '</div>',
-    unsafe_allow_html=True)
+st.markdown("""
+<div style="
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+">
+    <div>
+        <div style="
+            font-family: 'Syne', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        ">waste<span style="color:#22c55e">lens</span></div>
+        <div style="
+            font-size: 0.7rem;
+            color: #404040;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 400;
+        ">AI-powered waste classification</div>
+    </div>
+    <div style="
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #22c55e;
+        background: #0a1f10;
+        border: 1px solid #14532d;
+        padding: 6px 14px;
+        border-radius: 100px;
+        margin-bottom: 4px;
+    ">v4 model</div>
+</div>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 #  LAYOUT
@@ -364,7 +404,11 @@ st.markdown(
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    st.markdown('<div class="wl-label">Input source</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+        color:#404040;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
+        Input source
+    </div>""", unsafe_allow_html=True)
     mode = st.radio("Input", ["Upload image", "Use camera"], horizontal=True, label_visibility="collapsed")
     source_image = None
 
@@ -465,7 +509,11 @@ with right:
             st.warning("Nothing detected. Try lowering the confidence threshold in the sidebar.")
 
         if r["detections"]:
-            st.markdown('<div class="wl-label" style="margin-top:1rem">Item breakdown</div>', unsafe_allow_html=True)
+            st.markdown("""
+            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+                color:#404040;margin-top:1.2rem;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
+                Item breakdown
+            </div>""", unsafe_allow_html=True)
             RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
             for d in r["detections"]:
                 is_rec   = d["class"] in RECYCLABLE_CLASSES

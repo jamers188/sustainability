@@ -16,11 +16,9 @@ from ultralytics import YOLO
 #  on Streamlit Cloud, so we pull it from
 #  Google Drive at startup if not present.
 # ─────────────────────────────────────────
-MODEL_PATH = "waste_final_v4_best.pt"
-# Paste ONLY the file ID from your Google Drive share link.
-# Share link looks like: https://drive.google.com/file/d/1ABC123xyz.../view
-# Copy ONLY the bold part:                                  ^^^^^^^^^^^
-GDRIVE_FILE_ID = "1oV2jz3IDv1_8M_DNySn3dsMj3KyPyl2c"
+MODEL_PATH = "waste_final_v5_best.pt"
+
+GDRIVE_FILE_ID = "1hixnaagATWm1O119FJ7brW4HZuhHH4SC"
 
 def download_model(file_id: str, dest: str):
     import requests

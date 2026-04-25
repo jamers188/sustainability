@@ -159,47 +159,44 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER FIXES */
+/* UPLOADER RESET */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
 
-/* Force the dropzone background and remove the dark overlay */
+/* 1. This removes the black/dark overlay on the dropzone */
 [data-testid="stFileUploadDropzone"] {
     background-color: #ffffff !important;
     border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
-    padding: 1rem !important;
-    min-height: 95px !important;
-    color: #0f172a !important;
 }
 
-/* This targets the 'gray' text and ensures it is dark and readable */
-[data-testid="stFileUploadDropzone"] div, 
-[data-testid="stFileUploadDropzone"] span, 
-[data-testid="stFileUploadDropzone"] small {
-    color: #334155 !important;
-    opacity: 1 !important;
-}
-
-/* Fix the 'Black Cover' on non-hover state */
-[data-testid="stFileUploadDropzone"] > div:first-child {
+/* 2. Target the specific wrapper that causes the dark "cover" */
+[data-testid="stFileUploadDropzone"] > div {
     background-color: transparent !important;
 }
 
-/* Button visibility - ensuring it's not hidden by the overlay */
+/* 3. Make the "200MB per file" text dark and high-contrast */
+[data-testid="stFileUploadDropzone"] label, 
+[data-testid="stFileUploadDropzone"] span, 
+[data-testid="stFileUploadDropzone"] small {
+    color: #0f172a !important; /* Dark Slate */
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+
+/* 4. Fix the Upload Button inside the dropzone */
 [data-testid="stFileUploadDropzone"] button {
     background-color: #22c55e !important;
-    color: #052e16 !important;
+    color: #ffffff !important;
     border: none !important;
-    z-index: 10;
+    padding: 0.5rem 1rem !important;
 }
 
-/* Ensure icons and text inside the button stay dark */
-[data-testid="stFileUploadDropzone"] button * {
-    color: #052e16 !important;
+/* Ensure the upload icon inside the button is visible */
+[data-testid="stFileUploadDropzone"] button svg {
+    fill: #ffffff !important;
 }
-
 
 /* Upload icon */
 [data-testid="stFileUploadDropzone"] svg {

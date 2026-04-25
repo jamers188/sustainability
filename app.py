@@ -28,7 +28,7 @@ def download_model(file_id: str, dest: str):
 
     if "text/html" in r.headers.get("Content-Type", ""):
         import re
-        match = re.search(r'confirm=([0-9A-Za-z_\-]+)', r.text)
+        match = re.search(r'confirm=([0-9A-Za-z_\\-]+)', r.text)
         if match:
             r = session.get(url + f"&confirm={match.group(1)}", stream=True)
 
@@ -159,7 +159,7 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER FIX */
+/* UPLOADER */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
@@ -179,18 +179,22 @@ html, body, [class*="css"] {
     min-height: 95px !important;
 }
 
-/* This fixes the invisible MB/type text */
-[data-testid="stFileUploadDropzone"] div,
-[data-testid="stFileUploadDropzone"] span,
+/* Make upload helper text readable */
 [data-testid="stFileUploadDropzone"] p,
-[data-testid="stFileUploadDropzone"] small {
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] span,
+[data-testid="stFileUploadDropzone"] div {
     color: #334155 !important;
     opacity: 1 !important;
     visibility: visible !important;
 }
 
-/* This fixes the black upload button */
-[data-testid="stFileUploadDropzone"] button {
+/* FORCE native upload button readable */
+[data-testid="stFileUploadDropzone"] button,
+[data-testid="stFileUploadDropzone"] button:hover,
+[data-testid="stFileUploadDropzone"] button:active,
+[data-testid="stFileUploadDropzone"] button:focus,
+[data-testid="stFileUploadDropzone"] button:focus-visible {
     background: #22c55e !important;
     color: #052e16 !important;
     border: 1px solid #16a34a !important;
@@ -199,18 +203,18 @@ html, body, [class*="css"] {
     opacity: 1 !important;
 }
 
-[data-testid="stFileUploadDropzone"] button * {
+/* FORCE all text/icon inside upload button */
+[data-testid="stFileUploadDropzone"] button *,
+[data-testid="stFileUploadDropzone"] button:hover *,
+[data-testid="stFileUploadDropzone"] button:focus * {
+    background: transparent !important;
     color: #052e16 !important;
+    fill: #052e16 !important;
     opacity: 1 !important;
     visibility: visible !important;
 }
 
-[data-testid="stFileUploadDropzone"] button:hover {
-    background: #4ade80 !important;
-    color: #052e16 !important;
-    border-color: #16a34a !important;
-}
-
+/* Upload icon */
 [data-testid="stFileUploadDropzone"] svg {
     color: #052e16 !important;
     fill: #052e16 !important;
@@ -283,7 +287,6 @@ img {
     box-shadow: 0 12px 28px rgba(15,23,42,0.06) !important;
 }
 
-/* AWAIT PANEL */
 .await-panel {
     background:
         radial-gradient(circle at center, rgba(34,197,94,0.13), transparent 13rem),
@@ -323,7 +326,6 @@ img {
     line-height: 1.65;
 }
 
-/* METRICS */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(4,1fr);
@@ -357,7 +359,6 @@ img {
     font-weight: 800;
 }
 
-/* VERDICTS */
 .verdict-recyclable,
 .verdict-nonrecyclable,
 .verdict-mixed {
@@ -401,7 +402,6 @@ img {
     margin-top: 0.12rem;
 }
 
-/* BREAKDOWN */
 .det-item {
     background: #ffffff;
     border: 1px solid rgba(15,23,42,0.09);
@@ -483,17 +483,6 @@ img {
     margin-top: 2.2rem;
     padding: 1.5rem 0 0.5rem;
     border-top: 1px solid rgba(15,23,42,0.08);
-}
-
-@media (max-width: 900px) {
-    .hero {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .metric-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 </style>
 """, unsafe_allow_html=True)

@@ -144,7 +144,7 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stRadio"] label {
-    background: rgba(255,255,255,0.92) !important;
+    background: #ffffff !important;
     border: 1px solid rgba(15,23,42,0.12) !important;
     border-radius: 12px !important;
     padding: 0.6rem 0.85rem !important;
@@ -160,18 +160,26 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOAD - FULL LIGHT FIX */
+/* UPLOADER FULL FIX */
 [data-testid="stFileUploader"] {
     background: transparent !important;
+    color: #0f172a !important;
+}
+
+[data-testid="stFileUploader"] section {
+    background: #ffffff !important;
+    border: 1.5px dashed #22c55e !important;
+    border-radius: 14px !important;
+    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
 }
 
 [data-testid="stFileUploadDropzone"] {
+    background: #ffffff !important;
     border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
-    background: #ffffff !important;
     padding: 1rem !important;
     min-height: 95px !important;
-    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
+    color: #0f172a !important;
 }
 
 [data-testid="stFileUploadDropzone"]:hover {
@@ -179,12 +187,15 @@ html, body, [class*="css"] {
     box-shadow: 0 16px 40px rgba(34,197,94,0.12) !important;
 }
 
-[data-testid="stFileUploadDropzone"] * {
+[data-testid="stFileUploadDropzone"] div,
+[data-testid="stFileUploadDropzone"] span,
+[data-testid="stFileUploadDropzone"] p,
+[data-testid="stFileUploadDropzone"] small {
     color: #334155 !important;
+    background: transparent !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
-    color: #334155 !important;
     font-size: 0.84rem !important;
 }
 
@@ -198,22 +209,28 @@ html, body, [class*="css"] {
     fill: #22c55e !important;
 }
 
-/* Upload button inside uploader */
-[data-testid="stFileUploadDropzone"] button {
+[data-testid="stFileUploadDropzone"] button,
+[data-testid="stFileUploadDropzone"] button[kind],
+[data-testid="stFileUploadDropzone"] button div,
+[data-testid="stFileUploadDropzone"] button span {
     background: #f8fafc !important;
     color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+}
+
+[data-testid="stFileUploadDropzone"] button {
     border: 1px solid #cbd5e1 !important;
     border-radius: 10px !important;
-    box-shadow: none !important;
 }
 
 [data-testid="stFileUploadDropzone"] button:hover {
     background: #dcfce7 !important;
-    border-color: #22c55e !important;
     color: #166534 !important;
+    border-color: #22c55e !important;
 }
 
-/* Uploaded file chip/list */
+/* uploaded file chip */
 [data-testid="stFileUploaderFile"] {
     background: #ffffff !important;
     border: 1px solid rgba(15,23,42,0.10) !important;
@@ -224,6 +241,7 @@ html, body, [class*="css"] {
 
 [data-testid="stFileUploaderFile"] * {
     color: #0f172a !important;
+    background: transparent !important;
 }
 
 /* IMAGES */

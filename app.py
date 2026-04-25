@@ -10,6 +10,9 @@ import io
 import requests
 from ultralytics import YOLO
 
+# ─────────────────────────────────────────
+# MODEL DOWNLOAD
+# ─────────────────────────────────────────
 MODEL_PATH = "best_model.pt"
 GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
 
@@ -38,27 +41,34 @@ def download_model(file_id: str, dest: str):
                 f.write(chunk)
 
 model_ok = os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000
+
 if not model_ok:
     if GDRIVE_FILE_ID == "PASTE_YOUR_FILE_ID_HERE":
         st.error("Set your GDRIVE_FILE_ID in app.py")
         st.stop()
 
-    with st.spinner("Downloading model weights... (~6MB, first run only)"):
+    with st.spinner("Downloading model weights... first run only"):
         download_model(GDRIVE_FILE_ID, MODEL_PATH)
 
     if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
         st.error("Download failed — check GDRIVE_FILE_ID and that the file is shared publicly.")
         st.stop()
 
+# ─────────────────────────────────────────
+# PAGE CONFIG
+# ─────────────────────────────────────────
 st.set_page_config(
     page_title="WasteLens",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
+# ─────────────────────────────────────────
+# CSS
+# ─────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
@@ -68,72 +78,242 @@ html, body, [class*="css"] {
     visibility: hidden !important;
 }
 
-.block-container {
-    padding: 1.4rem 2rem 5rem !important;
-    max-width: 1300px !important;
+.stApp {
+    background:
+        radial-gradient(circle at top left, rgba(34,197,94,0.11), transparent 33rem),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.07), transparent 36rem),
+        linear-gradient(135deg, #040706 0%, #07100c 45%, #030504 100%);
+    color: #f9fafb;
 }
 
+.block-container {
+    max-width: 1420px !important;
+    padding: 1.8rem 2.2rem 4rem !important;
+}
+
+/* Sidebar */
 [data-testid="stSidebar"] {
-    background: #0a0a0a !important;
-    border-right: 1px solid #1f1f1f !important;
+    background:
+        radial-gradient(circle at top left, rgba(34,197,94,0.12), transparent 20rem),
+        #080d0b !important;
+    border-right: 1px solid rgba(255,255,255,0.08) !important;
 }
 
 [data-testid="stSidebar"] * {
-    color: #a0a0a0 !important;
+    color: #c7d0ca !important;
 }
 
-/* Native Streamlit Upload Dropzone */
+.sb-brand {
+    padding: 1.4rem 0 1.1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sb-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.sb-logo span {
+    color: #22c55e;
+}
+
+.sb-sub {
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    color: #8d9891 !important;
+}
+
+.sb-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #22c55e !important;
+    margin-bottom: 1rem;
+}
+
+.hist-item {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 13px;
+    padding: 0.85rem 0.9rem;
+    margin-bottom: 0.65rem;
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1.4fr;
+    gap: 0.45rem;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.empty-history {
+    color: #6b7280 !important;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+/* Hero */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    padding: 1.6rem 0 1.8rem;
+    margin-bottom: 1.8rem;
+}
+
+.logo {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.3rem, 4vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.075em;
+    color: #ffffff;
+    line-height: 0.95;
+}
+
+.logo span {
+    color: #22c55e;
+}
+
+.subtitle {
+    margin-top: 0.75rem;
+    color: #9ca3af;
+    font-size: 0.92rem;
+}
+
+.model-pill {
+    color: #4ade80;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.55);
+    border-radius: 999px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+/* Main shell cards */
+.app-shell {
+    border: 1px solid rgba(34,197,94,0.28);
+    background: rgba(8,13,11,0.72);
+    border-radius: 24px;
+    padding: 1.4rem;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+}
+
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+.card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 1rem;
+}
+
+/* Radio */
+[data-testid="stRadio"] > label {
+    display: none !important;
+}
+
+[data-testid="stRadio"] div[role="radiogroup"] {
+    display: flex !important;
+    gap: 0.7rem !important;
+}
+
+[data-testid="stRadio"] label {
+    background: rgba(255,255,255,0.035) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.15s ease !important;
+}
+
+[data-testid="stRadio"] label:hover {
+    border-color: rgba(34,197,94,0.65) !important;
+}
+
+/* Uploader */
 [data-testid="stFileUploadDropzone"] {
     border: 2px dashed #22c55e !important;
-    border-radius: 12px !important;
-    background: #0f0f0f !important;
-    padding: 1.5rem !important;
-    min-height: 120px !important;
+    border-radius: 18px !important;
+    background: rgba(15,15,15,0.96) !important;
+    padding: 2rem 1.5rem !important;
+    min-height: 155px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+[data-testid="stFileUploadDropzone"]:hover {
+    background: rgba(34,197,94,0.06) !important;
+    box-shadow: inset 0 0 40px rgba(34,197,94,0.04), 0 0 30px rgba(34,197,94,0.10) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
-    color: #9ca3af !important;
-    text-align: center !important;
+    color: #d1d5db !important;
     font-size: 0.9rem !important;
+    text-align: center !important;
+}
+
+[data-testid="stFileUploadDropzone"] small {
+    color: #6b7280 !important;
 }
 
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
+    width: 2.4rem !important;
+    height: 2.4rem !important;
 }
 
-/* Analyse Image Button */
+/* Images */
+img {
+    border-radius: 16px !important;
+}
+
+/* Buttons */
 .stButton > button {
     background: #22c55e !important;
     color: #000 !important;
     border: none !important;
-    border-radius: 8px !important;
+    border-radius: 16px !important;
     font-family: 'Syne', sans-serif !important;
-    font-weight: 800 !important;
-    font-size: 0.78rem !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
+    font-weight: 900 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.02em !important;
     height: auto !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    transition: all 0.15s ease !important;
-    box-shadow: 0 0 24px rgba(34,197,94,0.35) !important;
+    padding: 1.15rem 1rem !important;
+    box-shadow: 0 16px 45px rgba(34,197,94,0.28) !important;
     opacity: 1 !important;
+    transition: all 0.18s ease !important;
 }
 
 .stButton > button:not(:disabled) {
     background: #22c55e !important;
     color: #000 !important;
-    border: none !important;
     opacity: 1 !important;
-    box-shadow: 0 0 24px rgba(34,197,94,0.35) !important;
 }
 
 .stButton > button:hover {
     background: #4ade80 !important;
     color: #000 !important;
-    box-shadow: 0 0 34px rgba(34,197,94,0.45) !important;
     transform: translateY(-1px) !important;
+    box-shadow: 0 22px 60px rgba(34,197,94,0.36) !important;
 }
 
 .stButton > button:disabled {
@@ -144,26 +324,27 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stDownloadButton"] > button {
-    background: #0f0f0f !important;
-    color: #22c55e !important;
-    border: 1px solid #1a3a24 !important;
-    border-radius: 8px !important;
+    background: rgba(34,197,94,0.06) !important;
+    color: #4ade80 !important;
+    border: 1px solid rgba(34,197,94,0.45) !important;
+    border-radius: 14px !important;
     font-family: 'Syne', sans-serif !important;
-    font-size: 0.68rem !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    letter-spacing: 0.03em !important;
+    font-weight: 800 !important;
     width: 100% !important;
     height: auto !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding: 1rem !important;
 }
 
+/* Awaiting panel */
 .await-panel {
-    background: #0a0a0a;
-    border: 1px dashed #2a2a2a;
-    border-radius: 16px;
-    min-height: 400px;
+    background:
+        radial-gradient(circle at center, rgba(34,197,94,0.07), transparent 20rem),
+        rgba(255,255,255,0.025);
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 22px;
+    min-height: 440px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -171,129 +352,44 @@ html, body, [class*="css"] {
     justify-content: center;
     text-align: center;
     padding: 3rem 2.5rem;
-    margin-top: 0.2rem;
 }
 
 .await-icon {
-    font-size: 4rem;
+    font-size: 4.4rem;
     margin-bottom: 1.2rem;
     color: #22c55e;
-    filter: none;
+    text-shadow: 0 0 28px rgba(34,197,94,0.45);
 }
 
 .await-title {
     font-family: 'Syne', sans-serif;
     font-size: 0.95rem;
-    font-weight: 800;
-    letter-spacing: 0.2em;
+    font-weight: 900;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #e5e7eb;
-    margin-bottom: 0.7rem;
+    color: #f3f4f6;
+    margin-bottom: 0.65rem;
 }
 
 .await-text {
-    font-size: 0.92rem;
     color: #9ca3af;
+    font-size: 0.92rem;
     line-height: 1.7;
 }
 
-.verdict-recyclable {
-    background: linear-gradient(135deg, #0a1f12 0%, #0f2d1a 100%);
-    border: 1px solid #166534;
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.verdict-recyclable .v-icon {
-    font-size: 1.3rem;
-}
-
-.verdict-recyclable .v-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #22c55e;
-}
-
-.verdict-recyclable .v-sub {
-    font-size: 0.72rem;
-    color: #15803d;
-    margin-top: 2px;
-}
-
-.verdict-nonrecyclable {
-    background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 100%);
-    border: 1px solid #7f1d1d;
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.verdict-nonrecyclable .v-icon {
-    font-size: 1.3rem;
-}
-
-.verdict-nonrecyclable .v-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #ef4444;
-}
-
-.verdict-nonrecyclable .v-sub {
-    font-size: 0.72rem;
-    color: #b91c1c;
-    margin-top: 2px;
-}
-
-.verdict-mixed {
-    background: linear-gradient(135deg, #1a1500 0%, #2a2200 100%);
-    border: 1px solid #713f12;
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.verdict-mixed .v-icon {
-    font-size: 1.3rem;
-}
-
-.verdict-mixed .v-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #f59e0b;
-}
-
-.verdict-mixed .v-sub {
-    font-size: 0.72rem;
-    color: #b45309;
-    margin-top: 2px;
-}
-
+/* Metrics */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(4,1fr);
-    gap: 0.75rem;
-    margin-top: 1.2rem;
-    margin-bottom: 1.5rem;
+    gap: 0.85rem;
+    margin: 1rem 0 1.2rem;
 }
 
 .metric-box {
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
-    border-radius: 10px;
-    padding: 1.4rem 1rem;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+    padding: 1.25rem 1rem;
     text-align: center;
 }
 
@@ -306,125 +402,130 @@ html, body, [class*="css"] {
 }
 
 .metric-lbl {
-    font-size: 0.6rem;
-    color: #3f3f3f;
+    font-size: 0.63rem;
+    color: #9ca3af;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-top: 5px;
-    font-weight: 500;
+    letter-spacing: 0.13em;
+    margin-top: 0.55rem;
+    font-weight: 800;
 }
 
+/* Verdict */
+.verdict-recyclable,
+.verdict-nonrecyclable,
+.verdict-mixed {
+    border-radius: 18px;
+    padding: 1.05rem 1.25rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.verdict-recyclable {
+    background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.04));
+    border: 1px solid rgba(34,197,94,0.42);
+}
+
+.verdict-nonrecyclable {
+    background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.04));
+    border: 1px solid rgba(239,68,68,0.42);
+}
+
+.verdict-mixed {
+    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.04));
+    border: 1px solid rgba(245,158,11,0.42);
+}
+
+.v-icon {
+    font-size: 1.8rem;
+}
+
+.v-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: #f9fafb;
+}
+
+.v-sub {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    margin-top: 0.18rem;
+}
+
+/* Item breakdown */
 .det-item {
     background: #111111;
     border: 1px solid #222222;
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 0.75rem;
-    transition: border-color 0.15s;
-}
-
-.det-item:hover {
-    border-color: #2a2a2a;
+    border-radius: 14px;
+    padding: 0.85rem 0.95rem;
+    margin-bottom: 0.65rem;
 }
 
 .det-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
 }
 
 .det-name {
     font-family: 'Syne', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #e5e5e5;
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: #f3f4f6;
 }
 
 .det-conf {
-    font-size: 0.7rem;
-    color: #525252;
-    font-weight: 500;
+    font-size: 0.76rem;
+    color: #d1d5db;
+    font-weight: 700;
 }
 
 .conf-track {
-    background: #1a1a1a;
-    border-radius: 3px;
+    background: #27272a;
+    border-radius: 999px;
     height: 7px;
-    margin-bottom: 10px;
+    overflow: hidden;
+    margin-bottom: 0.7rem;
 }
 
 .conf-track div {
     height: 7px !important;
+    border-radius: 999px !important;
 }
 
 .det-tip {
-    font-size: 0.72rem;
-    color: #525252;
-    line-height: 1.6;
+    color: #9ca3af;
+    font-size: 0.76rem;
+    line-height: 1.55;
+}
+
+.chip-rec,
+.chip-nonrec {
+    display: inline-block;
+    font-size: 0.56rem;
+    font-weight: 800;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.55rem;
+    vertical-align: middle;
 }
 
 .chip-rec {
-    display: inline-block;
-    font-size: 0.58rem;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 0.1em;
-    padding: 2px 7px;
-    border-radius: 100px;
-    margin-left: 8px;
     background: #166534;
     color: #4ade80;
     border: 1px solid #15803d;
-    vertical-align: middle;
 }
 
 .chip-nonrec {
-    display: inline-block;
-    font-size: 0.58rem;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 0.1em;
-    padding: 2px 7px;
-    border-radius: 100px;
-    margin-left: 8px;
-    background: #166534;
-    color: #4ade80;
-    border: 1px solid #15803d;
-    vertical-align: middle;
-}
-
-.hist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #141414;
-    font-size: 0.85rem;
-}
-
-.hist-item:last-child {
-    border-bottom: none;
-}
-
-.sb-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #22c55e !important;
-    border-bottom: 1px solid #1a1a1a;
-    padding-bottom: 0.7rem;
-    margin-bottom: 1rem;
-}
-
-[data-testid="stRadio"] > label {
-    display: none !important;
-}
-
-[data-testid="stRadio"] div[role="radiogroup"] {
-    gap: 0.5rem !important;
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #991b1b;
 }
 
 .footer-line {
@@ -432,13 +533,27 @@ html, body, [class*="css"] {
     color: #4b5563;
     font-size: 0.75rem;
     letter-spacing: 0.08em;
-    margin-top: 4rem;
+    margin-top: 3rem;
     padding: 2rem 0 0.5rem;
-    border-top: 1px solid #111111;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+@media (max-width: 900px) {
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .metric-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 </style>
 """, unsafe_allow_html=True)
 
+# ─────────────────────────────────────────
+# CONSTANTS
+# ─────────────────────────────────────────
 CONF_THRESH = 0.25
 IOU_THRESH = 0.45
 SHOW_LABELS = True
@@ -448,16 +563,16 @@ RECYCLABLE_KEYWORDS = ["can", "glass", "paper", "plastic", "cardboard", "bottle"
 NON_RECYCLABLE_CLASSES = {"foodwaste", "food", "organic", "food_waste"}
 
 DISPOSAL_TIPS = {
-    "cans":           "Rinse before recycling. Crush to save bin space.",
-    "glass":          "Remove lids and sort by color if your facility requires it.",
-    "paperwaste":     "Keep dry. Remove staples and any plastic film.",
+    "cans": "Rinse before recycling. Crush to save bin space.",
+    "glass": "Remove lids and sort by color if your facility requires it.",
+    "paperwaste": "Keep dry. Remove staples and any plastic film.",
     "plasticbottles": "Empty, rinse, and check the resin code on the base.",
-    "can":            "Rinse before recycling. Crush to save bin space.",
-    "paper":          "Keep dry. Remove any plastic film or tape.",
-    "plastic":        "Empty and rinse. Check the resin code on the base.",
-    "bottle":         "Empty, rinse, and check the resin code on the base.",
-    "cardboard":      "Flatten before recycling. Remove any tape.",
-    "metal":          "Rinse clean and place in metals recycling.",
+    "can": "Rinse before recycling. Crush to save bin space.",
+    "paper": "Keep dry. Remove any plastic film or tape.",
+    "plastic": "Empty and rinse. Check the resin code on the base.",
+    "bottle": "Empty, rinse, and check the resin code on the base.",
+    "cardboard": "Flatten before recycling. Remove any tape.",
+    "metal": "Rinse clean and place in metals recycling.",
 }
 
 DEFAULT_TIP = "Seal in a bag and place in the general waste bin."
@@ -475,107 +590,97 @@ def build_class_maps(model):
 
     return recyclable, friendly
 
+# ─────────────────────────────────────────
+# MODEL
+# ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
     return YOLO(MODEL_PATH)
 
 model = load_model()
 
+# ─────────────────────────────────────────
+# SESSION STATE
+# ─────────────────────────────────────────
 if "history" not in st.session_state:
     st.session_state.history = []
 
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
 
+# ─────────────────────────────────────────
+# SIDEBAR
+# ─────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div class="sb-label">
-        Detection History
+    <div class="sb-brand">
+        <div class="sb-logo">waste<span>lens</span></div>
+        <div class="sb-sub">AI-powered waste classification</div>
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown('<div class="sb-label">Detection History</div>', unsafe_allow_html=True)
+
     if st.session_state.history:
-        if st.button("Clear history"):
+        if st.button("Clear history", use_container_width=True):
             st.session_state.history = []
             st.rerun()
 
         cmap = {
-            "recyclable": "#7ed4a0",
-            "non-recyclable": "#e07070",
-            "mixed": "#d4b86a",
-            "no-detection": "#6b7280",
+            "recyclable": "#4ade80",
+            "non-recyclable": "#f87171",
+            "mixed": "#facc15",
+            "no-detection": "#94a3b8",
         }
 
         for i, h in enumerate(reversed(st.session_state.history[-10:])):
             num = len(st.session_state.history) - i
-            c = cmap.get(h["verdict"], "#6b7280")
+            c = cmap.get(h["verdict"], "#94a3b8")
 
             st.markdown(
                 f'<div class="hist-item">'
-                f'<span style="color:#4b5563;font-family:Space Mono,monospace;font-size:0.85rem">#{num}</span>'
-                f'<span style="color:#9ca3af">{h["count"]} obj</span>'
-                f'<span style="color:{c};font-family:Space Mono,monospace;font-size:0.85rem">{h["verdict"].upper()}</span>'
+                f'<span style="color:#9ca3af;font-weight:800;">#{num}</span>'
+                f'<span style="color:#9ca3af;">{h["count"]} obj</span>'
+                f'<span style="color:{c};font-size:0.65rem;font-weight:900;letter-spacing:0.08em;">{h["verdict"].upper()}</span>'
                 f'</div>',
                 unsafe_allow_html=True
             )
     else:
-        st.markdown('<p style="color:#6b7280;font-size:0.9rem;line-height:1.6;">No scans yet.</p>', unsafe_allow_html=True)
+        st.markdown('<div class="empty-history">No scans yet.</div>', unsafe_allow_html=True)
 
+# ─────────────────────────────────────────
+# HEADER
+# ─────────────────────────────────────────
 st.markdown("""
-<div style="
-    padding: 3rem 0 2.4rem;
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 2.6rem;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-">
+<div class="hero">
     <div>
-        <div style="
-            font-family: 'Syne', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.05em;
-            line-height: 1;
-            margin-bottom: 0.4rem;
-        ">waste<span style="color:#22c55e">lens</span></div>
-        <div style="
-            font-size: 0.7rem;
-            color: #404040;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            font-weight: 400;
-        ">AI-powered waste classification</div>
+        <div class="logo">waste<span>lens</span></div>
+        <div class="subtitle">AI-powered waste classification</div>
     </div>
-    <div style="
-        font-size: 0.6rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #22c55e;
-        background: #0a1f10;
-        border: 1px solid #14532d;
-        padding: 6px 14px;
-        border-radius: 100px;
-        margin-bottom: 4px;
-    ">v4 model</div>
+    <div class="model-pill">v4 model</div>
 </div>
 """, unsafe_allow_html=True)
 
-left, right = st.columns([1, 1], gap="large")
+# ─────────────────────────────────────────
+# MAIN LAYOUT
+# ─────────────────────────────────────────
+st.markdown('<div class="app-shell">', unsafe_allow_html=True)
+
+left, right = st.columns([0.95, 1.35], gap="large")
 
 with left:
-    st.markdown("""
-    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-        color:#404040;margin-bottom:1rem;font-family:'Syne',sans-serif;">
-        Input source
-    </div>""", unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Input Source</div>', unsafe_allow_html=True)
 
-    mode = st.radio("Input", ["Upload image", "Use camera"], horizontal=True, label_visibility="collapsed")
+    mode = st.radio(
+        "Input",
+        ["Upload image", "Use camera"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+
     source_image = None
-
-    st.markdown("<div style='height:0.7rem;'></div>", unsafe_allow_html=True)
 
     if mode == "Upload image":
         uploaded = st.file_uploader(
@@ -605,13 +710,14 @@ with left:
             st.session_state["img_path"] = tmp_path
 
     if source_image:
-        st.markdown("<div style='height:0.8rem;'></div>", unsafe_allow_html=True)
-        st.image(source_image, caption="Original image", use_column_width=True)
+        st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Original Image</div>', unsafe_allow_html=True)
+        st.image(source_image, caption="Original image", use_container_width=True)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<div style='height:1.3rem;'></div>", unsafe_allow_html=True)
 
     run = st.button(
-        "Analyse image",
+        "✦ Analyse Image",
         disabled=(source_image is None),
         use_container_width=True,
         type="primary"
@@ -622,8 +728,8 @@ with right:
         st.markdown(
             '<div class="await-panel">'
             '<div class="await-icon">♻</div>'
-            '<div class="await-title">Awaiting scan</div>'
-            '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse image.</div>'
+            '<div class="await-title">Awaiting Scan</div>'
+            '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse Image.</div>'
             '</div>',
             unsafe_allow_html=True
         )
@@ -665,8 +771,8 @@ with right:
         nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
 
         verdict = (
-            "no-detection"   if n_det == 0 else
-            "recyclable"     if rec and not nonrec else
+            "no-detection" if n_det == 0 else
+            "recyclable" if rec and not nonrec else
             "non-recyclable" if nonrec and not rec else
             "mixed"
         )
@@ -693,14 +799,15 @@ with right:
     r = st.session_state.last_result
 
     if r and source_image is not None:
-        st.image(r["annotated_pil"], caption="Detection overlay", use_column_width=True)
+        st.markdown('<div class="section-title">Detection Overlay</div>', unsafe_allow_html=True)
+        st.image(r["annotated_pil"], caption="Detection overlay", use_container_width=True)
 
         st.markdown(
             f'<div class="metric-row">'
             f'<div class="metric-box"><div class="metric-val">{r["n_det"]}</div><div class="metric-lbl">Detected</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#7ed4a0">{r["rec_count"]}</div><div class="metric-lbl">Recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#e07070">{r["nonrec_count"]}</div><div class="metric-lbl">Non-recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#9ca3af">{r["elapsed"]*1000:.0f}ms</div><div class="metric-lbl">Inference</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#4ade80">{r["rec_count"]}</div><div class="metric-lbl">Recyclable</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#f87171">{r["nonrec_count"]}</div><div class="metric-lbl">Non-Recyclable</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#e5e7eb">{r["elapsed"]*1000:.0f}ms</div><div class="metric-lbl">Inference</div></div>'
             f'</div>',
             unsafe_allow_html=True
         )
@@ -709,19 +816,19 @@ with right:
 
         if v == "recyclable":
             st.markdown(
-                '<div class="verdict-recyclable"><div class="v-icon">♻</div><div><div class="v-text">Recyclable</div><div class="v-sub">Place in the recycling bin</div></div></div>',
+                '<div class="verdict-recyclable"><div class="v-icon">♻</div><div><div class="v-text">Verdict: Recyclable</div><div class="v-sub">Place in the recycling bin.</div></div></div>',
                 unsafe_allow_html=True
             )
 
         elif v == "non-recyclable":
             st.markdown(
-                '<div class="verdict-nonrecyclable"><div class="v-icon">✕</div><div><div class="v-text">Non-Recyclable</div><div class="v-sub">Place in the general waste bin</div></div></div>',
+                '<div class="verdict-nonrecyclable"><div class="v-icon">🗑</div><div><div class="v-text">Verdict: Non-Recyclable</div><div class="v-sub">Place in the general waste bin.</div></div></div>',
                 unsafe_allow_html=True
             )
 
         elif v == "mixed":
             st.markdown(
-                '<div class="verdict-mixed"><div class="v-icon">⚠</div><div><div class="v-text">Mixed Waste</div><div class="v-sub">Separate items before disposal</div></div></div>',
+                '<div class="verdict-mixed"><div class="v-icon">♻</div><div><div class="v-text">Verdict: Mixed Waste</div><div class="v-sub">Separate items before disposal.</div></div></div>',
                 unsafe_allow_html=True
             )
 
@@ -729,11 +836,7 @@ with right:
             st.warning("Nothing detected. Try using a clearer image with better lighting.")
 
         if r["detections"]:
-            st.markdown("""
-            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-                color:#404040;margin-top:1.5rem;margin-bottom:1rem;font-family:'Syne',sans-serif;">
-                Item breakdown
-            </div>""", unsafe_allow_html=True)
+            st.markdown('<div class="section-title" style="margin-top:1.2rem;">Item Breakdown</div>', unsafe_allow_html=True)
 
             RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
 
@@ -743,29 +846,34 @@ with right:
                 tip = DISPOSAL_TIPS.get(d["class"], DEFAULT_TIP)
 
                 chip_cls = "chip-rec" if is_rec else "chip-nonrec"
-                chip_lbl = "Recyclable" if is_rec else "Non-recyclable"
+                chip_lbl = "Recyclable" if is_rec else "Non-Recyclable"
 
                 fill_col = "#4ade80" if is_rec else "#f87171"
                 pct = d["conf"] * 100
 
                 st.markdown(
                     f'<div class="det-item">'
-                    f'<div class="det-top"><span class="det-name">{friendly}<span class="rec-chip {chip_cls}">{chip_lbl}</span></span><span class="det-conf">{pct:.1f}%</span></div>'
-                    f'<div class="conf-track"><div style="height:7px;border-radius:3px;background:{fill_col};width:{pct:.1f}%"></div></div>'
+                    f'<div class="det-top">'
+                    f'<span class="det-name">{friendly}<span class="{chip_cls}">{chip_lbl}</span></span>'
+                    f'<span class="det-conf">{pct:.1f}%</span>'
+                    f'</div>'
+                    f'<div class="conf-track"><div style="background:{fill_col};width:{pct:.1f}%"></div></div>'
                     f'<div class="det-tip">{tip}</div>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
 
-        st.markdown("<div style='height:0.8rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:0.9rem;'></div>", unsafe_allow_html=True)
 
         st.download_button(
-            "Download annotated image",
+            "⬇ Download Annotated Image",
             data=r["annotated_bytes"],
             file_name="wastelens_result.png",
             mime="image/png",
             use_container_width=True
         )
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown(
     '<div class="footer-line">WasteLens · AI Waste Classification</div>',

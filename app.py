@@ -16,9 +16,9 @@ from ultralytics import YOLO
 #  on Streamlit Cloud, so we pull it from
 #  Google Drive at startup if not present.
 # ─────────────────────────────────────────
-MODEL_PATH = "waste_final_v5_best.pt"
+MODEL_PATH = "best_model.pt"
 
-GDRIVE_FILE_ID = "1hixnaagATWm1O119FJ7brW4HZuhHH4SC"
+GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
 
 def download_model(file_id: str, dest: str):
     import requests

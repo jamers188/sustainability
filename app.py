@@ -159,61 +159,45 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER */
-[data-testid="stFileUploader"] {
-    background: transparent !important;
-}
+/* THE NUCLEAR UPLOADER FIX */
 
-[data-testid="stFileUploader"] section {
+/* 1. Kill the black background/overlay on the entire uploader area */
+[data-testid="stFileUploader"], 
+[data-testid="stFileUploadDropzone"],
+[data-testid="stFileUploadDropzone"] > div {
+    background-color: #ffffff !important;
     background: #ffffff !important;
-    border: 1.5px dashed #22c55e !important;
-    border-radius: 14px !important;
-    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
 }
 
-[data-testid="stFileUploadDropzone"] {
-    background: #ffffff !important;
-    border: 1.5px dashed #22c55e !important;
-    border-radius: 14px !important;
-    padding: 1rem !important;
-    min-height: 95px !important;
-}
-
-/* Make upload helper text readable */
-[data-testid="stFileUploadDropzone"] p,
-[data-testid="stFileUploadDropzone"] small,
+/* 2. Fix the "200MB..." text and the "JPG, PNG..." text */
+[data-testid="stFileUploadDropzone"] div [data-testid="stMarkdownContainer"] p,
 [data-testid="stFileUploadDropzone"] span,
-[data-testid="stFileUploadDropzone"] div {
-    color: #334155 !important;
+[data-testid="stFileUploadDropzone"] small {
+    color: #1e293b !important; /* Deep navy/charcoal */
     opacity: 1 !important;
     visibility: visible !important;
+    display: inline-block !important;
 }
 
-/* FORCE native upload button readable */
-[data-testid="stFileUploadDropzone"] button,
-[data-testid="stFileUploadDropzone"] button:hover,
-[data-testid="stFileUploadDropzone"] button:active,
-[data-testid="stFileUploadDropzone"] button:focus,
-[data-testid="stFileUploadDropzone"] button:focus-visible {
-    background: #22c55e !important;
+/* 3. The Upload Button (The black box you see is likely the button background) */
+[data-testid="stFileUploadDropzone"] button {
+    background-color: #22c55e !important; /* Your Green */
     color: #052e16 !important;
-    border: 1px solid #16a34a !important;
-    border-radius: 10px !important;
+    border: none !important;
     box-shadow: none !important;
-    opacity: 1 !important;
 }
 
-/* FORCE all text/icon inside upload button */
-[data-testid="stFileUploadDropzone"] button *,
-[data-testid="stFileUploadDropzone"] button:hover *,
-[data-testid="stFileUploadDropzone"] button:focus * {
-    background: transparent !important;
-    color: #052e16 !important;
+/* 4. Ensure the icon inside the button isn't causing a dark "blob" */
+[data-testid="stFileUploadDropzone"] button svg {
     fill: #052e16 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
+    color: #052e16 !important;
 }
 
+/* 5. Remove the dark hover effect that Streamlit adds by default */
+[data-testid="stFileUploadDropzone"]:hover {
+    border-color: #4ade80 !important;
+    background-color: #f8fafc !important; /* Slight off-white on hover */
+}
 /* Upload icon */
 [data-testid="stFileUploadDropzone"] svg {
     color: #052e16 !important;

@@ -65,7 +65,7 @@ html, body, [class*="css"] {
 }
 
 #MainMenu, footer, header {
-    visibility: hidden;
+    visibility: hidden !important;
 }
 
 .block-container {
@@ -82,21 +82,12 @@ html, body, [class*="css"] {
     color: #a0a0a0 !important;
 }
 
-/* Custom uploader wrapper */
-.upload-wrapper {
-    border: 2px dashed #22c55e;
-    border-radius: 12px;
-    background: #0f0f0f;
-    padding: 1.5rem;
-    margin-top: 0.7rem;
-    margin-bottom: 1rem;
-}
-
-/* Still keep fallback uploader styling */
+/* Native Streamlit Upload Dropzone */
 [data-testid="stFileUploadDropzone"] {
-    background: #0f0f0f !important;
     border: 2px dashed #22c55e !important;
     border-radius: 12px !important;
+    background: #0f0f0f !important;
+    padding: 1.5rem !important;
     min-height: 120px !important;
 }
 
@@ -111,6 +102,7 @@ html, body, [class*="css"] {
     fill: #22c55e !important;
 }
 
+/* Analyse Image Button */
 .stButton > button {
     background: #22c55e !important;
     color: #000 !important;
@@ -129,11 +121,19 @@ html, body, [class*="css"] {
     opacity: 1 !important;
 }
 
+.stButton > button:not(:disabled) {
+    background: #22c55e !important;
+    color: #000 !important;
+    border: none !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 24px rgba(34,197,94,0.35) !important;
+}
+
 .stButton > button:hover {
     background: #4ade80 !important;
     color: #000 !important;
     box-shadow: 0 0 34px rgba(34,197,94,0.45) !important;
-    transform: translateY(-1px);
+    transform: translateY(-1px) !important;
 }
 
 .stButton > button:disabled {
@@ -407,7 +407,6 @@ html, body, [class*="css"] {
     border-bottom: none;
 }
 
-/* FIX 1: Sidebar Detection History label */
 .sb-label {
     font-family: 'Syne', sans-serif;
     font-size: 0.65rem;
@@ -579,15 +578,11 @@ with left:
     st.markdown("<div style='height:0.7rem;'></div>", unsafe_allow_html=True)
 
     if mode == "Upload image":
-        st.markdown('<div class="upload-wrapper">', unsafe_allow_html=True)
-
         uploaded = st.file_uploader(
             "upload",
             type=["jpg", "jpeg", "png", "webp", "bmp"],
             label_visibility="collapsed"
         )
-
-        st.markdown('</div>', unsafe_allow_html=True)
 
         if uploaded:
             tmp_path = f"/tmp/wastelens_upload_{uploaded.name}"
@@ -626,7 +621,7 @@ with right:
     if source_image is None:
         st.markdown(
             '<div class="await-panel">'
-            '<div class="await-icon">&#9707;</div>'
+            '<div class="await-icon">♻</div>'
             '<div class="await-title">Awaiting scan</div>'
             '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse image.</div>'
             '</div>',

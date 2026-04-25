@@ -10,9 +10,6 @@ import io
 import requests
 from ultralytics import YOLO
 
-# ─────────────────────────────────────────
-# MODEL DOWNLOAD
-# ─────────────────────────────────────────
 MODEL_PATH = "best_model.pt"
 GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
 
@@ -43,137 +40,61 @@ def download_model(file_id: str, dest: str):
 model_ok = os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000
 
 if not model_ok:
-    if GDRIVE_FILE_ID == "PASTE_YOUR_FILE_ID_HERE":
-        st.error("Set your GDRIVE_FILE_ID in app.py")
-        st.stop()
-
-    with st.spinner("Downloading model weights... first run only"):
+    with st.spinner("Downloading model weights..."):
         download_model(GDRIVE_FILE_ID, MODEL_PATH)
 
     if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
         st.error("Download failed — check GDRIVE_FILE_ID and that the file is shared publicly.")
         st.stop()
 
-# ─────────────────────────────────────────
-# PAGE CONFIG
-# ─────────────────────────────────────────
 st.set_page_config(
     page_title="WasteLens",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
-# ─────────────────────────────────────────
-# CSS
-# ─────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
 }
 
-#MainMenu, footer, header {
+#MainMenu, footer, header, [data-testid="stSidebar"] {
     visibility: hidden !important;
+    display: none !important;
 }
 
 .stApp {
     background:
-        radial-gradient(circle at top left, rgba(34,197,94,0.11), transparent 33rem),
-        radial-gradient(circle at bottom right, rgba(34,197,94,0.07), transparent 36rem),
-        linear-gradient(135deg, #040706 0%, #07100c 45%, #030504 100%);
+        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.14), transparent 32rem),
+        radial-gradient(circle at 85% 85%, rgba(34,197,94,0.08), transparent 34rem),
+        linear-gradient(135deg, #030504 0%, #07100c 50%, #020302 100%);
     color: #f9fafb;
 }
 
 .block-container {
-    max-width: 1420px !important;
-    padding: 1.8rem 2.2rem 4rem !important;
+    max-width: 1280px !important;
+    padding: 2.2rem 2.4rem 4rem !important;
 }
 
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background:
-        radial-gradient(circle at top left, rgba(34,197,94,0.12), transparent 20rem),
-        #080d0b !important;
-    border-right: 1px solid rgba(255,255,255,0.08) !important;
-}
-
-[data-testid="stSidebar"] * {
-    color: #c7d0ca !important;
-}
-
-.sb-brand {
-    padding: 1.4rem 0 1.1rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.sb-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 900;
-    letter-spacing: -0.06em;
-    color: #ffffff;
-    line-height: 1;
-}
-
-.sb-logo span {
-    color: #22c55e;
-}
-
-.sb-sub {
-    margin-top: 0.45rem;
-    font-size: 0.78rem;
-    color: #8d9891 !important;
-}
-
-.sb-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #22c55e !important;
-    margin-bottom: 1rem;
-}
-
-.hist-item {
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 13px;
-    padding: 0.85rem 0.9rem;
-    margin-bottom: 0.65rem;
-    display: grid;
-    grid-template-columns: 0.5fr 1fr 1.4fr;
-    gap: 0.45rem;
-    align-items: center;
-    font-size: 0.8rem;
-}
-
-.empty-history {
-    color: #6b7280 !important;
-    font-size: 0.9rem;
-    line-height: 1.7;
-}
-
-/* Hero */
+/* HERO */
 .hero {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     gap: 1.5rem;
-    padding: 1.6rem 0 1.8rem;
-    margin-bottom: 1.8rem;
+    margin-bottom: 2.4rem;
 }
 
 .logo {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(2.3rem, 4vw, 4rem);
+    font-size: clamp(3rem, 6vw, 5.6rem);
     font-weight: 900;
-    letter-spacing: -0.075em;
+    letter-spacing: -0.08em;
     color: #ffffff;
-    line-height: 0.95;
+    line-height: 0.9;
 }
 
 .logo span {
@@ -181,78 +102,71 @@ html, body, [class*="css"] {
 }
 
 .subtitle {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
     color: #9ca3af;
-    font-size: 0.92rem;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
 }
 
 .model-pill {
     color: #4ade80;
     background: rgba(34,197,94,0.08);
-    border: 1px solid rgba(34,197,94,0.55);
+    border: 1px solid rgba(34,197,94,0.5);
     border-radius: 999px;
-    padding: 0.55rem 0.9rem;
-    font-size: 0.7rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
     font-weight: 900;
     letter-spacing: 0.15em;
     text-transform: uppercase;
 }
 
-/* Main shell cards */
-.app-shell {
-    border: 1px solid rgba(34,197,94,0.28);
-    background: rgba(8,13,11,0.72);
-    border-radius: 24px;
-    padding: 1.4rem;
-    box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+/* MAIN PANEL */
+.main-panel {
+    border: 1px solid rgba(34,197,94,0.26);
+    background: rgba(6, 10, 8, 0.82);
+    border-radius: 26px;
+    padding: 1.6rem;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.38);
 }
 
 .section-title {
     font-family: 'Syne', sans-serif;
     font-size: 0.72rem;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #d1d5db;
     margin-bottom: 1rem;
 }
 
-.card {
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 18px;
-    padding: 1rem;
-}
-
-/* Radio */
+/* RADIO */
 [data-testid="stRadio"] > label {
     display: none !important;
 }
 
 [data-testid="stRadio"] div[role="radiogroup"] {
     display: flex !important;
-    gap: 0.7rem !important;
+    gap: 0.8rem !important;
 }
 
 [data-testid="stRadio"] label {
-    background: rgba(255,255,255,0.035) !important;
-    border: 1px solid rgba(255,255,255,0.10) !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1rem !important;
-    transition: all 0.15s ease !important;
+    background: rgba(255,255,255,0.045) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 14px !important;
+    padding: 0.8rem 1.1rem !important;
 }
 
 [data-testid="stRadio"] label:hover {
     border-color: rgba(34,197,94,0.65) !important;
 }
 
-/* Uploader */
+/* UPLOAD */
 [data-testid="stFileUploadDropzone"] {
     border: 2px dashed #22c55e !important;
-    border-radius: 18px !important;
+    border-radius: 20px !important;
     background: rgba(15,15,15,0.96) !important;
-    padding: 2rem 1.5rem !important;
-    min-height: 155px !important;
+    padding: 2.4rem 1.5rem !important;
+    min-height: 170px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -261,12 +175,12 @@ html, body, [class*="css"] {
 
 [data-testid="stFileUploadDropzone"]:hover {
     background: rgba(34,197,94,0.06) !important;
-    box-shadow: inset 0 0 40px rgba(34,197,94,0.04), 0 0 30px rgba(34,197,94,0.10) !important;
+    box-shadow: inset 0 0 45px rgba(34,197,94,0.04), 0 0 30px rgba(34,197,94,0.1) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
     color: #d1d5db !important;
-    font-size: 0.9rem !important;
+    font-size: 0.92rem !important;
     text-align: center !important;
 }
 
@@ -277,16 +191,16 @@ html, body, [class*="css"] {
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
-    width: 2.4rem !important;
-    height: 2.4rem !important;
+    width: 2.6rem !important;
+    height: 2.6rem !important;
 }
 
-/* Images */
+/* IMAGES */
 img {
-    border-radius: 16px !important;
+    border-radius: 18px !important;
 }
 
-/* Buttons */
+/* BUTTONS */
 .stButton > button {
     background: #22c55e !important;
     color: #000 !important;
@@ -294,31 +208,27 @@ img {
     border-radius: 16px !important;
     font-family: 'Syne', sans-serif !important;
     font-weight: 900 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.02em !important;
+    font-size: 0.95rem !important;
     height: auto !important;
     padding: 1.15rem 1rem !important;
-    box-shadow: 0 16px 45px rgba(34,197,94,0.28) !important;
+    box-shadow: 0 18px 50px rgba(34,197,94,0.3) !important;
     opacity: 1 !important;
-    transition: all 0.18s ease !important;
 }
 
 .stButton > button:not(:disabled) {
     background: #22c55e !important;
     color: #000 !important;
-    opacity: 1 !important;
 }
 
 .stButton > button:hover {
     background: #4ade80 !important;
     color: #000 !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 22px 60px rgba(34,197,94,0.36) !important;
 }
 
 .stButton > button:disabled {
     background: #1a1a1a !important;
-    color: #3f3f3f !important;
+    color: #4b5563 !important;
     box-shadow: none !important;
     opacity: 1 !important;
 }
@@ -329,23 +239,21 @@ img {
     border: 1px solid rgba(34,197,94,0.45) !important;
     border-radius: 14px !important;
     font-family: 'Syne', sans-serif !important;
-    font-size: 0.82rem !important;
-    letter-spacing: 0.03em !important;
-    font-weight: 800 !important;
+    font-size: 0.85rem !important;
+    font-weight: 900 !important;
     width: 100% !important;
     height: auto !important;
     padding: 1rem !important;
 }
 
-/* Awaiting panel */
+/* AWAIT PANEL */
 .await-panel {
     background:
-        radial-gradient(circle at center, rgba(34,197,94,0.07), transparent 20rem),
+        radial-gradient(circle at center, rgba(34,197,94,0.08), transparent 18rem),
         rgba(255,255,255,0.025);
     border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 22px;
-    min-height: 440px;
-    height: 100%;
+    border-radius: 24px;
+    min-height: 460px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -355,20 +263,20 @@ img {
 }
 
 .await-icon {
-    font-size: 4.4rem;
+    font-size: 4.8rem;
     margin-bottom: 1.2rem;
     color: #22c55e;
-    text-shadow: 0 0 28px rgba(34,197,94,0.45);
+    text-shadow: 0 0 30px rgba(34,197,94,0.45);
 }
 
 .await-title {
     font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 900;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #f3f4f6;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.7rem;
 }
 
 .await-text {
@@ -377,7 +285,7 @@ img {
     line-height: 1.7;
 }
 
-/* Metrics */
+/* METRICS */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(4,1fr);
@@ -386,7 +294,7 @@ img {
 }
 
 .metric-box {
-    background: rgba(255,255,255,0.035);
+    background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.09);
     border-radius: 16px;
     padding: 1.25rem 1rem;
@@ -410,12 +318,12 @@ img {
     font-weight: 800;
 }
 
-/* Verdict */
+/* VERDICTS */
 .verdict-recyclable,
 .verdict-nonrecyclable,
 .verdict-mixed {
     border-radius: 18px;
-    padding: 1.05rem 1.25rem;
+    padding: 1.1rem 1.25rem;
     margin-bottom: 1.2rem;
     display: flex;
     align-items: center;
@@ -454,13 +362,13 @@ img {
     margin-top: 0.18rem;
 }
 
-/* Item breakdown */
+/* BREAKDOWN */
 .det-item {
     background: #111111;
     border: 1px solid #222222;
     border-radius: 14px;
-    padding: 0.85rem 0.95rem;
-    margin-bottom: 0.65rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.7rem;
 }
 
 .det-top {
@@ -509,7 +417,6 @@ img {
     font-size: 0.56rem;
     font-weight: 800;
     font-family: 'Syne', sans-serif;
-    letter-spacing: 0.05em;
     padding: 0.25rem 0.5rem;
     border-radius: 999px;
     margin-left: 0.55rem;
@@ -551,9 +458,6 @@ img {
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-# CONSTANTS
-# ─────────────────────────────────────────
 CONF_THRESH = 0.25
 IOU_THRESH = 0.45
 SHOW_LABELS = True
@@ -590,81 +494,29 @@ def build_class_maps(model):
 
     return recyclable, friendly
 
-# ─────────────────────────────────────────
-# MODEL
-# ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
     return YOLO(MODEL_PATH)
 
 model = load_model()
 
-# ─────────────────────────────────────────
-# SESSION STATE
-# ─────────────────────────────────────────
-if "history" not in st.session_state:
-    st.session_state.history = []
-
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
 
-# ─────────────────────────────────────────
-# SIDEBAR
-# ─────────────────────────────────────────
-with st.sidebar:
-    st.markdown("""
-    <div class="sb-brand">
-        <div class="sb-logo">waste<span>lens</span></div>
-        <div class="sb-sub">AI-powered waste classification</div>
-    </div>
-    """, unsafe_allow_html=True)
+if "last_image_key" not in st.session_state:
+    st.session_state.last_image_key = None
 
-    st.markdown('<div class="sb-label">Detection History</div>', unsafe_allow_html=True)
-
-    if st.session_state.history:
-        if st.button("Clear history", use_container_width=True):
-            st.session_state.history = []
-            st.rerun()
-
-        cmap = {
-            "recyclable": "#4ade80",
-            "non-recyclable": "#f87171",
-            "mixed": "#facc15",
-            "no-detection": "#94a3b8",
-        }
-
-        for i, h in enumerate(reversed(st.session_state.history[-10:])):
-            num = len(st.session_state.history) - i
-            c = cmap.get(h["verdict"], "#94a3b8")
-
-            st.markdown(
-                f'<div class="hist-item">'
-                f'<span style="color:#9ca3af;font-weight:800;">#{num}</span>'
-                f'<span style="color:#9ca3af;">{h["count"]} obj</span>'
-                f'<span style="color:{c};font-size:0.65rem;font-weight:900;letter-spacing:0.08em;">{h["verdict"].upper()}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-    else:
-        st.markdown('<div class="empty-history">No scans yet.</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────
 st.markdown("""
 <div class="hero">
     <div>
         <div class="logo">waste<span>lens</span></div>
-        <div class="subtitle">AI-powered waste classification</div>
+        <div class="subtitle">AI-powered waste classification for smarter recycling decisions.</div>
     </div>
     <div class="model-pill">v4 model</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-# MAIN LAYOUT
-# ─────────────────────────────────────────
-st.markdown('<div class="app-shell">', unsafe_allow_html=True)
+st.markdown('<div class="main-panel">', unsafe_allow_html=True)
 
 left, right = st.columns([0.95, 1.35], gap="large")
 
@@ -681,6 +533,7 @@ with left:
     st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 
     source_image = None
+    current_image_key = None
 
     if mode == "Upload image":
         uploaded = st.file_uploader(
@@ -690,6 +543,12 @@ with left:
         )
 
         if uploaded:
+            current_image_key = f"upload_{uploaded.name}_{uploaded.size}"
+
+            if st.session_state.last_image_key != current_image_key:
+                st.session_state.last_result = None
+                st.session_state.last_image_key = current_image_key
+
             tmp_path = f"/tmp/wastelens_upload_{uploaded.name}"
             with open(tmp_path, "wb") as f:
                 f.write(uploaded.getvalue())
@@ -702,6 +561,12 @@ with left:
         cam = st.camera_input("camera", label_visibility="collapsed")
 
         if cam:
+            current_image_key = f"camera_{len(cam.getvalue())}"
+
+            if st.session_state.last_image_key != current_image_key:
+                st.session_state.last_result = None
+                st.session_state.last_image_key = current_image_key
+
             tmp_path = "/tmp/wastelens_camera.jpg"
             with open(tmp_path, "wb") as f:
                 f.write(cam.getvalue())
@@ -710,11 +575,11 @@ with left:
             st.session_state["img_path"] = tmp_path
 
     if source_image:
-        st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:1.1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-title">Original Image</div>', unsafe_allow_html=True)
         st.image(source_image, caption="Original image", use_container_width=True)
 
-    st.markdown("<div style='height:1.3rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:1.4rem;'></div>", unsafe_allow_html=True)
 
     run = st.button(
         "✦ Analyse Image",
@@ -791,12 +656,17 @@ with right:
             "nonrec_count": len(nonrec),
         }
 
-        st.session_state.history.append({
-            "count": n_det,
-            "verdict": verdict
-        })
-
     r = st.session_state.last_result
+
+    if source_image is not None and r is None:
+        st.markdown(
+            '<div class="await-panel">'
+            '<div class="await-icon">♻</div>'
+            '<div class="await-title">Ready To Analyse</div>'
+            '<div class="await-text">Image loaded successfully.<br>Press Analyse Image to run YOLO detection.</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
     if r and source_image is not None:
         st.markdown('<div class="section-title">Detection Overlay</div>', unsafe_allow_html=True)
@@ -828,7 +698,7 @@ with right:
 
         elif v == "mixed":
             st.markdown(
-                '<div class="verdict-mixed"><div class="v-icon">♻</div><div><div class="v-text">Verdict: Mixed Waste</div><div class="v-sub">Separate items before disposal.</div></div></div>',
+                '<div class="verdict-mixed"><div class="v-icon">⚠</div><div><div class="v-text">Verdict: Mixed Waste</div><div class="v-sub">Separate items before disposal.</div></div></div>',
                 unsafe_allow_html=True
             )
 

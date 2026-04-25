@@ -159,33 +159,28 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* File uploader container */
+/* File uploader wrapper */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
 
-[data-testid="stFileUploader"] section {
+/* Main uploader card */
+[data-testid="stFileUploader"] section[data-testid="stFileUploadDropzone"] {
     background: #ffffff !important;
     border: 2px dashed #22c55e !important;
     border-radius: 14px !important;
     padding: 1rem !important;
+    box-shadow: none !important;
 }
 
-/* Dropzone */
-[data-testid="stFileUploadDropzone"] {
-    background: #ffffff !important;
-    color: #334155 !important;
-    opacity: 1 !important;
-}
-
-/* Inner wrappers that sometimes create dark overlays */
-[data-testid="stFileUploadDropzone"] > div,
-[data-testid="stFileUploadDropzone"] div {
+/* Remove any dark overlay layers */
+[data-testid="stFileUploader"] section[data-testid="stFileUploadDropzone"] > div {
     background: transparent !important;
 }
 
-/* Button */
-[data-testid="stFileUploadDropzone"] button {
+/* Browse button */
+[data-testid="stFileUploader"] [data-testid="baseButton-secondary"],
+[data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] {
     background: #22c55e !important;
     color: #052e16 !important;
     border: none !important;
@@ -193,28 +188,30 @@ html, body, [class*="css"] {
     opacity: 1 !important;
 }
 
-[data-testid="stFileUploadDropzone"] button * {
+/* Browse button text */
+[data-testid="stFileUploader"] [data-testid="baseButton-secondary"] *,
+[data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] * {
     color: #052e16 !important;
     fill: #052e16 !important;
     opacity: 1 !important;
 }
 
-/* Helper text */
-[data-testid="stFileUploadDropzone"] p,
+/* Helper text: drag/drop + file size + formats */
+[data-testid="stFileDropzoneInstructions"] span,
+[data-testid="stFileDropzoneInstructions"] small,
 [data-testid="stFileUploadDropzone"] span,
 [data-testid="stFileUploadDropzone"] small,
-[data-testid="stFileUploadDropzone"] label {
+[data-testid="stFileUploadDropzone"] p {
     color: #475569 !important;
     opacity: 1 !important;
 }
 
-/* Remove any dark pseudo layers */
-[data-testid="stFileUploadDropzone"]::before,
-[data-testid="stFileUploadDropzone"]::after {
+/* Kill dark pseudo elements if any */
+[data-testid="stFileUploader"] section[data-testid="stFileUploadDropzone"]::before,
+[data-testid="stFileUploader"] section[data-testid="stFileUploadDropzone"]::after {
     background: transparent !important;
     box-shadow: none !important;
 }
-
 
 /* Upload icon */
 [data-testid="stFileUploadDropzone"] svg {

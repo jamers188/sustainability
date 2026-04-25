@@ -68,16 +68,15 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.11), transparent 26rem),
-        radial-gradient(circle at 80% 30%, rgba(34,197,94,0.045), transparent 24rem),
-        radial-gradient(circle at 85% 85%, rgba(34,197,94,0.055), transparent 30rem),
+        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.10), transparent 24rem),
+        radial-gradient(circle at 85% 80%, rgba(34,197,94,0.055), transparent 28rem),
         linear-gradient(135deg, #030504 0%, #07100c 50%, #020302 100%);
     color: #f9fafb;
 }
 
 .block-container {
-    max-width: 1120px !important;
-    padding: 1.7rem 2rem 3.2rem !important;
+    max-width: 1080px !important;
+    padding: 1.6rem 2rem 3rem !important;
 }
 
 /* HERO */
@@ -86,14 +85,14 @@ html, body, [class*="css"] {
     justify-content: space-between;
     align-items: flex-end;
     gap: 1.2rem;
-    margin-bottom: 2.7rem;
-    padding-bottom: 1.4rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
     border-bottom: 1px solid rgba(255,255,255,0.065);
 }
 
 .logo {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(2.4rem, 4vw, 4rem);
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
     font-weight: 900;
     letter-spacing: -0.08em;
     color: #ffffff;
@@ -105,9 +104,9 @@ html, body, [class*="css"] {
 }
 
 .subtitle {
-    margin-top: 0.75rem;
+    margin-top: 0.65rem;
     color: #9ca3af;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     letter-spacing: 0.02em;
 }
 
@@ -116,30 +115,12 @@ html, body, [class*="css"] {
     background: rgba(34,197,94,0.08);
     border: 1px solid rgba(34,197,94,0.5);
     border-radius: 999px;
-    padding: 0.5rem 0.85rem;
-    font-size: 0.66rem;
+    padding: 0.48rem 0.85rem;
+    font-size: 0.62rem;
     font-weight: 900;
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
-}
-
-/* SECTION WRAPS */
-.input-card,
-.result-card {
-    background: rgba(255,255,255,0.018);
-    border: 1px solid rgba(255,255,255,0.055);
-    border-radius: 22px;
-    padding: 1.15rem;
-    min-height: 330px;
-}
-
-.input-card {
-    box-shadow: inset 0 0 40px rgba(34,197,94,0.018);
-}
-
-.result-card {
-    box-shadow: inset 0 0 55px rgba(34,197,94,0.025);
+    margin-bottom: 0.2rem;
 }
 
 .section-title {
@@ -149,7 +130,7 @@ html, body, [class*="css"] {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #e5e7eb;
-    margin-bottom: 0.95rem;
+    margin-bottom: 0.85rem;
 }
 
 /* RADIO */
@@ -180,21 +161,16 @@ html, body, [class*="css"] {
     background: rgba(15,15,15,0.96) !important;
     padding: 1rem !important;
     min-height: 95px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
 }
 
 [data-testid="stFileUploadDropzone"]:hover {
     background: rgba(34,197,94,0.06) !important;
-    box-shadow: inset 0 0 30px rgba(34,197,94,0.04), 0 0 20px rgba(34,197,94,0.08) !important;
+    box-shadow: 0 0 18px rgba(34,197,94,0.08) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
     color: #d1d5db !important;
     font-size: 0.84rem !important;
-    text-align: center !important;
 }
 
 [data-testid="stFileUploadDropzone"] small {
@@ -205,8 +181,6 @@ html, body, [class*="css"] {
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
-    width: 1.8rem !important;
-    height: 1.8rem !important;
 }
 
 /* IMAGES */
@@ -468,11 +442,6 @@ img {
     .metric-row {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    .input-card,
-    .result-card {
-        min-height: auto;
-    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -538,8 +507,6 @@ st.markdown("""
 left, right = st.columns([0.92, 1.28], gap="large")
 
 with left:
-    st.markdown('<div class="input-card">', unsafe_allow_html=True)
-
     st.markdown('<div class="section-title">Input Source</div>', unsafe_allow_html=True)
 
     mode = st.radio(
@@ -607,11 +574,7 @@ with left:
         type="primary"
     )
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
 with right:
-    st.markdown('<div class="result-card">', unsafe_allow_html=True)
-
     if source_image is None:
         st.markdown(
             '<div class="await-panel">'
@@ -765,8 +728,6 @@ with right:
             mime="image/png",
             use_container_width=True
         )
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown(
     '<div class="footer-line">WasteLens · AI Waste Classification</div>',

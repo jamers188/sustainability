@@ -159,43 +159,59 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER RESET */
+/* UPLOADER */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
 
-/* 1. This removes the black/dark overlay on the dropzone */
-[data-testid="stFileUploadDropzone"] {
-    background-color: #ffffff !important;
+[data-testid="stFileUploader"] section {
+    background: #ffffff !important;
     border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
+    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
 }
 
-/* 2. Target the specific wrapper that causes the dark "cover" */
-[data-testid="stFileUploadDropzone"] > div {
-    background-color: transparent !important;
+[data-testid="stFileUploadDropzone"] {
+    background: #ffffff !important;
+    border: 1.5px dashed #22c55e !important;
+    border-radius: 14px !important;
+    padding: 1rem !important;
+    min-height: 95px !important;
 }
 
-/* 3. Make the "200MB per file" text dark and high-contrast */
-[data-testid="stFileUploadDropzone"] label, 
-[data-testid="stFileUploadDropzone"] span, 
-[data-testid="stFileUploadDropzone"] small {
-    color: #0f172a !important; /* Dark Slate */
+/* Make upload helper text readable */
+[data-testid="stFileUploadDropzone"] p,
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] span,
+[data-testid="stFileUploadDropzone"] div {
+    color: #334155 !important;
     opacity: 1 !important;
-    font-weight: 500 !important;
+    visibility: visible !important;
 }
 
-/* 4. Fix the Upload Button inside the dropzone */
-[data-testid="stFileUploadDropzone"] button {
-    background-color: #22c55e !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 0.5rem 1rem !important;
+/* FORCE native upload button readable */
+[data-testid="stFileUploadDropzone"] button,
+[data-testid="stFileUploadDropzone"] button:hover,
+[data-testid="stFileUploadDropzone"] button:active,
+[data-testid="stFileUploadDropzone"] button:focus,
+[data-testid="stFileUploadDropzone"] button:focus-visible {
+    background: #22c55e !important;
+    color: #052e16 !important;
+    border: 1px solid #16a34a !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
 }
 
-/* Ensure the upload icon inside the button is visible */
-[data-testid="stFileUploadDropzone"] button svg {
-    fill: #ffffff !important;
+/* FORCE all text/icon inside upload button */
+[data-testid="stFileUploadDropzone"] button *,
+[data-testid="stFileUploadDropzone"] button:hover *,
+[data-testid="stFileUploadDropzone"] button:focus * {
+    background: transparent !important;
+    color: #052e16 !important;
+    fill: #052e16 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 /* Upload icon */

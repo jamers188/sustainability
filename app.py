@@ -68,9 +68,9 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.10), transparent 24rem),
-        radial-gradient(circle at 85% 80%, rgba(34,197,94,0.055), transparent 28rem),
-        linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eefdf3 100%);
+        radial-gradient(circle at 18% 8%, rgba(34,197,94,0.13), transparent 26rem),
+        radial-gradient(circle at 80% 80%, rgba(34,197,94,0.12), transparent 30rem),
+        linear-gradient(135deg, #ffffff 0%, #f8fafc 48%, #ecfdf5 100%);
     color: #0f172a;
 }
 
@@ -87,7 +87,7 @@ html, body, [class*="css"] {
     gap: 1.2rem;
     margin-bottom: 2rem;
     padding-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(255,255,255,0.065);
+    border-bottom: 1px solid rgba(15,23,42,0.08);
 }
 
 .logo {
@@ -105,15 +105,15 @@ html, body, [class*="css"] {
 
 .subtitle {
     margin-top: 0.65rem;
-    color: #9ca3af;
+    color: #64748b;
     font-size: 0.86rem;
     letter-spacing: 0.02em;
 }
 
 .model-pill {
-    color: #4ade80;
-    background: rgba(34,197,94,0.08);
-    border: 1px solid rgba(34,197,94,0.5);
+    color: #16a34a;
+    background: #dcfce7;
+    border: 1px solid #86efac;
     border-radius: 999px;
     padding: 0.48rem 0.85rem;
     font-size: 0.62rem;
@@ -144,37 +144,44 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stRadio"] label {
-    background: rgba(255,255,255,0.045) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.85) !important;
+    border: 1px solid rgba(15,23,42,0.12) !important;
     border-radius: 12px !important;
     padding: 0.6rem 0.85rem !important;
+    color: #0f172a !important;
+    box-shadow: 0 8px 22px rgba(15,23,42,0.04) !important;
 }
 
 [data-testid="stRadio"] label:hover {
-    border-color: rgba(34,197,94,0.65) !important;
+    border-color: #22c55e !important;
+}
+
+[data-testid="stRadio"] label * {
+    color: #0f172a !important;
 }
 
 /* UPLOAD */
 [data-testid="stFileUploadDropzone"] {
-    border: 1.5px dashed rgba(34,197,94,0.75) !important;
+    border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
-    background: rgba(15,15,15,0.96) !important;
+    background: #ffffff !important;
     padding: 1rem !important;
     min-height: 95px !important;
+    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
 }
 
 [data-testid="stFileUploadDropzone"]:hover {
-    background: rgba(34,197,94,0.06) !important;
-    box-shadow: 0 0 18px rgba(34,197,94,0.08) !important;
+    background: #f0fdf4 !important;
+    box-shadow: 0 16px 40px rgba(34,197,94,0.12) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
-    color: #d1d5db !important;
+    color: #334155 !important;
     font-size: 0.84rem !important;
 }
 
 [data-testid="stFileUploadDropzone"] small {
-    color: #6b7280 !important;
+    color: #64748b !important;
     font-size: 0.72rem !important;
 }
 
@@ -186,12 +193,13 @@ html, body, [class*="css"] {
 /* IMAGES */
 img {
     border-radius: 14px !important;
+    box-shadow: 0 14px 36px rgba(15,23,42,0.10) !important;
 }
 
 /* BUTTONS */
 .stButton > button {
     background: #22c55e !important;
-    color: #000 !important;
+    color: #052e16 !important;
     border: none !important;
     border-radius: 14px !important;
     font-family: 'Syne', sans-serif !important;
@@ -199,32 +207,32 @@ img {
     font-size: 0.82rem !important;
     height: auto !important;
     padding: 0.85rem 1rem !important;
-    box-shadow: 0 14px 35px rgba(34,197,94,0.24) !important;
+    box-shadow: 0 14px 35px rgba(34,197,94,0.25) !important;
     opacity: 1 !important;
 }
 
 .stButton > button:not(:disabled) {
     background: #22c55e !important;
-    color: #000 !important;
+    color: #052e16 !important;
 }
 
 .stButton > button:hover {
     background: #4ade80 !important;
-    color: #000 !important;
+    color: #052e16 !important;
     transform: translateY(-1px) !important;
 }
 
 .stButton > button:disabled {
-    background: #1a1a1a !important;
-    color: #4b5563 !important;
+    background: #e2e8f0 !important;
+    color: #94a3b8 !important;
     box-shadow: none !important;
     opacity: 1 !important;
 }
 
 [data-testid="stDownloadButton"] > button {
-    background: rgba(34,197,94,0.06) !important;
-    color: #4ade80 !important;
-    border: 1px solid rgba(34,197,94,0.45) !important;
+    background: #ffffff !important;
+    color: #16a34a !important;
+    border: 1px solid #86efac !important;
     border-radius: 13px !important;
     font-family: 'Syne', sans-serif !important;
     font-size: 0.78rem !important;
@@ -232,14 +240,15 @@ img {
     width: 100% !important;
     height: auto !important;
     padding: 0.85rem 1rem !important;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.06) !important;
 }
 
 /* AWAIT PANEL */
 .await-panel {
     background:
-        radial-gradient(circle at center, rgba(34,197,94,0.08), transparent 13rem),
-        rgba(255,255,255,0.025);
-    border: 1px dashed rgba(255,255,255,0.13);
+        radial-gradient(circle at center, rgba(34,197,94,0.13), transparent 13rem),
+        rgba(255,255,255,0.82);
+    border: 1px dashed rgba(34,197,94,0.55);
     border-radius: 18px;
     min-height: 300px;
     display: flex;
@@ -248,13 +257,14 @@ img {
     justify-content: center;
     text-align: center;
     padding: 2rem;
+    box-shadow: 0 18px 45px rgba(15,23,42,0.06);
 }
 
 .await-icon {
     font-size: 3rem;
     margin-bottom: 0.9rem;
     color: #22c55e;
-    text-shadow: 0 0 24px rgba(34,197,94,0.4);
+    text-shadow: 0 0 18px rgba(34,197,94,0.25);
 }
 
 .await-title {
@@ -268,7 +278,7 @@ img {
 }
 
 .await-text {
-    color: #9ca3af;
+    color: #64748b;
     font-size: 0.82rem;
     line-height: 1.65;
 }
@@ -282,24 +292,25 @@ img {
 }
 
 .metric-box {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.09);
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.08);
     border-radius: 14px;
     padding: 1rem 0.8rem;
     text-align: center;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.06);
 }
 
 .metric-val {
     font-family: 'Syne', sans-serif;
     font-size: 2.1rem;
     font-weight: 900;
-    color: #fff;
+    color: #0f172a;
     line-height: 1;
 }
 
 .metric-lbl {
     font-size: 0.55rem;
-    color: #9ca3af;
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-top: 0.45rem;
@@ -319,18 +330,18 @@ img {
 }
 
 .verdict-recyclable {
-    background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.04));
-    border: 1px solid rgba(34,197,94,0.42);
+    background: #dcfce7;
+    border: 1px solid #86efac;
 }
 
 .verdict-nonrecyclable {
-    background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.04));
-    border: 1px solid rgba(239,68,68,0.42);
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
 }
 
 .verdict-mixed {
-    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.04));
-    border: 1px solid rgba(245,158,11,0.42);
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
 }
 
 .v-icon {
@@ -346,17 +357,18 @@ img {
 
 .v-sub {
     font-size: 0.76rem;
-    color: #9ca3af;
+    color: #475569;
     margin-top: 0.12rem;
 }
 
 /* BREAKDOWN */
 .det-item {
-    background: #111111;
-    border: 1px solid #222222;
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.09);
     border-radius: 13px;
     padding: 0.75rem 0.85rem;
     margin-bottom: 0.6rem;
+    box-shadow: 0 10px 24px rgba(15,23,42,0.05);
 }
 
 .det-top {
@@ -371,17 +383,17 @@ img {
     font-family: 'Syne', sans-serif;
     font-size: 0.8rem;
     font-weight: 800;
-    color: #f3f4f6;
+    color: #0f172a;
 }
 
 .det-conf {
     font-size: 0.72rem;
-    color: #d1d5db;
+    color: #334155;
     font-weight: 700;
 }
 
 .conf-track {
-    background: #27272a;
+    background: #e2e8f0;
     border-radius: 999px;
     height: 7px;
     overflow: hidden;
@@ -394,7 +406,7 @@ img {
 }
 
 .det-tip {
-    color: #9ca3af;
+    color: #64748b;
     font-size: 0.72rem;
     line-height: 1.5;
 }
@@ -412,25 +424,25 @@ img {
 }
 
 .chip-rec {
-    background: #166534;
-    color: #4ade80;
-    border: 1px solid #15803d;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
 }
 
 .chip-nonrec {
-    background: #7f1d1d;
-    color: #fca5a5;
-    border: 1px solid #991b1b;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
 }
 
 .footer-line {
     text-align: center;
-    color: #4b5563;
+    color: #64748b;
     font-size: 0.72rem;
     letter-spacing: 0.08em;
     margin-top: 2.2rem;
     padding: 1.5rem 0 0.5rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    border-top: 1px solid rgba(15,23,42,0.08);
 }
 
 @media (max-width: 900px) {
@@ -661,9 +673,9 @@ with right:
         st.markdown(
             f'<div class="metric-row">'
             f'<div class="metric-box"><div class="metric-val">{r["n_det"]}</div><div class="metric-lbl">Detected</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#4ade80">{r["rec_count"]}</div><div class="metric-lbl">Recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#f87171">{r["nonrec_count"]}</div><div class="metric-lbl">Non-Recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#e5e7eb">{r["elapsed"]*1000:.0f}ms</div><div class="metric-lbl">Inference</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#16a34a">{r["rec_count"]}</div><div class="metric-lbl">Recyclable</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#dc2626">{r["nonrec_count"]}</div><div class="metric-lbl">Non-Recyclable</div></div>'
+            f'<div class="metric-box"><div class="metric-val" style="color:#0f172a">{r["elapsed"]*1000:.0f}ms</div><div class="metric-lbl">Inference</div></div>'
             f'</div>',
             unsafe_allow_html=True
         )
@@ -704,7 +716,7 @@ with right:
                 chip_cls = "chip-rec" if is_rec else "chip-nonrec"
                 chip_lbl = "Recyclable" if is_rec else "Non-Recyclable"
 
-                fill_col = "#4ade80" if is_rec else "#f87171"
+                fill_col = "#22c55e" if is_rec else "#ef4444"
                 pct = d["conf"] * 100
 
                 st.markdown(

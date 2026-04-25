@@ -248,23 +248,26 @@ with R:
         sc = "#22c55e" if r["score"]>=60 else "#f59e0b" if r["score"]>=30 else "#ef4444"
 
         # 4 metric cards
-        st.markdown(f"""
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.9rem 0 1.2rem;">
-            {''.join(f"""<div style="background:#080808;border:1px solid #111;border-radius:12px;
-                padding:.9rem .6rem;text-align:center;">
-                <div style="font-size:.48rem;color:#141414;text-transform:uppercase;
-                    letter-spacing:.18em;font-weight:700;margin-bottom:4px;">{lbl}</div>
-                <div style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;
-                    color:{col};line-height:1;">{val}</div>
-                <div style="font-size:.55rem;color:#111;margin-top:3px;">{sub}</div>
-            </div>""" for lbl,val,col,sub in [
-                ("Score", r["score"], sc, "/100"),
-                ("Objects", r["n"], "#fff", "detected"),
-                ("Confidence", f'{r["avg_c"]}%', "#22c55e", "average"),
-                ("Speed", f'{r["elapsed"]*1000:.0f}ms', "#333", "inference"),
-            ])}
-        </div>
-        """, unsafe_allow_html=True)
+        metrics = [
+            ("Score",      r["score"],                sc,       "/100"),
+            ("Objects",    r["n"],                    "#fff",   "detected"),
+            ("Confidence", f'{r["avg_c"]}%',          "#22c55e","average"),
+            ("Speed",      f'{r["elapsed"]*1000:.0f}ms', "#333","inference"),
+        ]
+        cards_html = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.9rem 0 1.2rem;">'
+        for lbl, val, col, sub in metrics:
+            cards_html += (
+                f'<div style="background:#080808;border:1px solid #111;border-radius:12px;'
+                f'padding:.9rem .6rem;text-align:center;">'
+                f'<div style="font-size:.48rem;color:#141414;text-transform:uppercase;'
+                f'letter-spacing:.18em;font-weight:700;margin-bottom:4px;">{lbl}</div>'
+                f'<div style="font-family:Syne,sans-serif;font-size:1.7rem;font-weight:800;'
+                f'color:{col};line-height:1;">{val}</div>'
+                f'<div style="font-size:.55rem;color:#111;margin-top:3px;">{sub}</div>'
+                f'</div>'
+            )
+        cards_html += '</div>'
+        st.markdown(cards_html, unsafe_allow_html=True)
 
         # Verdict banner
         vmap = {

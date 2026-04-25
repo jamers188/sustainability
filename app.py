@@ -159,59 +159,58 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER */
-[data-testid="stFileUploader"] {
+/* ---------- UPLOADER FIX ONLY ---------- */
+
+/* Main container */
+[data-testid="stFileUploader"] section {
+    background: #ffffff !important;
+    border: 2px dashed #22c55e !important;
+    border-radius: 14px !important;
+    padding: 1rem !important;
+}
+
+/* Remove internal dark overlays */
+[data-testid="stFileUploadDropzone"] {
     background: transparent !important;
 }
 
-[data-testid="stFileUploader"] section {
-    background: #ffffff !important;
-    border: 1.5px dashed #22c55e !important;
-    border-radius: 14px !important;
-    box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
-}
-
-[data-testid="stFileUploadDropzone"] {
-    background: #ffffff !important;
-    border: 1.5px dashed #22c55e !important;
-    border-radius: 14px !important;
-    padding: 1rem !important;
-    min-height: 95px !important;
-}
-
-/* Make upload helper text readable */
-[data-testid="stFileUploadDropzone"] p,
-[data-testid="stFileUploadDropzone"] small,
-[data-testid="stFileUploadDropzone"] span,
-[data-testid="stFileUploadDropzone"] div {
-    color: #334155 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-/* FORCE native upload button readable */
-[data-testid="stFileUploadDropzone"] button,
-[data-testid="stFileUploadDropzone"] button:hover,
-[data-testid="stFileUploadDropzone"] button:active,
-[data-testid="stFileUploadDropzone"] button:focus,
-[data-testid="stFileUploadDropzone"] button:focus-visible {
+/* 🔥 FIX BLACK BUTTON COVER */
+[data-testid="stFileUploadDropzone"] button {
     background: #22c55e !important;
     color: #052e16 !important;
-    border: 1px solid #16a34a !important;
-    border-radius: 10px !important;
+    border: none !important;
     box-shadow: none !important;
     opacity: 1 !important;
 }
 
-/* FORCE all text/icon inside upload button */
-[data-testid="stFileUploadDropzone"] button *,
-[data-testid="stFileUploadDropzone"] button:hover *,
-[data-testid="stFileUploadDropzone"] button:focus * {
-    background: transparent !important;
+/* Remove dark hover layer */
+[data-testid="stFileUploadDropzone"] button:hover,
+[data-testid="stFileUploadDropzone"] button:focus,
+[data-testid="stFileUploadDropzone"] button:active {
+    background: #22c55e !important;
+    color: #052e16 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Ensure text inside button is visible */
+[data-testid="stFileUploadDropzone"] button * {
     color: #052e16 !important;
     fill: #052e16 !important;
     opacity: 1 !important;
-    visibility: visible !important;
+}
+
+/* 🔥 FIX GREY TEXT (MB + formats) */
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] span,
+[data-testid="stFileUploadDropzone"] p {
+    color: #334155 !important;
+    opacity: 1 !important;
+}
+
+/* Remove weird dark internal blocks */
+[data-testid="stFileUploadDropzone"] div {
+    background: transparent !important;
 }
 
 /* Upload icon */

@@ -144,7 +144,7 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stRadio"] label {
-    background: rgba(255,255,255,0.85) !important;
+    background: rgba(255,255,255,0.92) !important;
     border: 1px solid rgba(15,23,42,0.12) !important;
     border-radius: 12px !important;
     padding: 0.6rem 0.85rem !important;
@@ -160,7 +160,11 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOAD */
+/* UPLOAD - FULL LIGHT FIX */
+[data-testid="stFileUploader"] {
+    background: transparent !important;
+}
+
 [data-testid="stFileUploadDropzone"] {
     border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
@@ -173,6 +177,10 @@ html, body, [class*="css"] {
 [data-testid="stFileUploadDropzone"]:hover {
     background: #f0fdf4 !important;
     box-shadow: 0 16px 40px rgba(34,197,94,0.12) !important;
+}
+
+[data-testid="stFileUploadDropzone"] * {
+    color: #334155 !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
@@ -188,6 +196,34 @@ html, body, [class*="css"] {
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
+}
+
+/* Upload button inside uploader */
+[data-testid="stFileUploadDropzone"] button {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+
+[data-testid="stFileUploadDropzone"] button:hover {
+    background: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #166534 !important;
+}
+
+/* Uploaded file chip/list */
+[data-testid="stFileUploaderFile"] {
+    background: #ffffff !important;
+    border: 1px solid rgba(15,23,42,0.10) !important;
+    border-radius: 12px !important;
+    color: #0f172a !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,0.05) !important;
+}
+
+[data-testid="stFileUploaderFile"] * {
+    color: #0f172a !important;
 }
 
 /* IMAGES */

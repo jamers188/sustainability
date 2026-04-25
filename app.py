@@ -159,19 +159,14 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER */
-[data-testid="stFileUploader"] {
-    background: transparent !important;
-}
 
-[data-testid="stFileUploader"] {
+
+[data-testid="stFileUploader"] section {
     background: #ffffff !important;
     border: 1.5px dashed #22c55e !important;
     border-radius: 14px !important;
-    padding: 1rem !important;
     box-shadow: 0 14px 35px rgba(15,23,42,0.06) !important;
 }
-
 
 [data-testid="stFileUploadDropzone"] {
     background: #ffffff !important;

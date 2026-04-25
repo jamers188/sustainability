@@ -120,15 +120,6 @@ html, body, [class*="css"] {
     text-transform: uppercase;
 }
 
-/* MAIN PANEL */
-.main-panel {
-    border: 1px solid rgba(34,197,94,0.26);
-    background: rgba(6, 10, 8, 0.82);
-    border-radius: 26px;
-    padding: 1.6rem;
-    box-shadow: 0 30px 90px rgba(0,0,0,0.38);
-}
-
 .section-title {
     font-family: 'Syne', sans-serif;
     font-size: 0.72rem;
@@ -516,7 +507,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-panel">', unsafe_allow_html=True)
+
 
 left, right = st.columns([0.95, 1.35], gap="large")
 
@@ -743,7 +734,7 @@ with right:
             use_container_width=True
         )
 
-st.markdown('</div>', unsafe_allow_html=True)
+
 
 st.markdown(
     '<div class="footer-line">WasteLens · AI Waste Classification</div>',

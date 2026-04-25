@@ -79,7 +79,6 @@ html, body, [class*="css"] {
     padding: 1.6rem 2rem 3rem !important;
 }
 
-/* HERO */
 .hero {
     display: flex;
     justify-content: space-between;
@@ -160,10 +159,9 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* UPLOADER FULL FIX */
+/* UPLOADER FIX */
 [data-testid="stFileUploader"] {
     background: transparent !important;
-    color: #0f172a !important;
 }
 
 [data-testid="stFileUploader"] section {
@@ -179,58 +177,46 @@ html, body, [class*="css"] {
     border-radius: 14px !important;
     padding: 1rem !important;
     min-height: 95px !important;
-    color: #0f172a !important;
 }
 
-[data-testid="stFileUploadDropzone"]:hover {
-    background: #f0fdf4 !important;
-    box-shadow: 0 16px 40px rgba(34,197,94,0.12) !important;
-}
-
+/* This fixes the invisible MB/type text */
 [data-testid="stFileUploadDropzone"] div,
 [data-testid="stFileUploadDropzone"] span,
 [data-testid="stFileUploadDropzone"] p,
 [data-testid="stFileUploadDropzone"] small {
     color: #334155 !important;
-    background: transparent !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-[data-testid="stFileUploadDropzone"] p {
-    font-size: 0.84rem !important;
-}
-
-[data-testid="stFileUploadDropzone"] small {
-    color: #64748b !important;
-    font-size: 0.72rem !important;
-}
-
-[data-testid="stFileUploadDropzone"] svg {
-    color: #22c55e !important;
-    fill: #22c55e !important;
-}
-
-[data-testid="stFileUploadDropzone"] button,
-[data-testid="stFileUploadDropzone"] button[kind],
-[data-testid="stFileUploadDropzone"] button div,
-[data-testid="stFileUploadDropzone"] button span {
-    background: #f8fafc !important;
-    color: #0f172a !important;
-    border-color: #cbd5e1 !important;
-    box-shadow: none !important;
-}
-
+/* This fixes the black upload button */
 [data-testid="stFileUploadDropzone"] button {
-    border: 1px solid #cbd5e1 !important;
+    background: #22c55e !important;
+    color: #052e16 !important;
+    border: 1px solid #16a34a !important;
     border-radius: 10px !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stFileUploadDropzone"] button * {
+    color: #052e16 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 [data-testid="stFileUploadDropzone"] button:hover {
-    background: #dcfce7 !important;
-    color: #166534 !important;
-    border-color: #22c55e !important;
+    background: #4ade80 !important;
+    color: #052e16 !important;
+    border-color: #16a34a !important;
 }
 
-/* uploaded file chip */
+[data-testid="stFileUploadDropzone"] svg {
+    color: #052e16 !important;
+    fill: #052e16 !important;
+}
+
+/* Uploaded file chip */
 [data-testid="stFileUploaderFile"] {
     background: #ffffff !important;
     border: 1px solid rgba(15,23,42,0.10) !important;
@@ -242,15 +228,15 @@ html, body, [class*="css"] {
 [data-testid="stFileUploaderFile"] * {
     color: #0f172a !important;
     background: transparent !important;
+    opacity: 1 !important;
 }
 
-/* IMAGES */
 img {
     border-radius: 14px !important;
     box-shadow: 0 14px 36px rgba(15,23,42,0.10) !important;
 }
 
-/* BUTTONS */
+/* MAIN BUTTONS */
 .stButton > button {
     background: #22c55e !important;
     color: #052e16 !important;

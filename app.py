@@ -1,532 +1,332 @@
-import os
+import os, re, io, time
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
 os.environ["MPLBACKEND"] = "Agg"
 
 import streamlit as st
 from PIL import Image
 import numpy as np
-import time
-import io
 import requests
 from ultralytics import YOLO
 
-# ─────────────────────────────────────────
-#  MODEL DOWNLOAD (for Streamlit Cloud)
-#  The .pt file is too large for Git LFS
-#  on Streamlit Cloud, so we pull it from
-#  Google Drive at startup if not present.
-# ─────────────────────────────────────────
-MODEL_PATH = "best_model.pt"
-
+# ── MODEL ────────────────────────────────────────────────────────
+MODEL_PATH    = "best_model.pt"
 GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
 
-def download_model(file_id: str, dest: str):
-    import requests
-    session = requests.Session()
-    # Step 1: hit the export URL
-    url = f"https://drive.google.com/uc?export=download&id={file_id}"
-    r = session.get(url, stream=True)
-    # Step 2: Google redirects large files through a confirm page
-    # The confirm token is now in the response URL or a cookie
-    token = None
-    for k, v in r.cookies.items():
-        if "download_warning" in k:
-            token = v
-    if token:
-        r = session.get(url + f"&confirm={token}", stream=True)
-    # Step 3: also handle the newer "confirm=t" style redirect
-    if "text/html" in r.headers.get("Content-Type", ""):
-        # parse confirm from HTML
-        import re
-        match = re.search(r'confirm=([0-9A-Za-z_\-]+)', r.text)
-        if match:
-            r = session.get(url + f"&confirm={match.group(1)}", stream=True)
-    with open(dest, "wb") as f:
-        for chunk in r.iter_content(chunk_size=65536):
-            if chunk:
-                f.write(chunk)
+def download_model(fid, dest):
+    s   = requests.Session()
+    url = f"https://drive.google.com/uc?export=download&id={fid}"
+    r   = s.get(url, stream=True)
+    tok = next((v for k,v in r.cookies.items() if "warning" in k), None)
+    if tok: r = s.get(url+f"&confirm={tok}", stream=True)
+    if "text/html" in r.headers.get("Content-Type",""):
+        m = re.search(r'confirm=([0-9A-Za-z_-]+)', r.text)
+        if m: r = s.get(url+f"&confirm={m.group(1)}", stream=True)
+    with open(dest,"wb") as f:
+        for chunk in r.iter_content(65536):
+            if chunk: f.write(chunk)
 
-model_ok = os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000
-if not model_ok:
-    if GDRIVE_FILE_ID == "PASTE_YOUR_FILE_ID_HERE":
-        st.error("Set your GDRIVE_FILE_ID in app.py")
-        st.stop()
-    with st.spinner("Downloading model weights... (~6MB, first run only)"):
+if not (os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000):
+    st.set_page_config(page_title="WasteLens", layout="centered")
+    with st.spinner("Setting up model..."):
         download_model(GDRIVE_FILE_ID, MODEL_PATH)
-    if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1_000_000:
-        st.error("Download failed — check GDRIVE_FILE_ID and that the file is shared publicly.")
-        st.stop()
+    st.rerun()
 
+st.set_page_config(page_title="WasteLens", layout="wide", initial_sidebar_state="collapsed")
 
-# ─────────────────────────────────────────
-#  PAGE CONFIG  (must be first Streamlit call)
-# ─────────────────────────────────────────
-st.set_page_config(
-    page_title="WasteLens",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+# ── CONSTANTS ────────────────────────────────────────────────────
+REC_KW   = {"can","glass","paper","plastic","cardboard","bottle","metal"}
+NON_REC  = {"foodwaste","food","organic","food_waste"}
+TIPS = {
+    "cans":           "Rinse and crush before placing in the recycling bin.",
+    "glass":          "Remove lids. Sort by color if your facility requires it.",
+    "paperwaste":     "Keep dry. Remove any staples or plastic coating.",
+    "plasticbottles": "Empty and rinse. Check the resin code on the base.",
+    "foodwaste":      "Compostable bag recommended. Use the organic bin.",
+}
+COLORS = {
+    "plasticbottles":"#60a5fa",
+    "glass":"#a78bfa",
+    "paperwaste":"#fbbf24",
+    "cans":"#34d399",
+    "foodwaste":"#f87171",
+}
 
+def class_maps(mdl):
+    rec, names = set(), {}
+    for i, n in mdl.names.items():
+        lo = n.lower()
+        names[lo] = lo.replace("_"," ").replace("waste","").strip().title()
+        if any(k in lo for k in REC_KW) and lo not in NON_REC:
+            rec.add(lo)
+    return rec, names
+
+@st.cache_resource
+def load_model(): return YOLO(MODEL_PATH)
+model = load_model()
+
+if "history" not in st.session_state: st.session_state.history = []
+if "result"  not in st.session_state: st.session_state.result  = None
+if "img_path" not in st.session_state: st.session_state.img_path = None
+
+# ── STYLES ───────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
 
-/* ── Base ── */
-html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 0 2rem 4rem !important; max-width: 1300px !important; }
+*, html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif !important;
+    background-color: #030303;
+    color: #d4d4d4;
+}
+#MainMenu, footer, header, [data-testid="stSidebar"] { display: none !important; visibility: hidden !important; }
+.block-container { padding: 0 !important; max-width: 100% !important; }
+[data-testid="stImage"] img { border-radius: 12px; }
 
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: #0a0a0a !important;
-    border-right: 1px solid #1f1f1f !important;
-}
-[data-testid="stSidebar"] * { color: #a0a0a0 !important; }
-
-/* ── Header ── */
-.wl-header {
-    padding: 2.5rem 0 2rem;
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-.wl-wordmark {
-    font-family: 'Syne', sans-serif !important;
-    font-size: 2rem; font-weight: 800; color: #fff;
-    letter-spacing: -0.04em; line-height: 1; margin: 0;
-}
-.wl-dot { color: #22c55e; }
-.wl-tagline { font-size: 0.78rem; color: #525252; font-weight: 300; margin-top: 0.3rem; letter-spacing: 0.05em; }
-.wl-pill {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.55rem; font-weight: 700;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    background: #0f2d1a; color: #22c55e;
-    border: 1px solid #166534; padding: 4px 10px;
-    border-radius: 100px; margin-left: auto;
-}
-
-/* ── Section label ── */
-.wl-label {
-    font-size: 0.62rem; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: #3f3f3f; margin-bottom: 1rem;
-    font-family: 'Syne', sans-serif;
-}
-
-/* ── Upload zone ── */
+/* Upload */
 [data-testid="stFileUploadDropzone"] {
-    background: #0f0f0f !important;
-    border: 1px dashed #2a2a2a !important;
+    background: #0a0a0a !important;
+    border: 1px dashed #1e1e1e !important;
     border-radius: 12px !important;
-    transition: border-color 0.2s !important;
 }
-[data-testid="stFileUploadDropzone"]:hover {
-    border-color: #22c55e !important;
-}
-[data-testid="stFileUploadDropzone"] p { color: #3f3f3f !important; }
+[data-testid="stFileUploadDropzone"] p,
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] span { color: #1f1f1f !important; font-size:0.8rem !important; }
+[data-testid="stFileUploadDropzone"] svg  { stroke: #1a1a1a !important; }
+[data-testid="stFileUploadDropzone"]:hover { border-color: #22c55e !important; }
 
-/* ── Analyse button ── */
+/* Analyse button */
 .stButton > button {
-    background: #22c55e !important;
-    color: #000 !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-    height: 2.8rem !important;
-    transition: all 0.15s ease !important;
-    box-shadow: 0 0 20px rgba(34,197,94,0.2) !important;
+    background: #22c55e !important; color: #000 !important;
+    border: none !important; border-radius: 10px !important;
+    font-family: 'Syne', sans-serif !important; font-weight: 700 !important;
+    font-size: 0.8rem !important; letter-spacing: 0.08em !important;
+    text-transform: uppercase !important; height: 3rem !important;
+    width: 100% !important; box-shadow: 0 0 20px rgba(34,197,94,.25) !important;
+    transition: all .15s !important;
 }
-.stButton > button:hover {
-    background: #16a34a !important;
-    box-shadow: 0 0 30px rgba(34,197,94,0.35) !important;
-}
-.stButton > button:disabled {
-    background: #1a1a1a !important;
-    color: #3f3f3f !important;
-    box-shadow: none !important;
-}
+.stButton > button:hover { background: #16a34a !important; box-shadow: 0 0 30px rgba(34,197,94,.4) !important; }
+.stButton > button:disabled { background: #111 !important; color: #222 !important; box-shadow: none !important; }
 
-/* ── Download button ── */
+/* Download */
 [data-testid="stDownloadButton"] > button {
-    background: #0f0f0f !important;
-    color: #22c55e !important;
-    border: 1px solid #1a3a24 !important;
-    border-radius: 8px !important;
-    font-family: 'Syne', sans-serif !important;
-    font-size: 0.68rem !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    font-weight: 600 !important;
-    width: 100% !important;
-    height: 2.5rem !important;
+    background: transparent !important; color: #22c55e !important;
+    border: 1px solid #14532d !important; border-radius: 10px !important;
+    font-size: 0.72rem !important; font-weight: 600 !important;
+    letter-spacing:.06em !important; text-transform: uppercase !important;
+    height: 2.6rem !important; width: 100% !important;
 }
+[data-testid="stDownloadButton"] > button:hover { background: #071a0d !important; }
 
-/* ── Await panel ── */
-.await-panel {
-    background: #0a0a0a;
-    border: 1px dashed #1f1f1f;
-    border-radius: 16px;
-    min-height: 320px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 2.5rem;
-}
-.await-icon { font-size: 2.5rem; margin-bottom: 1rem; filter: grayscale(1) opacity(0.3); }
-.await-title { font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.2em; text-transform: uppercase; color: #2a2a2a; margin-bottom: 0.5rem; }
-.await-text { font-size: 0.8rem; color: #303030; line-height: 1.6; }
-
-/* ── Verdict banners ── */
-.verdict-recyclable {
-    background: linear-gradient(135deg, #0a1f12 0%, #0f2d1a 100%);
-    border: 1px solid #166534; border-radius: 10px;
-    padding: 1rem 1.2rem; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 0.8rem;
-}
-.verdict-recyclable .v-icon { font-size: 1.3rem; }
-.verdict-recyclable .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #22c55e; }
-.verdict-recyclable .v-sub { font-size: 0.72rem; color: #15803d; margin-top: 2px; }
-
-.verdict-nonrecyclable {
-    background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 100%);
-    border: 1px solid #7f1d1d; border-radius: 10px;
-    padding: 1rem 1.2rem; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 0.8rem;
-}
-.verdict-nonrecyclable .v-icon { font-size: 1.3rem; }
-.verdict-nonrecyclable .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #ef4444; }
-.verdict-nonrecyclable .v-sub { font-size: 0.72rem; color: #b91c1c; margin-top: 2px; }
-
-.verdict-mixed {
-    background: linear-gradient(135deg, #1a1500 0%, #2a2200 100%);
-    border: 1px solid #713f12; border-radius: 10px;
-    padding: 1rem 1.2rem; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 0.8rem;
-}
-.verdict-mixed .v-icon { font-size: 1.3rem; }
-.verdict-mixed .v-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: #f59e0b; }
-.verdict-mixed .v-sub { font-size: 0.72rem; color: #b45309; margin-top: 2px; }
-
-/* ── Metrics ── */
-.metric-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
-.metric-box {
-    background: #0a0a0a; border: 1px solid #1a1a1a;
-    border-radius: 10px; padding: 1rem 0.8rem; text-align: center;
-}
-.metric-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; }
-.metric-lbl { font-size: 0.6rem; color: #3f3f3f; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 5px; font-weight: 500; }
-
-/* ── Detection items ── */
-.det-item {
-    background: #0a0a0a; border: 1px solid #1a1a1a;
-    border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 0.6rem;
-    transition: border-color 0.15s;
-}
-.det-item:hover { border-color: #2a2a2a; }
-.det-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.det-name { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; color: #e5e5e5; }
-.det-conf { font-size: 0.7rem; color: #525252; font-weight: 500; }
-.conf-track { background: #1a1a1a; border-radius: 3px; height: 3px; margin-bottom: 8px; }
-.det-tip { font-size: 0.72rem; color: #525252; line-height: 1.6; }
-.chip-rec { display: inline-block; font-size: 0.58rem; font-weight: 700; font-family: 'Syne', sans-serif;
-    letter-spacing: 0.1em; padding: 2px 7px; border-radius: 100px; margin-left: 8px;
-    background: #0f2d1a; color: #22c55e; border: 1px solid #166534; vertical-align: middle; }
-.chip-nonrec { display: inline-block; font-size: 0.58rem; font-weight: 700; font-family: 'Syne', sans-serif;
-    letter-spacing: 0.1em; padding: 2px 7px; border-radius: 100px; margin-left: 8px;
-    background: #1a0a0a; color: #ef4444; border: 1px solid #7f1d1d; vertical-align: middle; }
-
-/* ── History ── */
-.hist-item { display: flex; justify-content: space-between; align-items: center;
-    padding: 0.5rem 0; border-bottom: 1px solid #141414; font-size: 0.78rem; }
-.hist-item:last-child { border-bottom: none; }
-
-/* ── Sidebar label ── */
-.sb-label { font-family: 'Syne', sans-serif; font-size: 0.58rem; font-weight: 700;
-    letter-spacing: 0.2em; text-transform: uppercase; color: #22c55e !important;
-    border-bottom: 1px solid #1a1a1a; padding-bottom: 0.5rem; margin-bottom: 0.8rem; }
-
-/* ── Radio ── */
+/* Radio */
 [data-testid="stRadio"] > label { display: none !important; }
-[data-testid="stRadio"] div[role="radiogroup"] { gap: 0.5rem !important; }
-
-/* ── Sliders ── */
-[data-testid="stSlider"] { padding: 0 !important; }
-
-/* ── Checkbox ── */
-[data-testid="stCheckbox"] label span { font-size: 0.82rem !important; color: #a0a0a0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-#  CONSTANTS
-# ─────────────────────────────────────────
-# These are matched against model.names dynamically — see build_class_maps() below
-RECYCLABLE_KEYWORDS = ["can", "glass", "paper", "plastic", "cardboard", "bottle", "metal"]
-NON_RECYCLABLE_CLASSES = {"foodwaste", "food", "organic", "food_waste"}
-
-DISPOSAL_TIPS = {
-    "cans":           "Rinse before recycling. Crush to save bin space.",
-    "glass":          "Remove lids and sort by color if your facility requires it.",
-    "paperwaste":     "Keep dry. Remove staples and any plastic film.",
-    "plasticbottles": "Empty, rinse, and check the resin code on the base.",
-    "can":            "Rinse before recycling. Crush to save bin space.",
-    "paper":          "Keep dry. Remove any plastic film or tape.",
-    "plastic":        "Empty and rinse. Check the resin code on the base.",
-    "bottle":         "Empty, rinse, and check the resin code on the base.",
-    "cardboard":      "Flatten before recycling. Remove any tape.",
-    "metal":          "Rinse clean and place in metals recycling.",
-}
-DEFAULT_TIP = "Seal in a bag and place in the general waste bin."
-
-def build_class_maps(model):
-    """Dynamically build recyclable set and friendly names from the model's actual class list."""
-    recyclable = set()
-    friendly = {}
-    for idx, name in model.names.items():
-        n = name.lower()
-        friendly[n] = name.replace("_", " ").replace("waste", "").strip().title()
-        if any(kw in n for kw in RECYCLABLE_KEYWORDS) and n not in NON_RECYCLABLE_CLASSES:
-            recyclable.add(n)
-    return recyclable, friendly
-
-# ─────────────────────────────────────────
-#  MODEL
-# ─────────────────────────────────────────
-@st.cache_resource
-def load_model():
-    return YOLO(MODEL_PATH)
-
-model = load_model()
-
-# ─────────────────────────────────────────
-#  SESSION STATE
-# ─────────────────────────────────────────
-if "history" not in st.session_state:
-    st.session_state.history = []
-if "last_result" not in st.session_state:
-    st.session_state.last_result = None
-
-# ─────────────────────────────────────────
-#  SIDEBAR
-# ─────────────────────────────────────────
-with st.sidebar:
-    st.markdown("""<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.2em;
-        text-transform:uppercase;color:#22c55e;border-bottom:1px solid #1a1a1a;
-        padding-bottom:0.5rem;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
-        Settings</div>""", unsafe_allow_html=True)
-    conf_thresh = st.slider("Confidence threshold", 0.01, 0.50, 0.25, 0.01,
-                            help="Lower = more detections, more false positives")
-    iou_thresh  = st.slider("NMS IoU threshold", 0.10, 0.90, 0.45, 0.05,
-                            help="Controls overlap suppression")
-    show_labels  = st.checkbox("Show labels on image", value=True)
-    show_conf_img= st.checkbox("Show confidence on image", value=True)
-
-    st.markdown("""<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.2em;
-        text-transform:uppercase;color:#22c55e;border-bottom:1px solid #1a1a1a;
-        padding-bottom:0.5rem;margin-bottom:0.8rem;margin-top:1.5rem;font-family:'Syne',sans-serif;">
-        Detection History</div>""", unsafe_allow_html=True)
-    if st.session_state.history:
-        if st.button("Clear history"):
-            st.session_state.history = []
-            st.rerun()
-        cmap = {"recyclable":"#7ed4a0","non-recyclable":"#e07070","mixed":"#d4b86a","no-detection":"#6b7280"}
-        for i, h in enumerate(reversed(st.session_state.history[-10:])):
-            num = len(st.session_state.history) - i
-            c = cmap.get(h["verdict"], "#6b7280")
-            st.markdown(
-                f'<div class="hist-item">'
-                f'<span style="color:#4b5563;font-family:Space Mono,monospace;font-size:0.62rem">#{num}</span>'
-                f'<span style="color:#9ca3af">{h["count"]} obj</span>'
-                f'<span style="color:{c};font-family:Space Mono,monospace;font-size:0.65rem">{h["verdict"].upper()}</span>'
-                f'</div>', unsafe_allow_html=True)
-    else:
-        st.markdown('<p style="color:#4b5563;font-size:0.78rem">No scans yet.</p>', unsafe_allow_html=True)
-
-
-
-# ─────────────────────────────────────────
-#  HEADER
-# ─────────────────────────────────────────
+# ── HEADER ───────────────────────────────────────────────────────
 st.markdown("""
-<div style="
-    padding: 2.5rem 0 2rem;
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-">
-    <div>
-        <div style="
-            font-family: 'Syne', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.05em;
-            line-height: 1;
-            margin-bottom: 0.4rem;
-        ">waste<span style="color:#22c55e">lens</span></div>
-        <div style="
-            font-size: 0.7rem;
-            color: #404040;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            font-weight: 400;
-        ">AI-powered waste classification</div>
+<div style="background:#080808;border-bottom:1px solid #111;padding:1.2rem 3rem;
+    display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:baseline;gap:.05em;">
+        <span style="font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;
+            color:#fff;letter-spacing:-.04em;">Waste</span>
+        <span style="font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;
+            color:#22c55e;letter-spacing:-.04em;">Lens</span>
+        <span style="font-size:.5rem;font-weight:700;letter-spacing:.18em;
+            text-transform:uppercase;color:#22c55e;background:#071a0d;
+            border:1px solid #14532d;padding:3px 9px;border-radius:100px;
+            margin-left:.7rem;position:relative;top:-.25rem;">AI</span>
     </div>
-    <div style="
-        font-size: 0.6rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #22c55e;
-        background: #0a1f10;
-        border: 1px solid #14532d;
-        padding: 6px 14px;
-        border-radius: 100px;
-        margin-bottom: 4px;
-    ">v4 model</div>
+    <span style="font-size:.68rem;color:#1a1a1a;letter-spacing:.12em;text-transform:uppercase;">
+        Detect · Classify · Reduce Impact
+    </span>
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-#  LAYOUT
-# ─────────────────────────────────────────
-left, right = st.columns([1, 1], gap="large")
+# ── BODY ─────────────────────────────────────────────────────────
+st.markdown('<div style="padding:2.5rem 3rem;">', unsafe_allow_html=True)
 
-with left:
-    st.markdown("""
-    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-        color:#404040;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
-        Input source
-    </div>""", unsafe_allow_html=True)
-    mode = st.radio("Input", ["Upload image", "Use camera"], horizontal=True, label_visibility="collapsed")
-    source_image = None
+L, R = st.columns([1, 1.4], gap="large")
 
-    if mode == "Upload image":
-        uploaded = st.file_uploader("upload", type=["jpg","jpeg","png","webp","bmp"], label_visibility="collapsed")
-        if uploaded:
-            # Save raw bytes to a temp file — avoids PIL conversion artifacts
-            tmp_path = f"/tmp/wastelens_upload_{uploaded.name}"
-            with open(tmp_path, "wb") as f:
-                f.write(uploaded.getvalue())
-            source_image = Image.open(tmp_path).convert("RGB")
-            st.session_state["img_path"] = tmp_path
+# LEFT
+with L:
+    st.markdown('<p style="font-size:.6rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#1f1f1f;margin-bottom:.8rem;">Input</p>', unsafe_allow_html=True)
+
+    mode = st.radio("m", ["Upload", "Camera"], horizontal=True, label_visibility="collapsed")
+
+    # Tab pills
+    st.markdown(f"""
+    <div style="display:flex;gap:.4rem;margin-bottom:1rem;">
+        {"".join(f'''<div style="flex:1;text-align:center;padding:.55rem;border-radius:9px;
+            font-size:.76rem;font-weight:600;
+            background:{"#071a0d" if m==mode else "#0c0c0c"};
+            color:{"#22c55e" if m==mode else "#1a1a1a"};
+            border:1px solid {"#14532d" if m==mode else "#111"};">{m}</div>'''
+        for m in ["Upload","Camera"])}
+    </div>
+    """, unsafe_allow_html=True)
+
+    src = None
+    if mode == "Upload":
+        up = st.file_uploader("f", type=["jpg","jpeg","png","webp","bmp"], label_visibility="collapsed")
+        if up:
+            p = f"/tmp/wl_{up.name}"
+            with open(p,"wb") as f: f.write(up.getvalue())
+            src = Image.open(p).convert("RGB")
+            st.session_state.img_path = p
     else:
-        st.caption("Allow camera access in your browser, then click the shutter button.")
-        cam = st.camera_input("camera", label_visibility="collapsed")
+        cam = st.camera_input("c", label_visibility="collapsed")
         if cam:
-            tmp_path = "/tmp/wastelens_camera.jpg"
-            with open(tmp_path, "wb") as f:
-                f.write(cam.getvalue())
-            source_image = Image.open(tmp_path).convert("RGB")
-            st.session_state["img_path"] = tmp_path
+            p = "/tmp/wl_cam.jpg"
+            with open(p,"wb") as f: f.write(cam.getvalue())
+            src = Image.open(p).convert("RGB")
+            st.session_state.img_path = p
 
-    if source_image:
-        st.image(source_image, caption="Original image", use_column_width=True)
+    if src:
+        st.image(src, use_column_width=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    run = st.button("Analyse image", disabled=(source_image is None), use_container_width=True, type="primary")
+    st.markdown("<div style='height:.8rem'></div>", unsafe_allow_html=True)
+    go = st.button("Analyze Image", disabled=not src, use_container_width=True, type="primary")
 
-with right:
-    if source_image is None:
-        st.markdown(
-            '<div class="await-panel">'
-            '<div class="await-icon">&#9707;</div>'
-            '<div class="await-title">Awaiting scan</div>'
-            '<div class="await-text">Upload or capture an image on the left,<br>then press Analyse image.</div>'
-            '</div>', unsafe_allow_html=True)
+# RIGHT
+with R:
+    st.markdown('<p style="font-size:.6rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#1f1f1f;margin-bottom:.8rem;">Live Analysis</p>', unsafe_allow_html=True)
 
-    elif run:
-        with st.spinner("Running detection..."):
+    if not src:
+        st.markdown("""
+        <div style="background:#080808;border:1px solid #111;border-radius:16px;
+            min-height:400px;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;text-align:center;padding:3rem;">
+            <div style="font-size:2.5rem;color:#111;margin-bottom:1.2rem;">⬡</div>
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.22em;
+                text-transform:uppercase;color:#111;margin-bottom:.5rem;">Awaiting scan</div>
+            <div style="font-size:.78rem;color:#0f0f0f;line-height:1.7;max-width:220px;">
+                Upload or capture an image, then press Analyze
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif go:
+        with st.spinner("Scanning..."):
             t0 = time.time()
-            # Pass the file path directly — identical to how Colab runs it
-            # This bypasses any PIL/numpy conversion quality loss
-            img_path = st.session_state.get("img_path")
-            predict_input = img_path if img_path and os.path.exists(img_path) else np.array(source_image)
-            results = model.predict(predict_input, conf=conf_thresh, iou=iou_thresh, imgsz=640, verbose=False)
+            inp = st.session_state.img_path or np.array(src)
+            res = model.predict(inp, conf=0.25, iou=0.45, imgsz=640, verbose=False)
             elapsed = time.time() - t0
 
+        boxes = res[0].boxes
+        names = res[0].names
+        n     = len(boxes)
+        dets  = [{"cls": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
 
+        REC, FNAME = class_maps(model)
+        rec    = [d for d in dets if d["cls"] in REC]
+        nonrec = [d for d in dets if d["cls"] not in REC]
+        verdict = ("none" if n==0 else "recyclable" if rec and not nonrec
+                   else "non-recyclable" if nonrec and not rec else "mixed")
 
-        boxes = results[0].boxes
-        names = results[0].names
-        n_det = len(boxes)
-        detections = [{"class": names[int(b.cls[0])].lower(), "conf": float(b.conf[0])} for b in boxes]
+        avg_c  = int(sum(d["conf"] for d in dets)/n*100) if n else 0
+        score  = int((len(rec)/n*.6 + avg_c/100*.4)*100) if n else 0
 
-        # Build class maps dynamically from this model's actual names
-        RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
+        ann = Image.fromarray(res[0].plot())
+        buf = io.BytesIO(); ann.save(buf, "PNG")
 
-        annotated_pil = Image.fromarray(results[0].plot(labels=show_labels, conf=show_conf_img))
-        rec    = [d for d in detections if d["class"] in RECYCLABLE_CLASSES]
-        nonrec = [d for d in detections if d["class"] not in RECYCLABLE_CLASSES]
-        verdict = (
-            "no-detection"   if n_det == 0 else
-            "recyclable"     if rec and not nonrec else
-            "non-recyclable" if nonrec and not rec else
-            "mixed"
-        )
-
-        buf = io.BytesIO()
-        annotated_pil.save(buf, format="PNG")
-
-        st.session_state.last_result = {
-            "annotated_bytes": buf.getvalue(), "annotated_pil": annotated_pil,
-            "detections": detections, "verdict": verdict, "elapsed": elapsed,
-            "n_det": n_det, "rec_count": len(rec), "nonrec_count": len(nonrec),
+        st.session_state.result = {
+            "ann": ann, "buf": buf.getvalue(), "dets": dets,
+            "verdict": verdict, "elapsed": elapsed,
+            "n": n, "rec": len(rec), "nonrec": len(nonrec),
+            "avg_c": avg_c, "score": score,
         }
-        st.session_state.history.append({"count": n_det, "verdict": verdict})
+        st.session_state.history.append({"n": n, "verdict": verdict})
 
-    r = st.session_state.last_result
-    if r and source_image is not None:
-        st.image(r["annotated_pil"], caption="Detection overlay", use_column_width=True)
+    r = st.session_state.result
+    if r and src:
+        REC, FNAME = class_maps(model)
 
-        st.markdown(
-            f'<div class="metric-row">'
-            f'<div class="metric-box"><div class="metric-val">{r["n_det"]}</div><div class="metric-lbl">Detected</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#7ed4a0">{r["rec_count"]}</div><div class="metric-lbl">Recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#e07070">{r["nonrec_count"]}</div><div class="metric-lbl">Non-recyclable</div></div>'
-            f'<div class="metric-box"><div class="metric-val" style="color:#9ca3af">{r["elapsed"]*1000:.0f}ms</div><div class="metric-lbl">Inference</div></div>'
-            f'</div>', unsafe_allow_html=True)
+        # Annotated image
+        st.image(r["ann"], use_column_width=True)
 
-        v = r["verdict"]
-        if v == "recyclable":
-            st.markdown('<div class="verdict-recyclable"><div class="v-icon">♻</div><div><div class="v-text">Recyclable</div><div class="v-sub">Place in the recycling bin</div></div></div>', unsafe_allow_html=True)
-        elif v == "non-recyclable":
-            st.markdown('<div class="verdict-nonrecyclable"><div class="v-icon">✕</div><div><div class="v-text">Non-Recyclable</div><div class="v-sub">Place in the general waste bin</div></div></div>', unsafe_allow_html=True)
-        elif v == "mixed":
-            st.markdown('<div class="verdict-mixed"><div class="v-icon">⚠</div><div><div class="v-text">Mixed Waste</div><div class="v-sub">Separate items before disposal</div></div></div>', unsafe_allow_html=True)
-        else:
-            st.warning("Nothing detected. Try lowering the confidence threshold in the sidebar.")
+        # Score color
+        sc = "#22c55e" if r["score"]>=60 else "#f59e0b" if r["score"]>=30 else "#ef4444"
 
-        if r["detections"]:
-            st.markdown("""
-            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-                color:#404040;margin-top:1.2rem;margin-bottom:0.8rem;font-family:'Syne',sans-serif;">
-                Item breakdown
-            </div>""", unsafe_allow_html=True)
-            RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
-            for d in r["detections"]:
-                is_rec   = d["class"] in RECYCLABLE_CLASSES
-                friendly = FRIENDLY.get(d["class"], d["class"].title())
-                tip      = DISPOSAL_TIPS.get(d["class"], DEFAULT_TIP)
-                chip_cls = "chip-rec" if is_rec else "chip-nonrec"
-                chip_lbl = "Recyclable" if is_rec else "Non-recyclable"
-                fill_col = "#5a9e6f" if is_rec else "#c05050"
-                pct      = d["conf"] * 100
-                st.markdown(
-                    f'<div class="det-item">'
-                    f'<div class="det-top"><span class="det-name">{friendly}<span class="rec-chip {chip_cls}">{chip_lbl}</span></span><span class="det-conf">{pct:.1f}%</span></div>'
-                    f'<div class="conf-track"><div style="height:3px;border-radius:3px;background:{fill_col};width:{pct:.1f}%"></div></div>'
-                    f'<div class="det-tip">{tip}</div>'
-                    f'</div>', unsafe_allow_html=True)
+        # 4 metric cards
+        st.markdown(f"""
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.9rem 0 1.2rem;">
+            {''.join(f"""<div style="background:#080808;border:1px solid #111;border-radius:12px;
+                padding:.9rem .6rem;text-align:center;">
+                <div style="font-size:.48rem;color:#141414;text-transform:uppercase;
+                    letter-spacing:.18em;font-weight:700;margin-bottom:4px;">{lbl}</div>
+                <div style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;
+                    color:{col};line-height:1;">{val}</div>
+                <div style="font-size:.55rem;color:#111;margin-top:3px;">{sub}</div>
+            </div>""" for lbl,val,col,sub in [
+                ("Score", r["score"], sc, "/100"),
+                ("Objects", r["n"], "#fff", "detected"),
+                ("Confidence", f'{r["avg_c"]}%', "#22c55e", "average"),
+                ("Speed", f'{r["elapsed"]*1000:.0f}ms', "#333", "inference"),
+            ])}
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.download_button("Download annotated image", data=r["annotated_bytes"],
-                           file_name="wastelens_result.png", mime="image/png", use_container_width=True)
+        # Verdict banner
+        vmap = {
+            "recyclable":     ("#071a0d","#14532d","#22c55e","♻","Recyclable","Goes in the recycling bin"),
+            "non-recyclable": ("#1a0505","#7f1d1d","#ef4444","✕","Non-Recyclable","Goes in the general waste bin"),
+            "mixed":          ("#1a1200","#92400e","#f59e0b","⚠","Mixed Waste","Separate before disposal"),
+            "none":           ("#0a0a0a","#111","#252525","?","Nothing Detected","Try a clearer image"),
+        }
+        vbg,vbd,vc,vi,vt,vs = vmap.get(r["verdict"], vmap["none"])
+        st.markdown(f"""
+        <div style="background:{vbg};border:1px solid {vbd};border-radius:12px;
+            padding:1rem 1.1rem;display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;">
+            <div style="width:38px;height:38px;border-radius:10px;border:1px solid {vbd};
+                display:flex;align-items:center;justify-content:center;
+                font-size:1.1rem;color:{vc};flex-shrink:0;">{vi}</div>
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;
+                    font-size:.95rem;color:{vc};">{vt}</div>
+                <div style="font-size:.68rem;color:{vbd};margin-top:2px;">{vs}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Per-class breakdown
+        if r["dets"]:
+            seen, counts = set(), {}
+            for d in r["dets"]: counts[d["cls"]] = counts.get(d["cls"],0)+1
+
+            for cls, cnt in counts.items():
+                if cls in seen: continue
+                seen.add(cls)
+                col   = COLORS.get(cls,"#555")
+                lbl   = FNAME.get(cls, cls.title())
+                conf  = int(sum(d["conf"] for d in r["dets"] if d["cls"]==cls)/cnt*100)
+                is_r  = cls in REC
+                cc,cb,cbg = ("#22c55e","#14532d","#071a0d") if is_r else ("#ef4444","#7f1d1d","#1a0505")
+                tip   = TIPS.get(cls, "Seal and place in general waste.")
+
+                st.markdown(f"""
+                <div style="background:#080808;border:1px solid #111;border-radius:11px;
+                    padding:.8rem .95rem;margin-bottom:.5rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                        <div style="display:flex;align-items:center;gap:.5rem;">
+                            <div style="width:8px;height:8px;border-radius:50%;
+                                background:{col};box-shadow:0 0 6px {col}70;"></div>
+                            <span style="font-size:.82rem;font-weight:600;color:#e5e5e5;">{lbl}</span>
+                            <span style="font-size:.52rem;font-weight:700;padding:2px 7px;
+                                border-radius:100px;background:{cbg};color:{cc};
+                                border:1px solid {cb};">{"Recyclable" if is_r else "Non-recyclable"}</span>
+                        </div>
+                        <span style="font-size:.82rem;font-weight:700;color:{col};">{conf}%</span>
+                    </div>
+                    <div style="background:#0f0f0f;border-radius:3px;height:3px;margin-bottom:7px;">
+                        <div style="height:3px;border-radius:3px;background:{col};width:{conf}%;"></div>
+                    </div>
+                    <div style="font-size:.68rem;color:#1a1a1a;line-height:1.6;">{tip}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        st.markdown("<div style='margin-top:.8rem;'>", unsafe_allow_html=True)
+        st.download_button("Download Report", data=r["buf"],
+            file_name="wastelens.png", mime="image/png", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)

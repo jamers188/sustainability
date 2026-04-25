@@ -70,8 +70,8 @@ html, body, [class*="css"] {
     background:
         radial-gradient(circle at 20% 5%, rgba(34,197,94,0.10), transparent 24rem),
         radial-gradient(circle at 85% 80%, rgba(34,197,94,0.055), transparent 28rem),
-        linear-gradient(135deg, #030504 0%, #07100c 50%, #020302 100%);
-    color: #f9fafb;
+        linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eefdf3 100%);
+    color: #0f172a;
 }
 
 .block-container {
@@ -95,7 +95,7 @@ html, body, [class*="css"] {
     font-size: clamp(2.4rem, 4vw, 3.8rem);
     font-weight: 900;
     letter-spacing: -0.08em;
-    color: #ffffff;
+    color: #0f172a;
     line-height: 0.9;
 }
 
@@ -129,7 +129,7 @@ html, body, [class*="css"] {
     font-weight: 900;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #e5e7eb;
+    color: #0f172a;
     margin-bottom: 0.85rem;
 }
 
@@ -263,7 +263,7 @@ img {
     font-weight: 900;
     letter-spacing: 0.17em;
     text-transform: uppercase;
-    color: #f3f4f6;
+    color: #0f172a;
     margin-bottom: 0.55rem;
 }
 
@@ -341,7 +341,7 @@ img {
     font-family: 'Syne', sans-serif;
     font-weight: 900;
     font-size: 0.88rem;
-    color: #f9fafb;
+    color: #0f172a;
 }
 
 .v-sub {

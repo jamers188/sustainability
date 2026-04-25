@@ -68,15 +68,15 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.14), transparent 32rem),
-        radial-gradient(circle at 85% 85%, rgba(34,197,94,0.08), transparent 34rem),
+        radial-gradient(circle at 20% 5%, rgba(34,197,94,0.10), transparent 28rem),
+        radial-gradient(circle at 85% 85%, rgba(34,197,94,0.06), transparent 30rem),
         linear-gradient(135deg, #030504 0%, #07100c 50%, #020302 100%);
     color: #f9fafb;
 }
 
 .block-container {
-    max-width: 1280px !important;
-    padding: 2.2rem 2.4rem 4rem !important;
+    max-width: 1100px !important;
+    padding: 1.4rem 2rem 3rem !important;
 }
 
 /* HERO */
@@ -84,13 +84,13 @@ html, body, [class*="css"] {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 1.5rem;
-    margin-bottom: 2.4rem;
+    gap: 1.2rem;
+    margin-bottom: 1.6rem;
 }
 
 .logo {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(3rem, 6vw, 5.6rem);
+    font-size: clamp(2.4rem, 4vw, 4rem);
     font-weight: 900;
     letter-spacing: -0.08em;
     color: #ffffff;
@@ -102,9 +102,9 @@ html, body, [class*="css"] {
 }
 
 .subtitle {
-    margin-top: 1rem;
+    margin-top: 0.65rem;
     color: #9ca3af;
-    font-size: 1rem;
+    font-size: 0.88rem;
     letter-spacing: 0.02em;
 }
 
@@ -113,21 +113,22 @@ html, body, [class*="css"] {
     background: rgba(34,197,94,0.08);
     border: 1px solid rgba(34,197,94,0.5);
     border-radius: 999px;
-    padding: 0.6rem 1rem;
-    font-size: 0.72rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.66rem;
     font-weight: 900;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
 }
 
+/* TITLES */
 .section-title {
     font-family: 'Syne', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     font-weight: 900;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #d1d5db;
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
 }
 
 /* RADIO */
@@ -137,14 +138,14 @@ html, body, [class*="css"] {
 
 [data-testid="stRadio"] div[role="radiogroup"] {
     display: flex !important;
-    gap: 0.8rem !important;
+    gap: 0.65rem !important;
 }
 
 [data-testid="stRadio"] label {
     background: rgba(255,255,255,0.045) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 14px !important;
-    padding: 0.8rem 1.1rem !important;
+    border-radius: 12px !important;
+    padding: 0.6rem 0.85rem !important;
 }
 
 [data-testid="stRadio"] label:hover {
@@ -154,10 +155,10 @@ html, body, [class*="css"] {
 /* UPLOAD */
 [data-testid="stFileUploadDropzone"] {
     border: 2px dashed #22c55e !important;
-    border-radius: 20px !important;
+    border-radius: 14px !important;
     background: rgba(15,15,15,0.96) !important;
-    padding: 2.4rem 1.5rem !important;
-    min-height: 170px !important;
+    padding: 1rem !important;
+    min-height: 90px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -166,29 +167,30 @@ html, body, [class*="css"] {
 
 [data-testid="stFileUploadDropzone"]:hover {
     background: rgba(34,197,94,0.06) !important;
-    box-shadow: inset 0 0 45px rgba(34,197,94,0.04), 0 0 30px rgba(34,197,94,0.1) !important;
+    box-shadow: inset 0 0 30px rgba(34,197,94,0.04), 0 0 20px rgba(34,197,94,0.08) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
     color: #d1d5db !important;
-    font-size: 0.92rem !important;
+    font-size: 0.84rem !important;
     text-align: center !important;
 }
 
 [data-testid="stFileUploadDropzone"] small {
     color: #6b7280 !important;
+    font-size: 0.72rem !important;
 }
 
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
-    width: 2.6rem !important;
-    height: 2.6rem !important;
+    width: 1.8rem !important;
+    height: 1.8rem !important;
 }
 
 /* IMAGES */
 img {
-    border-radius: 18px !important;
+    border-radius: 14px !important;
 }
 
 /* BUTTONS */
@@ -196,13 +198,13 @@ img {
     background: #22c55e !important;
     color: #000 !important;
     border: none !important;
-    border-radius: 16px !important;
+    border-radius: 14px !important;
     font-family: 'Syne', sans-serif !important;
     font-weight: 900 !important;
-    font-size: 0.95rem !important;
+    font-size: 0.82rem !important;
     height: auto !important;
-    padding: 1.15rem 1rem !important;
-    box-shadow: 0 18px 50px rgba(34,197,94,0.3) !important;
+    padding: 0.85rem 1rem !important;
+    box-shadow: 0 14px 35px rgba(34,197,94,0.24) !important;
     opacity: 1 !important;
 }
 
@@ -228,84 +230,84 @@ img {
     background: rgba(34,197,94,0.06) !important;
     color: #4ade80 !important;
     border: 1px solid rgba(34,197,94,0.45) !important;
-    border-radius: 14px !important;
+    border-radius: 13px !important;
     font-family: 'Syne', sans-serif !important;
-    font-size: 0.85rem !important;
+    font-size: 0.78rem !important;
     font-weight: 900 !important;
     width: 100% !important;
     height: auto !important;
-    padding: 1rem !important;
+    padding: 0.85rem 1rem !important;
 }
 
 /* AWAIT PANEL */
 .await-panel {
     background:
-        radial-gradient(circle at center, rgba(34,197,94,0.08), transparent 18rem),
+        radial-gradient(circle at center, rgba(34,197,94,0.07), transparent 15rem),
         rgba(255,255,255,0.025);
     border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 24px;
-    min-height: 460px;
+    border-radius: 20px;
+    min-height: 330px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 3rem 2.5rem;
+    padding: 2rem;
 }
 
 .await-icon {
-    font-size: 4.8rem;
-    margin-bottom: 1.2rem;
+    font-size: 3.2rem;
+    margin-bottom: 1rem;
     color: #22c55e;
-    text-shadow: 0 0 30px rgba(34,197,94,0.45);
+    text-shadow: 0 0 24px rgba(34,197,94,0.4);
 }
 
 .await-title {
     font-family: 'Syne', sans-serif;
-    font-size: 1rem;
+    font-size: 0.82rem;
     font-weight: 900;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.17em;
     text-transform: uppercase;
     color: #f3f4f6;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
 }
 
 .await-text {
     color: #9ca3af;
-    font-size: 0.92rem;
-    line-height: 1.7;
+    font-size: 0.84rem;
+    line-height: 1.65;
 }
 
 /* METRICS */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(4,1fr);
-    gap: 0.85rem;
-    margin: 1rem 0 1.2rem;
+    gap: 0.7rem;
+    margin: 0.9rem 0 1rem;
 }
 
 .metric-box {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.09);
-    border-radius: 16px;
-    padding: 1.25rem 1rem;
+    border-radius: 14px;
+    padding: 1rem 0.8rem;
     text-align: center;
 }
 
 .metric-val {
     font-family: 'Syne', sans-serif;
-    font-size: 2.8rem;
+    font-size: 2.1rem;
     font-weight: 900;
     color: #fff;
     line-height: 1;
 }
 
 .metric-lbl {
-    font-size: 0.63rem;
+    font-size: 0.55rem;
     color: #9ca3af;
     text-transform: uppercase;
-    letter-spacing: 0.13em;
-    margin-top: 0.55rem;
+    letter-spacing: 0.12em;
+    margin-top: 0.45rem;
     font-weight: 800;
 }
 
@@ -313,12 +315,12 @@ img {
 .verdict-recyclable,
 .verdict-nonrecyclable,
 .verdict-mixed {
-    border-radius: 18px;
-    padding: 1.1rem 1.25rem;
-    margin-bottom: 1.2rem;
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    gap: 0.9rem;
+    gap: 0.8rem;
 }
 
 .verdict-recyclable {
@@ -337,29 +339,29 @@ img {
 }
 
 .v-icon {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
 }
 
 .v-text {
     font-family: 'Syne', sans-serif;
     font-weight: 900;
-    font-size: 1rem;
+    font-size: 0.88rem;
     color: #f9fafb;
 }
 
 .v-sub {
-    font-size: 0.82rem;
+    font-size: 0.76rem;
     color: #9ca3af;
-    margin-top: 0.18rem;
+    margin-top: 0.12rem;
 }
 
 /* BREAKDOWN */
 .det-item {
     background: #111111;
     border: 1px solid #222222;
-    border-radius: 14px;
-    padding: 0.9rem 1rem;
-    margin-bottom: 0.7rem;
+    border-radius: 13px;
+    padding: 0.75rem 0.85rem;
+    margin-bottom: 0.6rem;
 }
 
 .det-top {
@@ -367,18 +369,18 @@ img {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.55rem;
 }
 
 .det-name {
     font-family: 'Syne', sans-serif;
-    font-size: 0.86rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #f3f4f6;
 }
 
 .det-conf {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     color: #d1d5db;
     font-weight: 700;
 }
@@ -388,7 +390,7 @@ img {
     border-radius: 999px;
     height: 7px;
     overflow: hidden;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
 }
 
 .conf-track div {
@@ -398,19 +400,19 @@ img {
 
 .det-tip {
     color: #9ca3af;
-    font-size: 0.76rem;
-    line-height: 1.55;
+    font-size: 0.72rem;
+    line-height: 1.5;
 }
 
 .chip-rec,
 .chip-nonrec {
     display: inline-block;
-    font-size: 0.56rem;
+    font-size: 0.5rem;
     font-weight: 800;
     font-family: 'Syne', sans-serif;
-    padding: 0.25rem 0.5rem;
+    padding: 0.22rem 0.45rem;
     border-radius: 999px;
-    margin-left: 0.55rem;
+    margin-left: 0.45rem;
     vertical-align: middle;
 }
 
@@ -429,10 +431,10 @@ img {
 .footer-line {
     text-align: center;
     color: #4b5563;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     letter-spacing: 0.08em;
-    margin-top: 3rem;
-    padding: 2rem 0 0.5rem;
+    margin-top: 2rem;
+    padding: 1.5rem 0 0.5rem;
     border-top: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -507,9 +509,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-
-left, right = st.columns([0.95, 1.35], gap="large")
+left, right = st.columns([0.92, 1.28], gap="large")
 
 with left:
     st.markdown('<div class="section-title">Input Source</div>', unsafe_allow_html=True)
@@ -521,7 +521,7 @@ with left:
         label_visibility="collapsed"
     )
 
-    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
 
     source_image = None
     current_image_key = None
@@ -566,11 +566,11 @@ with left:
             st.session_state["img_path"] = tmp_path
 
     if source_image:
-        st.markdown("<div style='height:1.1rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:0.9rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-title">Original Image</div>', unsafe_allow_html=True)
         st.image(source_image, caption="Original image", use_container_width=True)
 
-    st.markdown("<div style='height:1.4rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 
     run = st.button(
         "✦ Analyse Image",
@@ -697,7 +697,7 @@ with right:
             st.warning("Nothing detected. Try using a clearer image with better lighting.")
 
         if r["detections"]:
-            st.markdown('<div class="section-title" style="margin-top:1.2rem;">Item Breakdown</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title" style="margin-top:1rem;">Item Breakdown</div>', unsafe_allow_html=True)
 
             RECYCLABLE_CLASSES, FRIENDLY = build_class_maps(model)
 
@@ -724,7 +724,7 @@ with right:
                     unsafe_allow_html=True
                 )
 
-        st.markdown("<div style='height:0.9rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:0.7rem;'></div>", unsafe_allow_html=True)
 
         st.download_button(
             "⬇ Download Annotated Image",
@@ -733,8 +733,6 @@ with right:
             mime="image/png",
             use_container_width=True
         )
-
-
 
 st.markdown(
     '<div class="footer-line">WasteLens · AI Waste Classification</div>',

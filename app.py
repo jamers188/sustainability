@@ -159,9 +159,11 @@ html, body, [class*="css"] {
     color: #0f172a !important;
 }
 
-/* ---------- UPLOADER FIX ONLY ---------- */
+/* File uploader container */
+[data-testid="stFileUploader"] {
+    background: transparent !important;
+}
 
-/* Main container */
 [data-testid="stFileUploader"] section {
     background: #ffffff !important;
     border: 2px dashed #22c55e !important;
@@ -169,12 +171,20 @@ html, body, [class*="css"] {
     padding: 1rem !important;
 }
 
-/* Remove internal dark overlays */
+/* Dropzone */
 [data-testid="stFileUploadDropzone"] {
+    background: #ffffff !important;
+    color: #334155 !important;
+    opacity: 1 !important;
+}
+
+/* Inner wrappers that sometimes create dark overlays */
+[data-testid="stFileUploadDropzone"] > div,
+[data-testid="stFileUploadDropzone"] div {
     background: transparent !important;
 }
 
-/* 🔥 FIX BLACK BUTTON COVER */
+/* Button */
 [data-testid="stFileUploadDropzone"] button {
     background: #22c55e !important;
     color: #052e16 !important;
@@ -183,35 +193,28 @@ html, body, [class*="css"] {
     opacity: 1 !important;
 }
 
-/* Remove dark hover layer */
-[data-testid="stFileUploadDropzone"] button:hover,
-[data-testid="stFileUploadDropzone"] button:focus,
-[data-testid="stFileUploadDropzone"] button:active {
-    background: #22c55e !important;
-    color: #052e16 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-/* Ensure text inside button is visible */
 [data-testid="stFileUploadDropzone"] button * {
     color: #052e16 !important;
     fill: #052e16 !important;
     opacity: 1 !important;
 }
 
-/* 🔥 FIX GREY TEXT (MB + formats) */
-[data-testid="stFileUploadDropzone"] small,
+/* Helper text */
+[data-testid="stFileUploadDropzone"] p,
 [data-testid="stFileUploadDropzone"] span,
-[data-testid="stFileUploadDropzone"] p {
-    color: #334155 !important;
+[data-testid="stFileUploadDropzone"] small,
+[data-testid="stFileUploadDropzone"] label {
+    color: #475569 !important;
     opacity: 1 !important;
 }
 
-/* Remove weird dark internal blocks */
-[data-testid="stFileUploadDropzone"] div {
+/* Remove any dark pseudo layers */
+[data-testid="stFileUploadDropzone"]::before,
+[data-testid="stFileUploadDropzone"]::after {
     background: transparent !important;
+    box-shadow: none !important;
 }
+
 
 /* Upload icon */
 [data-testid="stFileUploadDropzone"] svg {

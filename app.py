@@ -10,14 +10,10 @@ import io
 import requests
 from ultralytics import YOLO
 
-# ─────────────────────────────────────────
-#  MODEL DOWNLOAD
-# ─────────────────────────────────────────
 MODEL_PATH = "best_model.pt"
 GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
 
 def download_model(file_id: str, dest: str):
-    import requests
     session = requests.Session()
     url = f"https://drive.google.com/uc?export=download&id={file_id}"
     r = session.get(url, stream=True)
@@ -54,9 +50,6 @@ if not model_ok:
         st.error("Download failed — check GDRIVE_FILE_ID and that the file is shared publicly.")
         st.stop()
 
-# ─────────────────────────────────────────
-#  PAGE CONFIG
-# ─────────────────────────────────────────
 st.set_page_config(
     page_title="WasteLens",
     layout="wide",
@@ -67,7 +60,6 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
 
-/* ── Base ── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
 }
@@ -81,7 +73,6 @@ html, body, [class*="css"] {
     max-width: 1300px !important;
 }
 
-/* ── Sidebar ── */
 [data-testid="stSidebar"] {
     background: #0a0a0a !important;
     border-right: 1px solid #1f1f1f !important;
@@ -91,24 +82,22 @@ html, body, [class*="css"] {
     color: #a0a0a0 !important;
 }
 
-/* ── Upload zone ── */
+/* Custom uploader wrapper */
+.upload-wrapper {
+    border: 2px dashed #22c55e;
+    border-radius: 12px;
+    background: #0f0f0f;
+    padding: 1.5rem;
+    margin-top: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+/* Still keep fallback uploader styling */
 [data-testid="stFileUploadDropzone"] {
     background: #0f0f0f !important;
     border: 2px dashed #22c55e !important;
-    border-radius: 14px !important;
+    border-radius: 12px !important;
     min-height: 120px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 1.5rem !important;
-    transition: all 0.2s ease !important;
-}
-
-[data-testid="stFileUploadDropzone"]:hover {
-    border-color: #4ade80 !important;
-    background: #111111 !important;
-    box-shadow: 0 0 24px rgba(34,197,94,0.12) !important;
 }
 
 [data-testid="stFileUploadDropzone"] p {
@@ -120,11 +109,8 @@ html, body, [class*="css"] {
 [data-testid="stFileUploadDropzone"] svg {
     color: #22c55e !important;
     fill: #22c55e !important;
-    width: 2.1rem !important;
-    height: 2.1rem !important;
 }
 
-/* ── Analyse button ── */
 .stButton > button {
     background: #22c55e !important;
     color: #000 !important;
@@ -157,7 +143,6 @@ html, body, [class*="css"] {
     opacity: 1 !important;
 }
 
-/* ── Download button ── */
 [data-testid="stDownloadButton"] > button {
     background: #0f0f0f !important;
     color: #22c55e !important;
@@ -174,7 +159,6 @@ html, body, [class*="css"] {
     padding-bottom: 1rem !important;
 }
 
-/* ── Await panel ── */
 .await-panel {
     background: #0a0a0a;
     border: 1px dashed #2a2a2a;
@@ -213,7 +197,6 @@ html, body, [class*="css"] {
     line-height: 1.7;
 }
 
-/* ── Verdict banners ── */
 .verdict-recyclable {
     background: linear-gradient(135deg, #0a1f12 0%, #0f2d1a 100%);
     border: 1px solid #166534;
@@ -298,7 +281,6 @@ html, body, [class*="css"] {
     margin-top: 2px;
 }
 
-/* ── Metrics ── */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(4,1fr);
@@ -332,7 +314,6 @@ html, body, [class*="css"] {
     font-weight: 500;
 }
 
-/* ── Detection items ── */
 .det-item {
     background: #111111;
     border: 1px solid #222222;
@@ -413,7 +394,6 @@ html, body, [class*="css"] {
     vertical-align: middle;
 }
 
-/* ── History ── */
 .hist-item {
     display: flex;
     justify-content: space-between;
@@ -427,11 +407,11 @@ html, body, [class*="css"] {
     border-bottom: none;
 }
 
-/* ── Sidebar label ── */
+/* FIX 1: Sidebar Detection History label */
 .sb-label {
     font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 800;
+    font-size: 0.65rem;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #22c55e !important;
@@ -440,7 +420,6 @@ html, body, [class*="css"] {
     margin-bottom: 1rem;
 }
 
-/* ── Radio ── */
 [data-testid="stRadio"] > label {
     display: none !important;
 }
@@ -449,17 +428,18 @@ html, body, [class*="css"] {
     gap: 0.5rem !important;
 }
 
-/* ── Checkbox ── */
-[data-testid="stCheckbox"] label span {
-    font-size: 0.82rem !important;
-    color: #a0a0a0 !important;
+.footer-line {
+    text-align: center;
+    color: #4b5563;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    margin-top: 4rem;
+    padding: 2rem 0 0.5rem;
+    border-top: 1px solid #111111;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-#  CONSTANTS
-# ─────────────────────────────────────────
 CONF_THRESH = 0.25
 IOU_THRESH = 0.45
 SHOW_LABELS = True
@@ -484,7 +464,6 @@ DISPOSAL_TIPS = {
 DEFAULT_TIP = "Seal in a bag and place in the general waste bin."
 
 def build_class_maps(model):
-    """Dynamically build recyclable set and friendly names from the model's actual class list."""
     recyclable = set()
     friendly = {}
 
@@ -497,27 +476,18 @@ def build_class_maps(model):
 
     return recyclable, friendly
 
-# ─────────────────────────────────────────
-#  MODEL
-# ─────────────────────────────────────────
 @st.cache_resource
 def load_model():
     return YOLO(MODEL_PATH)
 
 model = load_model()
 
-# ─────────────────────────────────────────
-#  SESSION STATE
-# ─────────────────────────────────────────
 if "history" not in st.session_state:
     st.session_state.history = []
 
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
 
-# ─────────────────────────────────────────
-#  SIDEBAR
-# ─────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
     <div class="sb-label">
@@ -552,9 +522,6 @@ with st.sidebar:
     else:
         st.markdown('<p style="color:#6b7280;font-size:0.9rem;line-height:1.6;">No scans yet.</p>', unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-#  HEADER
-# ─────────────────────────────────────────
 st.markdown("""
 <div style="
     padding: 3rem 0 2.4rem;
@@ -597,9 +564,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────
-#  LAYOUT
-# ─────────────────────────────────────────
 left, right = st.columns([1, 1], gap="large")
 
 with left:
@@ -615,7 +579,15 @@ with left:
     st.markdown("<div style='height:0.7rem;'></div>", unsafe_allow_html=True)
 
     if mode == "Upload image":
-        uploaded = st.file_uploader("upload", type=["jpg", "jpeg", "png", "webp", "bmp"], label_visibility="collapsed")
+        st.markdown('<div class="upload-wrapper">', unsafe_allow_html=True)
+
+        uploaded = st.file_uploader(
+            "upload",
+            type=["jpg", "jpeg", "png", "webp", "bmp"],
+            label_visibility="collapsed"
+        )
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if uploaded:
             tmp_path = f"/tmp/wastelens_upload_{uploaded.name}"
@@ -799,3 +771,8 @@ with right:
             mime="image/png",
             use_container_width=True
         )
+
+st.markdown(
+    '<div class="footer-line">WasteLens · AI Waste Classification</div>',
+    unsafe_allow_html=True
+)

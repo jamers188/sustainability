@@ -10,8 +10,8 @@ import io
 import requests
 from ultralytics import YOLO
 
-MODEL_PATH = "best_model.pt"
-GDRIVE_FILE_ID = "1FYO7H9UnLDuw5FwAqVpLSvEnPC1dTmod"
+MODEL_PATH = "best.pt"
+GDRIVE_FILE_ID = "10QAZfdTZaXiESYeexlN7cg4ztvqBKYk9"
 
 def download_model(file_id: str, dest: str):
     session = requests.Session()

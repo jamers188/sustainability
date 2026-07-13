@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme:light only">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="color-scheme" content="light only"/>
+<title>DAMAC AI Call Review</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;font-size:14px;line-height:1.5}
+:root{--gold:#b8943a;--gl:rgba(5, 4, 2, 0.12);--gb:rgba(184,148,58,0.3);--sf:#fff;--s2:#f8f9fa;--br:rgba(0,0,0,0.07);--br2:rgba(0,0,0,0.13);--tx:#1a1a2e;--t2:#6b7280;--t3:#9ca3af;--gn:#16a34a;--am:#ca8a04;--rd:#dc2626;--bl:#0ea5e9;--gnb:rgba(22,163,74,0.08);--amb:rgba(202,138,4,0.08);--rdb:rgba(220,38,38,0.08);--blb:rgba(14,165,233,0.08);--r:10px;--rs:6px}
+.app{display:flex;height:100vh;overflow:hidden}
+.sb{width:252px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden}
+.sb-top{padding:14px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px}
+.sb-mk{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;flex-shrink:0}
+.sb-ti{font-size:13px;font-weight:600}
+.sb-st{font-size:11px;margin-top:2px}
+.sb-sec{padding:12px 14px 5px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.sb-nav{list-style:none;padding:0 8px}
+.sb-nav li a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);font-size:13px;color:var(--t2);cursor:pointer;transition:all .15s;user-select:none}
+.sb-nav li a:hover{background:var(--s2);color:var(--tx)}
+.sb-nav li a.on{background:var(--gl);color:var(--gold);font-weight:600}
+.sb-div{height:1px;background:var(--br);margin:6px 14px}
+.sb-fl-wrap{padding:6px 12px;flex:1;overflow-y:auto}
+.sb-fl{margin-bottom:12px}
+.sb-fl-lbl{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.sb-fl select,.sb-fl input{width:100%;font-size:12px;padding:7px 9px;border-radius:var(--rs);border:1px solid var(--br2);background:var(--s2);color:var(--tx);outline:none;appearance:none}
+.sb-fl select:focus,.sb-fl input:focus{border-color:var(--gold)}
+.qf{width:100%;padding:7px 10px;border-radius:var(--rs);font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--br);background:transparent;color:var(--t2);text-align:left;margin-bottom:3px;display:flex;align-items:center;gap:6px;transition:all .15s}
+.qf:hover{background:var(--s2)}.qf.qa{background:var(--rdb);border-color:rgba(220,38,38,.25);color:var(--rd)}.qf.qt{background:var(--gnb);border-color:rgba(22,163,74,.25);color:var(--gn)}.qf.qb{background:var(--blb);border-color:rgba(14,165,233,.25);color:var(--bl)}
+.clr{width:100%;margin-top:6px;padding:7px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--br);background:transparent;color:var(--t3)}
+.main{flex:1;overflow-y:auto;padding:20px 24px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+.sc{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:14px 16px}
+.sc-l{font-size:11px;color:var(--t2);margin-bottom:5px}.sc-v{font-size:24px;font-weight:700;line-height:1}.sc-s{font-size:11px;color:var(--t3);margin-top:3px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pill{padding:5px 12px;border-radius:999px;font-size:11px;cursor:pointer;border:1px solid var(--br);background:var(--sf);color:var(--t2);transition:all .15s}
+.pill:hover{border-color:var(--gb)}.pill.on{background:var(--gl);border-color:var(--gb);color:var(--gold);font-weight:600}
+.spill{padding:5px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--sf);color:var(--t2);transition:all .15s}
+.spill.s-all.on{background:var(--gl);border-color:var(--gb);color:var(--gold)}.spill.s-top.on{background:var(--gnb);border-color:rgba(22,163,74,.3);color:var(--gn)}.spill.s-above.on{background:var(--blb);border-color:rgba(14,165,233,.3);color:var(--bl)}.spill.s-avg.on{background:var(--amb);border-color:rgba(202,138,4,.3);color:var(--am)}.spill.s-below.on{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.3);color:#ea580c}.spill.s-crit.on{background:var(--rdb);border-color:rgba(220,38,38,.3);color:var(--rd)}
+.dos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.dos-card{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s}
+.dos-card:hover{border-color:var(--gb);box-shadow:0 2px 10px rgba(0,0,0,.06);transform:translateY(-1px)}
+.tbl-wrap{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 14px;text-align:left;font-size:9px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--br);background:var(--s2);white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--br);font-size:12px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#fafbfc;cursor:pointer}
+.pg-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--br);background:var(--s2);font-size:12px;color:var(--t2)}
+.pg-btns{display:flex;gap:4px}
+.pg-btn{width:28px;height:28px;border-radius:5px;border:1px solid var(--br);background:var(--sf);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pg-btn:hover,.pg-btn.on{border-color:var(--gold);color:var(--gold);background:var(--gl)}
+.score-b{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:12px;font-weight:700}
+.sg{background:var(--gnb);color:var(--gn)}.sw{background:var(--amb);color:var(--am)}.sr{background:var(--rdb);color:var(--rd)}.sb2{background:var(--blb);color:var(--bl)}
+.op{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;font-weight:600}
+.o-book{background:var(--gnb);color:var(--gn)}.o-int{background:var(--amb);color:var(--am)}.o-no{background:var(--rdb);color:var(--rd)}.o-tr{background:var(--blb);color:var(--bl)}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;background:var(--gl);color:var(--gold)}
+.card{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--br);background:var(--s2);display:flex;align-items:center;justify-content:space-between}
+.card-ti{font-size:14px;font-weight:600}.card-su{font-size:11px;color:var(--t2);margin-top:2px}
+.card-body{padding:16px 18px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.three-box{padding:14px;background:var(--s2);border-radius:var(--rs)}
+.three-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--br)}
+.three-hd-ic{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.three-hd-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.three-item{padding:7px 0;border-bottom:1px solid var(--br);font-size:12px;line-height:1.5}
+.three-item:last-child{border-bottom:none;padding-bottom:0}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;flex-shrink:0}
+/* DEEP DIVE HEADER */
+.dd-hd{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.dd-name{font-size:28px;font-weight:700;margin-bottom:4px}
+.dd-sub{font-size:13px;color:var(--t2);margin-bottom:16px}
+.dd-meta{display:flex;gap:28px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--br)}
+.dd-m-lbl{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.dd-m-val{font-size:13px;font-weight:600}
+.dd-selectors{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.dd-sel-lbl{font-size:11px;font-weight:600;color:var(--t2);margin-right:4px}
+.dd-sel{font-size:12px;padding:7px 12px;border-radius:var(--rs);border:1px solid var(--br2);background:var(--s2);color:var(--tx);outline:none;cursor:pointer;min-width:160px}
+.dd-sel:focus{border-color:var(--gold)}
+.dd-big{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.dd-big-c{background:var(--s2);border-radius:var(--rs);padding:18px}
+.dd-big-lbl{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.dd-big-num{font-size:44px;font-weight:700;line-height:1;letter-spacing:-2px}
+.dd-big-sub{font-size:11px;color:var(--t2);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
+.dd-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.dd-kpi{background:var(--s2);border-radius:var(--rs);padding:12px;text-align:center}
+.dd-kpi-v{font-size:22px;font-weight:700;color:var(--gold)}.dd-kpi-l{font-size:10px;color:var(--t2);margin-top:3px;line-height:1.3}
+.tabs{display:flex;gap:2px;background:var(--s2);padding:4px;border-radius:var(--rs);margin-bottom:16px;width:fit-content}
+.tab{padding:7px 16px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--tx)}.tab.on{background:var(--sf);color:var(--tx);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.info-box{background:var(--sf);border:1px solid var(--br);border-radius:var(--rs);padding:16px}
+.info-box-ti{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--br);font-size:12px}
+.info-row:last-child{border-bottom:none}
+.info-k{color:var(--t2);flex-shrink:0;margin-right:12px}.info-v{font-weight:500;text-align:right}
+.list-item{display:flex;align-items:flex-start;gap:7px;padding:5px 0;font-size:12px;border-bottom:1px solid var(--br);line-height:1.5}
+.list-item:last-child{border-bottom:none}
+.sc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--br);font-size:12px}
+.sc-row:last-child{border-bottom:none;padding-bottom:0}
+.sc-name{width:160px;flex-shrink:0;color:var(--t2);font-size:11px}
+.sc-bar{flex:1;height:7px;background:var(--br);border-radius:3px;overflow:hidden}
+.sc-fill{height:100%;border-radius:3px}
+.sc-val{width:45px;text-align:right;font-weight:700;font-size:12px}
+.sc-comment{font-size:11px;line-height:1.5;padding:4px 0 8px 170px;color:var(--t2);border-bottom:1px solid var(--br)}
+.flag{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border-radius:var(--rs);margin-bottom:6px;font-size:12px;font-weight:500}
+.dim-row{border-bottom:1px solid var(--br)}
+.dim-row:last-child{border-bottom:none}
+.dim-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;transition:background .15s}
+.dim-hd:hover{background:#fafbfc}
+.dim-label{min-width:180px;flex-shrink:0}
+.dim-nm{font-size:13px;font-weight:500}.dim-ds{font-size:11px;color:var(--t3);margin-top:1px}
+.dim-bar-w{flex:1;height:8px;background:var(--br);border-radius:4px;overflow:hidden}
+.dim-bar-f{height:100%;border-radius:4px;transition:width .4s}
+.dim-sc{font-size:14px;font-weight:700;min-width:55px;text-align:right}
+.dim-sp{font-size:10px;color:var(--t3);min-width:150px;text-align:right;white-space:nowrap}
+.dim-ms{font-size:11px;min-width:65px;text-align:right;font-weight:600}
+.dim-ar{font-size:12px;color:var(--t3);margin-left:4px}
+.dim-det{display:none;padding:0 18px 16px;background:#fafbfc;border-top:1px solid var(--br)}
+.dim-why{padding:10px 14px;border-radius:var(--rs);margin-bottom:10px;font-size:12px;line-height:1.6}
+.dim-chk{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.chk{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:var(--rs);border:1px solid transparent}
+.chk-ic{font-size:14px;flex-shrink:0;margin-top:1px}.chk-tx{font-size:12px;line-height:1.5}
+/* TIMELINE */
+.tl-row{display:flex;gap:12px;margin-bottom:14px;position:relative}
+.tl-row::before{content:'';position:absolute;left:14px;top:34px;bottom:-14px;width:1px;background:var(--br)}
+.tl-row:last-child::before{display:none}
+.tl-sp{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;z-index:1}
+.tl-body{flex:1;background:var(--s2);border-radius:var(--rs);padding:12px 14px}
+.tl-hl{font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.tl-time{font-size:10px;color:var(--t3);font-weight:400}
+.tl-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.tl-text{font-size:11px;color:var(--t2);line-height:1.55}
+.tl-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:999px;margin-top:5px;font-weight:500}
+/* CONVERSATION BUBBLES */
+.conv-block{margin:10px 0;padding:12px 14px;background:#fff;border:1px solid var(--br);border-radius:var(--rs)}
+.conv-block-hd{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.conv-msg{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.conv-msg:last-child{margin-bottom:0}
+.conv-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:#fff}
+.conv-av-rm{background:var(--gold)}
+.conv-av-cu{background:var(--bl)}
+.conv-bubble{flex:1;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;position:relative}
+.conv-bubble-rm{background:rgba(184,148,58,.08);border:1px solid rgba(184,148,58,.2);border-left:3px solid var(--gold)}
+.conv-bubble-rm.bad{background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.2);border-left-color:var(--rd)}
+.conv-bubble-rm.good{background:rgba(22,163,74,.06);border-color:rgba(22,163,74,.2);border-left-color:var(--gn)}
+.conv-bubble-cu{background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-left:3px solid var(--bl)}
+.conv-speaker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.conv-quote{font-style:italic;color:var(--tx);font-size:13px;line-height:1.65}
+.conv-issue{margin-top:6px;padding-top:6px;border-top:1px dashed rgba(0,0,0,.08);font-size:11px;font-style:normal;color:var(--t2);line-height:1.5}
+.conv-issue.bad{color:var(--rd)}
+.conv-issue.good{color:var(--gn)}
+.conv-correct{margin-top:8px;padding:8px 12px;background:rgba(22,163,74,.05);border:1px dashed rgba(22,163,74,.3);border-radius:6px;font-size:12px;color:var(--gn);line-height:1.6}
+.conv-correct-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gn);margin-bottom:3px}
+/* LEADERBOARD POPUP */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--sf);border-radius:var(--r);width:100%;max-width:640px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-hd{padding:18px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.modal-ti{font-size:16px;font-weight:600}
+.modal-cl{width:28px;height:28px;border-radius:6px;border:1px solid var(--br);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--t2)}
+.modal-body{padding:20px;overflow-y:auto}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--br);cursor:pointer}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--s2);margin:0 -20px;padding:12px 20px;border-radius:var(--rs)}
+.lb-rank{width:32px;text-align:center;font-size:16px;flex-shrink:0}
+.lb-info{flex:1}
+.lb-name{font-size:13px;font-weight:600}
+.lb-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.lb-score{font-size:18px;font-weight:700}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;margin-bottom:16px}
+.back-btn:hover{color:var(--tx)}
+.attn-box{padding:12px 16px;background:var(--rdb);border:1px solid rgba(220,38,38,.2);border-radius:var(--rs);margin-bottom:14px;font-size:12px;color:var(--rd);display:flex;align-items:center;gap:10px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--br2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sb" id="sb"></div>
+  <div class="main" id="main"></div>
+</div>
+<div class="overlay" id="lb-overlay" style="display:none" onclick="if(event.target===this)closeLB()">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><div class="modal-ti" id="lb-title">Agent Leaderboard</div><div style="font-size:11px;color:var(--t2);margin-top:2px" id="lb-sub"></div></div>
+      <div class="modal-cl" onclick="closeLB()">✕</div>
+    </div>
+    <div class="modal-body" id="lb-body"></div>
+  </div>
+</div>
+
+
+<script> 
+const WEBHOOK='https://aihub.damacgroup.com/webhook/damac-call-reviews'
+const DETAIL_WEBHOOK='https://aihub.damacgroup.com/webhook/damac-call-detail';
+const DIMS=[
+  {id:'greeting',label:'Opening & Greeting',max:10,desc:'Energy, name, introduce self + role'},
+  {id:'profiling',label:'Client Profiling',max:15,desc:'Financial capacity, decision-maker, rapport'},
+  {id:'probing',label:'Requirement ID',max:20,desc:'Budget, type, location, timeline, summarize first'},
+  {id:'presentation',label:'Project Presentation',max:15,desc:'Max 2 projects, tailored, location→project→price'},
+  {id:'objections',label:'Objection Handling',max:15,desc:'LAER — Listen, Acknowledge, Explore, Respond'},
+  {id:'communication',label:'Communication',max:10,desc:'Tone, pacing, active listening'},
+  {id:'followup',label:'Follow-up & Closing',max:10,desc:'Specific next step confirmed before ending'},
+  {id:'overall_prof',label:'Professionalism',max:5,desc:'Product knowledge, brand representation'}
+];
+
+const DIM_CHECKLIST={greeting:[
+{pass:"Agent greeted with energy and positivity",fail:"Did NOT greet with energy — call started flat",thr:75},
+{pass:"Agent used the client name in greeting",fail:"Did NOT use client name — impersonal opening",thr:65},
+{pass:"Agent introduced full name clearly",fail:"Did NOT introduce name — client does not know who called",thr:50},
+{pass:"Agent introduced company (DAMAC) and role",fail:"Did NOT mention DAMAC or role upfront",thr:50},
+{pass:"Agent did NOT jump straight into pitch",fail:"Agent jumped straight into pitch — no warm-up",thr:60},
+{pass:"Agent set a warm and friendly opening tone",fail:"Tone was cold or too formal from the start",thr:70}
+],profiling:[
+{pass:"Agent confirmed client is the decision-maker",fail:"Did NOT confirm if client is the decision-maker",thr:75},
+{pass:"Agent asked about financial capability",fail:"Did NOT ask about financial capability",thr:65},
+{pass:"Agent established common ground and rapport",fail:"No rapport built — went straight to business",thr:60},
+{pass:"Agent identified investor vs end-user early",fail:"Did NOT identify investor vs end-user purpose",thr:70},
+{pass:"Agent explored prior Dubai experience",fail:"Did NOT ask about prior Dubai experience",thr:50},
+{pass:"Agent built rapport BEFORE presenting",fail:"Started presenting WITHOUT building rapport first",thr:65}
+],probing:[
+{pass:"Agent asked self-use vs investment explicitly",fail:"Did NOT ask about purpose (investment or own use)",thr:80},
+{pass:"Agent captured exact budget range",fail:"Did NOT capture budget — presenting blind",thr:75},
+{pass:"Agent asked preferred property type",fail:"Did NOT ask property type preference",thr:70},
+{pass:"Agent identified bedroom requirement",fail:"Did NOT ask about bedroom preference",thr:65},
+{pass:"Agent explored location preference",fail:"Did NOT ask about preferred location",thr:60},
+{pass:"Agent asked timeline to purchase",fail:"Did NOT ask when client wants to buy",thr:65},
+{pass:"Agent asked finance type (cash or mortgage)",fail:"Did NOT ask about finance method",thr:60},
+{pass:"Agent SUMMARIZED requirements before presenting",fail:"CRITICAL: Jumped to presentation WITHOUT summarizing",thr:75}
+],presentation:[
+{pass:"Agent presented MAX 2 projects only",fail:"Presented MORE than 2 projects — causes confusion",thr:80},
+{pass:"Agent led with Why Dubai context first",fail:"Skipped Why Dubai — went straight to project names",thr:65},
+{pass:"Agent framed pricing AFTER building value",fail:"Quoted price before establishing value",thr:65},
+{pass:"Presentation was tailored to this client profile",fail:"Generic pitch — not tailored to this specific client",thr:70},
+{pass:"Agent used features relevant to THIS client",fail:"Used irrelevant features — not listening to requirements",thr:60},
+{pass:"Presentation felt specific not generic",fail:"Presentation felt like a script — no personalization",thr:65}
+],objections:[
+{pass:"Agent listened fully without interrupting",fail:"Agent interrupted or rushed past the objection",thr:75},
+{pass:"Agent acknowledged the concern empathetically",fail:"Did NOT acknowledge concern — felt dismissive",thr:70},
+{pass:"Agent explored the ROOT CAUSE of objection",fail:"Did NOT explore why — just tried to overcome it",thr:60},
+{pass:"Agent responded with facts not just reassurance",fail:"Used generic reassurance instead of facts",thr:65},
+{pass:"Agent did NOT give up on the objection",fail:"Gave up too quickly — did not push back properly",thr:70},
+{pass:"Agent used LAER framework throughout",fail:"No LAER structure — objection handled poorly",thr:65}
+],communication:[
+{pass:"Agent maintained professional confident tone",fail:"Tone was unprofessional or lacking confidence",thr:75},
+{pass:"Agent paced the conversation appropriately",fail:"Pacing was too fast or too slow",thr:70},
+{pass:"Agent actively listened before responding",fail:"Responded without really listening",thr:65},
+{pass:"Agent used clear language with no filler words",fail:"Used filler words or unclear language",thr:65},
+{pass:"Agent stayed calm during pushback",fail:"Got flustered or defensive during pushback",thr:70},
+{pass:"Agent matched client energy and style",fail:"Did NOT adapt to client energy — mismatch",thr:60}
+],followup:[
+{pass:"Agent set a SPECIFIC next step before ending",fail:"CRITICAL: No specific next step — lead will go cold",thr:80},
+{pass:"Agent confirmed follow-up method (WhatsApp or call)",fail:"Did NOT confirm how to follow up",thr:70},
+{pass:"Agent got commitment on a specific date and time",fail:"No date or time confirmed — vague follow-up",thr:65},
+{pass:"Agent summarized what was agreed on the call",fail:"No summary of agreements — client may forget",thr:65},
+{pass:"Call ended with a clear confirmed action",fail:"Call ended vaguely — no clear next action",thr:70}
+],overall_prof:[ 
+{pass:"Agent showed strong accurate product knowledge",fail:"Product knowledge was weak or inaccurate",thr:70},
+{pass:"Agent treated client with consistent respect",fail:"Respect was inconsistent during the call",thr:80},
+{pass:"Agent represented DAMAC brand positively",fail:"Brand representation was poor or neutral",thr:70},
+{pass:"No unprofessional language used",fail:"Unprofessional language or tone was used",thr:85}
+]};
+const DIM_WHY={greeting:'A weak or missing greeting sets a cold tone for the entire call.',profiling:'Without knowing who you\'re talking to, the pitch is guesswork.',probing:'Not summarizing requirements before presenting is the #1 SOP violation.',presentation:'Presenting too many projects creates confusion. Quoting price before value kills interest.',objections:'Objections are buying signals. Weak handling loses leads.',communication:'Poor communication affects trust and client confidence.',followup:'Ending without a next step means the lead goes cold.',overall_prof:'Professionalism affects brand perception throughout the call.'};
+const DIM_FIX={greeting:'Practice: "Hi [Name], this is [Agent] from DAMAC Properties — how are you today?" before any product mention.',profiling:'FORD method: Family, Occupation, Recreation, Dreams. Build a picture first.',probing:'"So just to confirm — looking for a [X] for [purpose], budget around [Y], in [Z] area, within [timeline] — is that right?"',presentation:'Location → Community → Unit → Price. Investors: ROI + rental yield. End users: lifestyle + amenities.',objections:'LAER: Listen. Acknowledge. Explore ("What specifically worries you?"). Respond with evidence. Never say "but" — say "and".',communication:'Review recordings. 120-140 words per minute. Pause 2 seconds before responding.',followup:'"I\'ll send floor plans on WhatsApp by [time], and we\'ll speak on [specific day] at [specific time] — does that work?"',overall_prof:'Product quiz weekly. Role-play monthly. Review top performer recordings.'};
+const RULE_EXP={RULE_01:'Agent must introduce with name and company at start.',RULE_02:'Agent must ask purpose before presenting.',RULE_03:'Agent must ask budget before presenting.',RULE_04:'Agent must summarize requirements before presenting.',RULE_05:'Agent must present MAX 2 projects only.',RULE_06:'Agent must not quote price before understanding requirements.',RULE_07:'Agent must handle objections before giving up.',RULE_08:'Agent must set specific next step before ending.',RULE_09:'Agent must ask about finance type.',RULE_10:'Agent must confirm follow-up before ending.'};
+
+let ALL=[], IS_LIVE=false;
+let S={view:'home',curDOS:null,curHOS:null,curRM:null,selMonth:'',selCallIdx:0,selTab:'overview',fHOS:'',fDOS:'',fRM:'',fMonth:'',fSeg:'',fQ:'',fOut:'',fSearch:'',page:1};
+const PER=20;
+
+const bc=p=>p>=80?'#16a34a':p>=60?'#0ea5e9':p>=40?'#ca8a04':'#dc2626';
+const tc=p=>p>=80?'color:#16a34a':p>=60?'color:#0ea5e9':p>=40?'color:#ca8a04':'color:#dc2626';
+const sc=p=>p>=80?'sg':p>=60?'sb2':p>=40?'sw':'sr';
+const seg=p=>p>=80?'top':p>=60?'above':p>=40?'avg':p>=20?'below':'crit';
+const segLbl=s=>({top:'Top (80–100)',above:'Above avg (60–79)',avg:'Average (40–59)',below:'Needs work (20–39)',crit:'Critical (<20%)'}[s]||s);
+const segCol=s=>({top:'#16a34a',above:'#0ea5e9',avg:'#ca8a04',below:'#ea580c',crit:'#dc2626'}[s]||'#999');
+const ini=n=>(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const fmtB=b=>b?'AED '+Number(b).toLocaleString():'—';
+const fmtDur=s=>s?Math.round(Number(s)/60)+' min':'—';
+const fmtDt=ts=>{const d=new Date(ts);return isNaN(d)?'—':d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+const fmtTime=ts=>{const d=new Date(ts);return isNaN(d)?'—':d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+const outLbl=o=>({meeting_booked:'Meeting Booked',interested_not_committed:'Interested',not_interested:'Not Interested',transferred:'Transferred'}[o]||o||'—');
+const outCls=o=>({meeting_booked:'o-book',interested_not_committed:'o-int',not_interested:'o-no',transferred:'o-tr'}[o]||'o-no');
+
+function fixRow(r){
+  let b={...r};
+  if(r.full_json&&typeof r.full_json==='string'&&r.full_json.length>20){try{const p=JSON.parse(r.full_json);b={...r,...p};}catch(e){}}
+  ['scores','scoreComments','strengths','gaps','coachingTips','sopViolations','ruleFlags','customerProfile','callIntelligence','sopAnalysis','metadata'].forEach(k=>{if(typeof b[k]==='string'&&(b[k][0]==='{' || b[k][0]==='[')){try{b[k]=JSON.parse(b[k]);}catch(e){}}});
+  const d=new Date(b.timestamp||b.call_date||'');
+  b.month=isNaN(d)?'Unknown':d.toLocaleString('en-GB',{month:'long',year:'numeric'});
+  b.pct=Number(b.pct)||0;b.total=Number(b.total)||0;
+  b.rm_name=b.agentName||b.rm_name||'Unknown';
+  b.scores=b.scores||b.sopAnalysis?.scores||{};
+  b.scoreComments=b.scoreComments||b.sopAnalysis?.score_comments||{};
+  b.strengths=b.strengths||b.sopAnalysis?.strengths||[];
+  b.gaps=b.gaps||b.sopAnalysis?.gaps||[];
+  b.coachingTips=b.coachingTips||b.sopAnalysis?.coaching_tips||[];
+  const rawFlags=b.ruleFlags||b.sopAnalysis?.rule_flags||[];
+b.ruleFlags=rawFlags.map(f=>{
+  if(!f)return null;
+  if(typeof f==='string')return f;
+  const rule=f.rule||f.rule_id||f.id||f.code||'';
+  const desc=f.description||f.violation||f.detail||f.message||f.text||'';
+  return rule&&desc?`${rule}: ${desc}`:rule||desc||JSON.stringify(f);
+}).filter(Boolean);
+  b.customerProfile=b.customerProfile||{};
+  b.callIntelligence=b.callIntelligence||{};
+  return b;
+}
+
+function filtered(){
+  let d=[...ALL];
+  if(S.fHOS)d=d.filter(r=>r.hos_name===S.fHOS);
+  if(S.fDOS)d=d.filter(r=>r.dos_name===S.fDOS);
+  if(S.fRM)d=d.filter(r=>r.rm_name===S.fRM);
+  if(S.fMonth)d=d.filter(r=>r.month===S.fMonth);
+  if(S.fOut)d=d.filter(r=>r.callOutcome===S.fOut);
+  if(S.fSearch){const s=S.fSearch.toLowerCase();d=d.filter(r=>(r.rm_name||'').toLowerCase().includes(s)||(r.dos_name||'').toLowerCase().includes(s)||(r.hos_name||'').toLowerCase().includes(s)||(r.customerProfile?.customer_name||'').toLowerCase().includes(s)||(r.inquiry_id||'').toLowerCase().includes(s));}
+  const sg=S.fSeg||S.fQ;
+  if(sg){const ra={};ALL.forEach(r=>{if(!ra[r.rm_name])ra[r.rm_name]=[];ra[r.rm_name].push(r.pct);});const rs={};Object.entries(ra).forEach(([rm,ps])=>{rs[rm]=seg(Math.round(ps.reduce((a,b)=>a+b,0)/ps.length));});if(sg==='attn')d=d.filter(r=>['below','crit'].includes(rs[r.rm_name]||'avg'));else d=d.filter(r=>rs[r.rm_name]===sg);}
+  return d;
+}
+function rmAvg(rm,data){const c=(data||ALL).filter(r=>r.rm_name===rm);return c.length?Math.round(c.reduce((a,b)=>a+b.pct,0)/c.length):0;}
+function uRMs(d){return[...new Set((d||ALL).map(r=>r.rm_name).filter(Boolean))];}
+function uDOS(d){return[...new Set((d||ALL).map(r=>r.dos_name).filter(Boolean))];}
+function uHOS(){return[...new Set(ALL.map(r=>r.hos_name).filter(Boolean))];}
+function months(){return[...new Set(ALL.map(r=>r.month).filter(Boolean))].sort((a,b)=>new Date('1 '+a)-new Date('1 '+b));}
+
+function sf(k,v){S[k]=v;S.page=1;renderSB();renderMain();}
+function sfSearch(v){S.fSearch=v;S.page=1;renderMain();}
+async function ensureDetail(c){
+  if(!c||c.__detailLoaded)return;
+  const fname=((c.URL||c.htmlUrl||'').split('/').pop())||c.htmlFileName||'';
+  if(!fname){c.__detailLoaded=true;return;}
+  try{
+    const res=await fetch(DETAIL_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:fname}),signal:AbortSignal.timeout(30000)});
+    const txt=await res.text();
+    const d=txt.trim()?JSON.parse(txt.trim().replace(/^=/,'')):null;
+    if(d&&d.full_json){
+      c.full_json=d.full_json;
+      const fixed=fixRow({...c});
+      Object.assign(c,fixed);
+    }
+  }catch(e){console.warn('Detail load failed for',fname,e);}
+  c.__detailLoaded=true;
+}
+function applyDateRange(){
+  S.drFrom=document.getElementById('dr-from').value;
+  S.drTo=document.getElementById('dr-to').value;
+  if(!S.drFrom&&!S.drTo){document.getElementById('dr-status').textContent='Pick at least one date';return;}
+  document.getElementById('dr-status').textContent='Loading range...';
+  reloadWithRange(S.drFrom,S.drTo);
+}
+
+async function reloadWithRange(from,to){
+  try{
+    const res=await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:from||'',to:to||''}),signal:AbortSignal.timeout(180000)});
+    const txt=await res.text();
+    const raw=txt.trim()?JSON.parse(txt.trim().replace(/^=/,'')):{calls:[]};
+    const arr=Array.isArray(raw)?raw:(raw.calls||raw.reviews||raw.data||[]);
+    if(!arr.length){
+      // Nothing processed for this range yet — offer to process now
+      document.getElementById('dr-status').textContent='No processed calls in this range yet.';
+      if(confirm('No analyzed calls found for '+from+' → '+to+'.\n\nRun AI analysis on this date range now?\n\n(Takes ~1-2 min per call — new calls appear as they finish)')){
+        await fetch('https://aihub.damacgroup.com/webhook/damac-process-range',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to})});
+        document.getElementById('dr-status').textContent='⚙️ AI processing started! Click "View this range" again in a few minutes.';
+      }
+      return;
+    }
+    ALL=arr.map(fixRow);IS_LIVE=true;
+    document.getElementById('dr-status').textContent='Showing '+ALL.length+' calls in range';
+    renderSB();renderMain();
+  }catch(e){
+    document.getElementById('dr-status').textContent='Error: '+e.message;
+  }
+}
+
+async function processDateRange(){
+  const from=document.getElementById('dr-from').value;
+  const to=document.getElementById('dr-to').value;
+  if(!from||!to){document.getElementById('dr-status').textContent='Pick BOTH dates to process';return;}
+  if(!confirm('Process all calls from '+from+' to '+to+' with AI?\n\nThis runs in the background and may take a while (~1-2 min per call). New calls will appear in the dashboard as they finish.'))return;
+  try{
+    await fetch('https://aihub.damacgroup.com/webhook/damac-process-range',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to})});
+    document.getElementById('dr-status').textContent='⚙️ Processing started! Refresh in a few minutes to see new calls.';
+  }catch(e){
+    document.getElementById('dr-status').textContent='Trigger failed: '+e.message;
+  }
+}
+function setQ(v){S.fQ=S.fQ===v?'':v;S.fSeg='';S.page=1;renderSB();renderMain();}
+function clearF(){
+  S.fHOS='';S.fDOS='';S.fRM='';S.fMonth='';S.fSeg='';S.fQ='';S.fOut='';S.fSearch='';S.page=1;
+  const wasRanged=S.drFrom||S.drTo;
+  S.drFrom='';S.drTo='';
+  const f=document.getElementById('dr-from'),t=document.getElementById('dr-to');
+  if(f)f.value='';if(t)t.value='';
+  const st=document.getElementById('dr-status');
+  if(st)st.textContent='';
+  renderSB();renderMain();
+  if(wasRanged){ // date range was active → reload FULL dataset
+    reloadWithRange('','');
+  }
+}
+function clearDates(){
+  S.drFrom='';S.drTo='';
+  const f=document.getElementById('dr-from'),t=document.getElementById('dr-to');
+  if(f)f.value='';if(t)t.value='';
+  document.getElementById('dr-status').textContent='Loading all calls...';
+  reloadWithRange('','');
+}
+function nav(v){S.view=v;S.curDOS=null;S.curHOS=null;S.curRM=null;S.page=1;renderSB();renderMain();}
+function drillDOS(dos,hos){S.curDOS=dos;S.curHOS=hos;S.page=1;renderSB();renderMain();}
+function openRM(rm){S.curRM=rm;S.selMonth='';S.selCallIdx=0;S.selTab='overview';S.page=1;renderMain();}
+
+function goBack(){
+  if(S.curRM){S.curRM=null;renderMain();return;}
+  if(S.curDOS){S.curDOS=null;S.curHOS=null;renderMain();return;}
+}
+
+function toggleDim(uid){const el=document.getElementById(uid);const ar=document.getElementById('ar_'+uid);if(!el)return;const o=el.style.display==='block';el.style.display=o?'none':'block';if(ar)ar.textContent=o?'▼':'▲';}
+function onMonthChange(v){S.selMonth=v;S.selCallIdx=0;renderDD();}
+function onCallChange(v){S.selCallIdx=parseInt(v)||0;S.selTab='overview';renderDD();}
+function setTab(t){S.selTab=t;renderCallDetail();}
+
+function renderSB(){
+  const ho=uHOS().sort().map(h=>`<option value="${h}"${S.fHOS===h?' selected':''}>${h}</option>`).join('');
+  const doo=uDOS().sort().map(d=>`<option value="${d}"${S.fDOS===d?' selected':''}>${d}</option>`).join('');
+  const rms=[...new Set(ALL.map(r=>r.rm_name).filter(Boolean))].sort().map(r=>`<option value="${r}"${S.fRM===r?' selected':''}>${r}</option>`).join('');
+  const oos=['meeting_booked','interested_not_committed','not_interested','transferred'].map(o=>`<option value="${o}"${S.fOut===o?' selected':''}>${outLbl(o)}</option>`).join('');
+  const fc=[S.fHOS,S.fDOS,S.fRM,S.fMonth,S.fSeg,S.fQ,S.fOut,S.fSearch].filter(Boolean).length;
+  const st=IS_LIVE?`<span style="color:#16a34a">● Live</span> — ${ALL.length.toLocaleString()} calls`:`<span style="color:#ca8a04">● Demo</span> — ${ALL.length} calls`;
+  document.getElementById('sb').innerHTML=`
+  <div class="sb-top"><div class="sb-mk">D</div><div><div class="sb-ti">DAMAC AI Review</div><div class="sb-st" id="sb-st">${st}</div></div></div>
+  <div class="sb-sec">Views</div>
+  <ul class="sb-nav">
+    <li><a class="${S.view==='home'&&!S.curRM&&!S.curDOS?'on':''}" onclick="nav('home')">🏠 All Teams</a></li>
+    <li><a class="${S.view==='dos'?'on':''}" onclick="nav('dos')">🏢 DOS Groups</a></li>
+    <li><a class="${S.view==='rms'?'on':''}" onclick="nav('rms')">👥 All RMs</a></li>
+  </ul>
+  <div class="sb-div"></div>
+  <div class="sb-sec">Filters ${fc?`<span style="background:var(--gold);color:#fff;padding:1px 6px;border-radius:999px;margin-left:4px">${fc}</span>`:''}</div>
+  <div class="sb-fl-wrap">
+    <div class="sb-fl"><div class="sb-fl-lbl">Search</div><input type="text" placeholder="RM, DOS, customer, IQ..." value="${S.fSearch}" oninput="sfSearch(this.value)"/></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Head of Sales (HOS)</div><select onchange="sf('fHOS',this.value)"><option value="">All HOS</option>${ho}</select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Director of Sales (DOS)</div><select onchange="sf('fDOS',this.value)"><option value="">All DOS</option>${doo}</select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Relationship Manager</div><select onchange="sf('fRM',this.value)"><option value="">All RMs</option>${rms}</select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl" style="display:flex;justify-content:space-between;align-items:center">📅 Date Range ${(S.drFrom||S.drTo)?`<span onclick="clearDates()" style="cursor:pointer;color:var(--rd);font-size:10px">✕ clear</span>`:''}</div>
+  <input type="date" id="dr-from" value="${S.drFrom||''}" style="margin-bottom:4px"/>
+  <input type="date" id="dr-to" value="${S.drTo||''}"/>
+  <button class="qf" style="margin-top:6px" onclick="applyDateRange()">🔍 View this range</button>
+  <button class="qf qb" onclick="processDateRange()">⚙️ Process this range (AI)</button>
+  <div id="dr-status" style="font-size:10px;color:var(--t3);margin-top:4px"></div>
+</div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Month</div><select onchange="sf('fMonth',this.value)"><option value="">All months</option>${months().map(m=>`<option value="${m}"${S.fMonth===m?' selected':''}>${m}</option>`).join('')}</select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Call Outcome</div><select onchange="sf('fOut',this.value)"><option value="">All outcomes</option>${oos}</select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Performance Segment</div><select onchange="sf('fSeg',this.value)"><option value="">All</option><option value="top"${S.fSeg==='top'?' selected':''}>Top (80–100)</option><option value="above"${S.fSeg==='above'?' selected':''}>Above avg (60–79)</option><option value="avg"${S.fSeg==='avg'?' selected':''}>Average (40–59)</option><option value="below"${S.fSeg==='below'?' selected':''}>Below avg (20–39)</option><option value="crit"${S.fSeg==='crit'?' selected':''}>Critical (0–19)</option></select></div>
+    <div class="sb-fl"><div class="sb-fl-lbl">Quick Focus</div>
+      <button class="qf ${S.fQ==='attn'?'qa':''}" onclick="setQ('attn')">⚠ Needs attention</button>
+      <button class="qf ${S.fQ==='top'?'qt':''}" onclick="setQ('top')">★ Top performers</button>
+      <button class="qf ${S.fQ==='avg'?'qb':''}" onclick="setQ('avg')">◉ Average performers</button>
+    </div>
+    <button class="clr" onclick="clearF()">↺ Reset all filters & dates</button>
+  </div>`;
+}
+
+function statsBar(data){
+  const t=data.length,rms=uRMs(data);
+  const avg=t?Math.round(data.reduce((a,b)=>a+b.pct,0)/t):0;
+  const book=data.filter(r=>r.callOutcome==='meeting_booked').length;
+  const hot=data.filter(r=>r.customerProfile?.lead_quality==='hot').length;
+  const needs=rms.filter(rm=>rmAvg(rm,data)<40).length;
+  return`<div class="stats">
+    <div class="sc"><div class="sc-l">Calls reviewed</div><div class="sc-v" style="color:var(--gold)">${t.toLocaleString()}</div><div class="sc-s">${t} records</div></div>
+    <div class="sc"><div class="sc-l">Active RMs</div><div class="sc-v">${rms.length}</div><div class="sc-s">${uDOS(data).length} DOS teams</div></div>
+    <div class="sc"><div class="sc-l">Team avg score</div><div class="sc-v" style="${tc(avg)}">${avg}%</div><div class="sc-s">${avg>=60?'On track':avg>=40?'Average':'Needs improvement'}</div></div>
+    <div class="sc"><div class="sc-l">Meetings booked</div><div class="sc-v" style="color:#16a34a">${book}</div><div class="sc-s">${t?Math.round(book/t*100):0}% conversion</div></div>
+    <div class="sc"><div class="sc-l">Need attention</div><div class="sc-v" style="color:#dc2626">${needs}</div><div class="sc-s">Scoring below 40%</div></div>
+  </div>`;}
+
+function renderMain(){
+  if(S.curRM){renderDD();return;}
+  if(S.curDOS){renderTeam();return;}
+  if(S.view==='dos'){renderDOS();return;}
+  if(S.view==='rms'){renderRMs();return;}
+  renderHome();
+}
+
+function renderHome(){
+  const data=filtered();
+  const dosList=uDOS(data).sort();
+  const allRMs=uRMs(data).sort((a,b)=>rmAvg(b,data)-rmAvg(a,data)).slice(0,10);
+  const medals=['🥇','🥈','🥉'];
+  const lbRows=allRMs.map((rm,i)=>{
+    const rc=data.filter(r=>r.rm_name===rm);
+    const avg=rmAvg(rm,data);
+    const book=rc.filter(r=>r.callOutcome==='meeting_booked').length;
+    return`<div class="lb-row" onclick="openRM('${rm.replace(/'/g,"\\'")}')">
+      <div class="lb-rank">${medals[i]||i+1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${rm}</div>
+        <div class="lb-sub">${rc[0]?.dos_name||'—'} → ${rc[0]?.hos_name||'—'} · ${rc.length} calls · ${book} meetings</div>
+      </div>
+      <div class="lb-score" style="${tc(avg)}">${avg}%</div>
+    </div>`;}).join('');
+  const cards=dosList.map(dos=>{
+    const dc=data.filter(r=>r.dos_name===dos);
+    const rms2=uRMs(dc);
+    const avg=dc.length?Math.round(dc.reduce((a,b)=>a+b.pct,0)/dc.length):0;
+    const book=dc.filter(r=>r.callOutcome==='meeting_booked').length;
+    const hos=dc[0]?.hos_name||'—';
+    const needs=rms2.filter(rm=>rmAvg(rm,dc)<40).length;
+    return`<div class="dos-card" onclick="drillDOS('${dos.replace(/'/g,"\\'")}','${hos.replace(/'/g,"\\'")}')">
+      <div style="font-size:14px;font-weight:600;margin-bottom:2px">${dos}</div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:12px">HOS: ${hos}</div>
+      <div style="display:flex;gap:16px;margin-bottom:8px">
+        <div><div style="font-size:20px;font-weight:700;${tc(avg)}">${avg}%</div><div style="font-size:10px;color:var(--t2)">Avg score</div></div>
+        <div><div style="font-size:20px;font-weight:700;color:#16a34a">${book}</div><div style="font-size:10px;color:var(--t2)">Meetings</div></div>
+        <div><div style="font-size:20px;font-weight:700">${dc.length}</div><div style="font-size:10px;color:var(--t2)">Calls</div></div>
+        ${needs?`<div><div style="font-size:20px;font-weight:700;color:#dc2626">${needs}</div><div style="font-size:10px;color:var(--t2)">Need attn</div></div>`:''}
+      </div>
+      <div style="font-size:11px;color:var(--t3);padding-top:8px;border-top:1px solid var(--br)">${rms2.slice(0,4).join(', ')}${rms2.length>4?` +${rms2.length-4} more`:''}</div>
+    </div>`}).join('');
+  document.getElementById('main').innerHTML=statsBar(data)+
+    `<div class="pills">${['','June 2026','July 2026','August 2026'].map(m=>`<span class="pill ${S.fMonth===m?'on':''}" onclick="sf('fMonth','${m}')">${m||'All months'}</span>`).join('')}</div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-hd">
+        <div><div class="card-ti">🏆 Agent Leaderboard</div><div class="card-su">Ranked by average score across all calls — click any agent for full analysis</div></div>
+        <button onclick="openLB()" style="padding:6px 14px;border-radius:var(--rs);border:1px solid var(--br2);background:var(--s2);font-size:11px;cursor:pointer;font-weight:500">View full leaderboard</button>
+      </div>
+      <div style="padding:0 18px">${lbRows}</div>
+    </div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:4px">Sales teams by Director of Sales</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:14px">Click any team to drill down into RM performance</div>
+    <div class="dos-grid">${cards||'<p style="color:var(--t2);font-size:13px;padding:20px 0">No teams match filters.</p>'}</div>`;}
+
+function openLB(){
+  const data=filtered();
+  const allRMs=uRMs(data).sort((a,b)=>rmAvg(b,data)-rmAvg(a,data));
+  const medals=['🥇','🥈','🥉'];
+  const top=allRMs[0];
+  const topCalls=top?data.filter(r=>r.rm_name===top):[];
+  const topAvg=top?rmAvg(top,data):0;
+  const topStrengths=[...new Set(topCalls.flatMap(c=>c.strengths||[]))].slice(0,3);
+  const rows=allRMs.map((rm,i)=>{
+    const rc=data.filter(r=>r.rm_name===rm);
+    const avg=rmAvg(rm,data);
+    const book=rc.filter(r=>r.callOutcome==='meeting_booked').length;
+    const s=seg(avg);
+    return`<div class="lb-row" onclick="closeLB();openRM('${rm.replace(/'/g,"\\'")}')">
+      <div class="lb-rank">${medals[i]||i+1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${rm} <span style="font-size:10px;padding:1px 7px;border-radius:999px;font-weight:700;color:${segCol(s)}">${segLbl(s)}</span></div>
+        <div class="lb-sub">${rc[0]?.dos_name||'—'} → ${rc[0]?.hos_name||'—'} · ${rc.length} calls · ${book} meetings booked</div>
+      </div>
+      <div class="lb-score" style="${tc(avg)}">${avg}%</div>
+    </div>`;}).join('');
+  document.getElementById('lb-title').textContent='Agent Leaderboard — '+allRMs.length+' RMs ranked';
+  document.getElementById('lb-sub').textContent='Click any agent to open their full deep-dive analysis';
+  document.getElementById('lb-body').innerHTML=`
+    ${top?`<div style="padding:14px;background:var(--gnb);border:1px solid rgba(22,163,74,.2);border-radius:var(--rs);margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#16a34a;margin-bottom:6px">🥇 Why ${top} is #1 — what others can learn</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:8px">${top} scores ${topAvg}% on average across ${topCalls.length} calls — consistently above team average. Their top SOP strengths are identified below.</div>
+      ${topStrengths.map(s=>`<div style="display:flex;align-items:flex-start;gap:6px;font-size:12px;margin-bottom:4px"><span style="color:#16a34a">✓</span><span>${s}</span></div>`).join('')}
+    </div>`:''}
+    ${rows}`;
+  document.getElementById('lb-overlay').style.display='flex';
+}
+function closeLB(){document.getElementById('lb-overlay').style.display='none';}
+
+function renderTeam(){
+  const data=filtered().filter(r=>r.dos_name===S.curDOS);
+  const rms=uRMs(data).sort((a,b)=>rmAvg(b,data)-rmAvg(a,data));
+  const needs=rms.filter(rm=>rmAvg(rm,data)<40);
+  const total=rms.length,pages=Math.ceil(total/PER);
+  const page=rms.slice((S.page-1)*PER,S.page*PER);
+  const medals=['🥇','🥈','🥉'];
+  const rows=page.map((rm,i)=>{
+    const rc=data.filter(r=>r.rm_name===rm);
+    const avg=rmAvg(rm,data);
+    const book=rc.filter(r=>r.callOutcome==='meeting_booked').length;
+    const conv=rc.length?Math.round(book/rc.length*100):0;
+    const hot=rc.filter(r=>r.customerProfile?.lead_quality==='hot').length;
+    const s=seg(avg);
+    return`<tr onclick="openRM('${rm.replace(/'/g,"\\'")}')">
+      <td style="text-align:center">${medals[(S.page-1)*PER+i]||((S.page-1)*PER+i+1)}</td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini(rm)}</div><div><div style="font-size:13px;font-weight:500">${rm}</div><div style="font-size:11px;color:var(--t2)">${S.curDOS}</div></div></div></td>
+      <td style="font-weight:500">${rc.length}</td>
+      <td><span class="score-b ${sc(avg)}">${avg}%</span></td>
+      <td><span style="font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700;color:${segCol(s)}">${segLbl(s)}</span></td>
+      <td style="color:#16a34a;font-weight:700">${book}</td>
+      <td style="font-weight:600;color:${conv>=50?'#16a34a':conv>=25?'#ca8a04':'#dc2626'}">${conv}%</td>
+      <td style="color:#ef4444;font-weight:700">${hot}</td>
+      <td style="color:var(--gold);font-size:11px;font-weight:500">Deep dive →</td>
+    </tr>`}).join('');
+  const pbtns=pages>1?Array.from({length:pages},(_,i)=>`<button class="pg-btn ${S.page===i+1?'on':''}" onclick="S.page=${i+1};renderMain()">${i+1}</button>`).join(''):'';
+  document.getElementById('main').innerHTML=`
+    <div class="back-btn" onclick="goBack()">← Back to all teams</div>
+    ${statsBar(data)}
+    ${needs.length?`<div class="attn-box">⚠ ${needs.length} RM${needs.length>1?'s':''} need attention: ${needs.slice(0,5).join(', ')}${needs.length>5?` +${needs.length-5} more`:''}</div>`:''}
+    <div class="pills">${['all','top','above','avg','below','crit'].map((s2,i)=>`<span class="spill s-${s2} ${(!S.fSeg&&s2==='all')||S.fSeg===s2?'on':''}" onclick="sf('fSeg','${s2==='all'?'':s2}')">${['All RMs','Top (80+)','Above avg','Average','Needs work','Critical'][i]}</span>`).join('')}</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th></th><th>RM Name</th><th>Calls</th><th>Avg Score</th><th>Segment</th><th>Meetings</th><th>Conv%</th><th>Hot Leads</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--t2)">No RMs match</td></tr>'}</tbody>
+    </table><div class="pg-row"><span>Showing ${Math.min((S.page-1)*PER+1,total)}–${Math.min(S.page*PER,total)} of ${total} RMs</span><div class="pg-btns">${pbtns}</div></div></div>`;}
+
+function renderDOS(){
+  const data=filtered();
+  const hosNames=[...new Set(data.map(r=>r.hos_name).filter(Boolean))].sort();
+  let html=statsBar(data);
+  hosNames.forEach(hos=>{
+    const hd=data.filter(r=>r.hos_name===hos);
+    html+=`<div style="margin-bottom:24px"><div style="font-size:15px;font-weight:600;margin-bottom:2px">${hos}</div><div style="font-size:12px;color:var(--t2);margin-bottom:12px">Head of Sales · ${uDOS(hd).length} DOS teams · ${uRMs(hd).length} RMs</div><div class="dos-grid">`;
+    uDOS(hd).forEach(dos=>{
+      const dc=hd.filter(r=>r.dos_name===dos);
+      const avg=dc.length?Math.round(dc.reduce((a,b)=>a+b.pct,0)/dc.length):0;
+      const book=dc.filter(r=>r.callOutcome==='meeting_booked').length;
+      html+=`<div class="dos-card" onclick="drillDOS('${dos.replace(/'/g,"\\'")}','${hos.replace(/'/g,"\\'")}')"><div style="font-size:14px;font-weight:600;margin-bottom:2px">${dos}</div><div style="font-size:11px;color:var(--t2);margin-bottom:12px">HOS: ${hos}</div><div style="display:flex;gap:16px;margin-bottom:8px"><div><div style="font-size:20px;font-weight:700;${tc(avg)}">${avg}%</div><div style="font-size:10px;color:var(--t2)">Avg</div></div><div><div style="font-size:20px;font-weight:700;color:#16a34a">${book}</div><div style="font-size:10px;color:var(--t2)">Meetings</div></div><div><div style="font-size:20px;font-weight:700">${dc.length}</div><div style="font-size:10px;color:var(--t2)">Calls</div></div></div><div style="font-size:11px;color:var(--t3);padding-top:8px;border-top:1px solid var(--br)">${uRMs(dc).join(', ')}</div></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  document.getElementById('main').innerHTML=html;}
+
+function renderRMs(){
+  const data=filtered();
+  const rms=uRMs(data).sort((a,b)=>rmAvg(b,data)-rmAvg(a,data));
+  const total=rms.length,pages=Math.ceil(total/PER);
+  const page=rms.slice((S.page-1)*PER,S.page*PER);
+  const medals=['🥇','🥈','🥉'];
+  const rows=page.map((rm,i)=>{
+    const rc=data.filter(r=>r.rm_name===rm);
+    const avg=rmAvg(rm,data);
+    const book=rc.filter(r=>r.callOutcome==='meeting_booked').length;
+    const conv=rc.length?Math.round(book/rc.length*100):0;
+    const s=seg(avg);
+    return`<tr onclick="openRM('${rm.replace(/'/g,"\\'")}')">
+      <td style="text-align:center">${medals[(S.page-1)*PER+i]||((S.page-1)*PER+i+1)}</td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini(rm)}</div><div><div style="font-size:13px;font-weight:500">${rm}</div><div style="font-size:11px;color:var(--t2)">${rc[0]?.dos_name||'—'} → ${rc[0]?.hos_name||'—'}</div></div></div></td>
+      <td>${rc.length}</td>
+      <td><span class="score-b ${sc(avg)}">${avg}%</span></td>
+      <td><span style="font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700;color:${segCol(s)}">${segLbl(s)}</span></td>
+      <td style="color:#16a34a;font-weight:700">${book}</td>
+      <td style="color:${conv>=50?'#16a34a':conv>=25?'#ca8a04':'#dc2626'}">${conv}%</td>
+      <td style="color:var(--gold);font-size:11px;font-weight:500">Deep dive →</td>
+    </tr>`}).join('');
+
+  const pbtns=pages>1?Array.from({length:pages},(_,i)=>`<button class="pg-btn ${S.page===i+1?'on':''}" onclick="S.page=${i+1};renderMain()">${i+1}</button>`).join(''):'';
+  document.getElementById('main').innerHTML=statsBar(data)+
+    `<div class="pills">${['all','top','above','avg','below','crit'].map((s2,i)=>`<span class="spill s-${s2} ${(!S.fSeg&&s2==='all')||S.fSeg===s2?'on':''}" onclick="sf('fSeg','${s2==='all'?'':s2}')">${['All RMs','Top (80+)','Above avg','Average','Needs work','Critical'][i]}</span>`).join('')}</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th></th><th>RM Name / Team</th><th>Calls</th><th>Avg Score</th><th>Segment</th><th>Meetings</th><th>Conv%</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <div class="pg-row"><span>Showing ${Math.min((S.page-1)*PER+1,total)}–${Math.min(S.page*PER,total)} of ${total} RMs</span><div class="pg-btns">${pbtns}</div></div></div>`;}
+
+function renderDD(){
+  const rm=S.curRM;
+  const allCalls=ALL.filter(r=>r.rm_name===rm).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  const rmMonths=[...new Set(allCalls.map(c=>c.month).filter(Boolean))].sort((a,b)=>new Date('1 '+a)-new Date('1 '+b));
+  const data=S.selMonth?allCalls.filter(c=>c.month===S.selMonth):allCalls;
+  if(!data.length){document.getElementById('main').innerHTML=`<div class="back-btn" onclick="goBack()">← Back</div><p style="color:var(--t2)">No calls for ${rm}.</p>`;return;}
+  if(S.selCallIdx>=data.length)S.selCallIdx=0;
+  // Auto-load full analysis for all this RM's calls (needed for dimension scores)
+  const pending=data.filter(c=>!c.__detailLoaded);
+  if(pending.length){
+    Promise.all(pending.map(c=>ensureDetail(c))).then(()=>{if(S.curRM===rm)renderDD();});
+  }
+  const avg=Math.round(data.reduce((a,b)=>a+b.pct,0)/data.length);
+  const dos=data[0].dos_name||'—',hos=data[0].hos_name||'—';
+  const book=data.filter(c=>c.callOutcome==='meeting_booked').length;
+  const conv=Math.round(book/data.length*100);
+  const hot=data.filter(c=>c.customerProfile?.lead_quality==='hot').length;
+  const durs=data.map(c=>Number(c.duration)||0).filter(Boolean);
+  const avgLen=durs.length?Math.round(durs.reduce((a,b)=>a+b,0)/durs.length/60):0;
+  const totalMins=Math.round(durs.reduce((a,b)=>a+b,0)/60);
+  // NEW: Sales Score = meeting conversion %, Overall Score = blend of SOP + Sales
+  // Future: when real property sales data is available, replace 'book' with actual sales count
+  const salesScore = data.length ? Math.round((book / data.length) * 100) : 0;
+  const overallScore = Math.round((avg + salesScore) / 2);
+
+  const dimAvgs={};
+  DIMS.forEach(d=>{
+    const vals=data.map(c=>Number(c.scores?.[d.id])||0);
+    dimAvgs[d.id]={avg:vals.reduce((a,b)=>a+b,0)/vals.length,min:Math.min(...vals),max:Math.max(...vals),pct:Math.round((vals.reduce((a,b)=>a+b,0)/vals.length/d.max)*100),pass:data.filter(c=>((Number(c.scores?.[d.id])||0)/d.max)>=0.7).length};
+  });
+  const sorted=[...DIMS].sort((a,b)=>dimAvgs[b.id].pct-dimAvgs[a.id].pct);
+  const strengths=sorted.slice(0,3),training=sorted.slice(-3).reverse();
+  const allFlags=data.flatMap(c=>(c.ruleFlags||[])).map(f=>String(f||'')).filter(Boolean);
+  const fc2={};allFlags.forEach(f=>{const k=(f.split(':')[0]||'').trim();if(k)fc2[k]=(fc2[k]||0)+1;});
+  const riskFlags=Object.entries(fc2).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topStrengths=[...new Set(data.flatMap(c=>c.strengths||[]))].slice(0,5);
+  const topGaps=[...new Set(data.flatMap(c=>c.gaps||[]))].slice(0,5);
+  const topTips=[...new Set(data.flatMap(c=>c.coachingTips||[]))].slice(0,4);
+
+  const dimsHtml=DIMS.map(d=>{
+    const da=dimAvgs[d.id];const b=bc(da.pct);
+    const uid=`d_${rm.replace(/[^a-z0-9]/gi,'_')}_${d.id}`;
+    const cl=DIM_CHECKLIST[d.id]||[];
+    const passCount=cl.filter(item=>da.pct>=item.thr).length;
+    const failCount=cl.length-passCount;
+    const comments=data.map(c=>c.scoreComments?.[d.id]).filter(Boolean);
+    const mainComment=comments[0]||DIM_WHY[d.id];
+    return`<div class="dim-row">
+      <div class="dim-hd" onclick="toggleDim('${uid}')">
+        <div class="dim-label"><div class="dim-nm">${d.label}</div><div class="dim-ds">${d.desc}</div></div>
+        <div class="dim-bar-w"><div class="dim-bar-f" style="width:${da.pct}%;background:${b}"></div></div>
+        <div class="dim-sc" style="color:${b}">${da.avg.toFixed(1)}<span style="font-size:10px;color:var(--t3)">/${d.max}</span></div>
+        <div class="dim-sp">Low ${Math.round(da.min/d.max*100)}% · High ${Math.round(da.max/d.max*100)}% · ${da.pass}/${data.length} passed</div>
+        <div class="dim-ms" style="color:${failCount>0?'#dc2626':'#16a34a'}">${failCount>0?failCount+' missed':'✓ All pass'}</div>
+        <div class="dim-ar" id="ar_${uid}">▼</div>
+      </div>
+      <div id="${uid}" class="dim-det">
+        <div style="padding:14px 0 0">
+          <div class="dim-why" style="background:${da.pct>=70?'rgba(22,163,74,.05)':'rgba(220,38,38,.05)'};border:1px solid ${da.pct>=70?'rgba(22,163,74,.15)':'rgba(220,38,38,.15)'}">
+            <div style="font-size:10px;font-weight:700;color:${da.pct>=70?'#16a34a':'#dc2626'};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${da.pct>=70?'✅ Performing well':'❌ Needs improvement'} — ${da.pct}% average</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.6">${mainComment}</div>
+          </div>
+          ${da.pct<70?`
+          <div class="dim-why" style="background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.12)">
+            <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Why the score is low</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.6">${DIM_WHY[d.id]}</div>
+          </div>
+          <div class="dim-why" style="background:rgba(14,165,233,.04);border:1px solid rgba(14,165,233,.12)">
+            <div style="font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">How to fix it</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.6">${DIM_FIX[d.id]}</div>
+          </div>`:''}
+          <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">SOP checklist — ${passCount}/${cl.length} passing</div>
+          <div class="dim-chk">${cl.map((item,ii)=>{const pass=da.pct>=70||(da.pct>=40&&ii<Math.ceil(cl.length*(da.pct/100)));const chtxt=pass?(item.pass||item.t):(item.fail||item.t);return`<div class="chk" style="background:${pass?'rgba(22,163,74,.05)':'rgba(220,38,38,.05)'};border-color:${pass?'rgba(22,163,74,.2)':'rgba(220,38,38,.2)'}"><div class="chk-ic">${pass?'✓':'✗'}</div><div class="chk-tx" style="color:${pass?'#16a34a':'#dc2626'};font-weight:${pass?400:500}">${chtxt}</div></div>`}).join('')}</div>
+        </div>
+      </div>
+    </div>`;}).join('');
+
+  const monthOpts=rmMonths.map(m=>`<option value="${m}"${S.selMonth===m?' selected':''}>${m}</option>`).join('');
+  const callOpts=data.map((c,i)=>{
+    const cp=c.customerProfile||{};
+    return`<option value="${i}"${S.selCallIdx===i?' selected':''}>Call ${i+1}: ${fmtDt(c.timestamp)} — ${cp.customer_name||'Unknown'} (${cp.nationality||'—'}) — ${c.pct}% — ${outLbl(c.callOutcome)}</option>`;}).join('');
+
+  document.getElementById('main').innerHTML=`
+    <div class="back-btn" onclick="goBack()">← Back</div>
+    <div class="dd-hd">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">RM Performance Briefing</div>
+      <div class="dd-name">${rm}</div>
+      <div class="dd-sub">Comprehensive performance analysis · ${data.length} calls in ${S.selMonth||'all months'}</div>
+      <div class="dd-meta">
+        <div><div class="dd-m-lbl">RM</div><div class="dd-m-val">${rm}</div></div>
+        <div><div class="dd-m-lbl">DOS</div><div class="dd-m-val">${dos}</div></div>
+        <div><div class="dd-m-lbl">HOS</div><div class="dd-m-val">${hos}</div></div>
+        <div><div class="dd-m-lbl">Calls</div><div class="dd-m-val">${data.length}</div></div>
+        <div><div class="dd-m-lbl">Segment</div><div class="dd-m-val" style="color:${segCol(seg(avg))}">${segLbl(seg(avg))}</div></div>
+      </div>
+      <div class="dd-selectors">
+        <div><span class="dd-sel-lbl">📅 Month:</span><select class="dd-sel" onchange="onMonthChange(this.value)"><option value="">All months</option>${monthOpts}</select></div>
+        <div><span class="dd-sel-lbl">📞 Call:</span><select class="dd-sel" onchange="onCallChange(this.value)">${callOpts}</select></div>
+      </div>
+      <div class="dd-big">
+        <div class="dd-big-c">
+          <div class="dd-big-lbl">📋 SOP Score (Script Quality)</div>
+          <div class="dd-big-num" style="${tc(avg)}">${avg}<span style="font-size:18px;color:var(--t3)">/100</span></div>
+          <div style="height:5px;background:var(--br);border-radius:3px;overflow:hidden;margin:10px 0 6px"><div style="height:100%;width:${avg}%;background:${bc(avg)};border-radius:3px"></div></div>
+          <div class="dd-big-sub"><span>Low: <strong>${Math.min(...data.map(c=>c.pct))}%</strong></span><span>High: <strong>${Math.max(...data.map(c=>c.pct))}%</strong></span></div>
+        </div>
+        <div class="dd-big-c">
+          <div class="dd-big-lbl">💰 Sales Score (Conversion)</div>
+          <div class="dd-big-num" style="${tc(salesScore)}">${salesScore}<span style="font-size:18px;color:var(--t3)">/100</span></div>
+          <div style="height:5px;background:var(--br);border-radius:3px;overflow:hidden;margin:10px 0 6px"><div style="height:100%;width:${salesScore}%;background:${bc(salesScore)};border-radius:3px"></div></div>
+          <div class="dd-big-sub"><span>Meetings: <strong style="color:#16a34a">${book}/${data.length}</strong></span><span>Hot leads: <strong style="color:#dc2626">${hot}</strong></span></div>
+        </div>
+        <div class="dd-big-c" style="background:linear-gradient(135deg,var(--gl),var(--s2));border:2px solid var(--gb)">
+          <div class="dd-big-lbl">⭐ Overall Score (Blended)</div>
+          <div class="dd-big-num" style="${tc(overallScore)}">${overallScore}<span style="font-size:18px;color:var(--t3)">/100</span></div>
+          <div style="height:5px;background:var(--br);border-radius:3px;overflow:hidden;margin:10px 0 6px"><div style="height:100%;width:${overallScore}%;background:${bc(overallScore)};border-radius:3px"></div></div>
+          <div class="dd-big-sub"><span>SOP ${avg}% + Sales ${salesScore}% ÷ 2</span></div>
+        </div>
+      </div>
+      <div class="dd-kpis">
+        <div class="dd-kpi"><div class="dd-kpi-v">${data.length}</div><div class="dd-kpi-l">Calls analyzed</div></div>
+        <div class="dd-kpi"><div class="dd-kpi-v">${book}</div><div class="dd-kpi-l">Meetings booked</div></div>
+        <div class="dd-kpi"><div class="dd-kpi-v">${conv}%</div><div class="dd-kpi-l">Conversion rate</div></div>
+        <div class="dd-kpi"><div class="dd-kpi-v">${hot}</div><div class="dd-kpi-l">Hot leads</div></div>
+        <div class="dd-kpi"><div class="dd-kpi-v">${avgLen}m</div><div class="dd-kpi-l">Avg call length</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><div><div class="card-ti">What ${rm.split(' ')[0]} is good at, what needs training, and what is at risk</div><div class="card-su">Deep analysis across all ${data.length} calls — per SOP dimension with real examples from calls</div></div></div>
+      <div class="card-body">
+        <div class="three">
+          <div class="three-box">
+            <div class="three-hd"><div class="three-hd-ic" style="background:#dcfce7">💪</div><div class="three-hd-lbl" style="color:#16a34a">Strengths — consistently above threshold</div></div>
+            ${strengths.map(d=>{
+              const da=dimAvgs[d.id];
+              const bestCall=data.filter(c=>c.scores?.[d.id]).sort((a,b)=>(b.scores[d.id]||0)-(a.scores[d.id]||0))[0];
+              const bestComment=bestCall?.scoreComments?.[d.id]||'';
+              return`<div class="three-item">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-weight:600;color:var(--tx)">${d.label}</span>
+                  <span style="font-size:11px;font-weight:700;color:#16a34a">${da.avg.toFixed(1)}/${d.max} avg</span>
+                </div>
+
+                <div style="height:4px;background:var(--br);border-radius:2px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${da.pct}%;background:#16a34a;border-radius:2px"></div></div>
+                <div style="font-size:11px;color:#16a34a;margin-bottom:4px">↑ Highest scoring dimension — ${da.pct}% avg</div>
+                ${bestComment?`<div style="font-size:11px;color:var(--t2);font-style:italic;border-left:2px solid #16a34a;padding-left:7px;line-height:1.5">"${bestComment}"</div>`:''}
+              </div>`;
+            }).join('')}
+            ${topStrengths.slice(0,4).map(s=>`<div class="three-item" style="font-size:11px;color:var(--t2)"><span class="dot" style="background:#16a34a"></span>${s}</div>`).join('')}
+          </div>
+
+          <div class="three-box">
+            <div class="three-hd"><div class="three-hd-ic" style="background:#fef3c7">📚</div><div class="three-hd-lbl" style="color:#ca8a04">Needs Training — consistently low scores</div></div>
+            ${training.map(d=>{
+              const da=dimAvgs[d.id];
+              const worstCall=data.filter(c=>c.scores?.[d.id]).sort((a,b)=>(a.scores[d.id]||0)-(b.scores[d.id]||0))[0];
+              const worstComment=worstCall?.scoreComments?.[d.id]||DIM_WHY[d.id];
+              return`<div class="three-item">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-weight:600;color:var(--tx)">${d.label}</span>
+                  <span style="font-size:11px;font-weight:700;color:#ca8a04">${da.avg.toFixed(1)}/${d.max} avg</span>
+                </div>
+                <div style="height:4px;background:var(--br);border-radius:2px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${da.pct}%;background:#ca8a04;border-radius:2px"></div></div>
+                <div style="font-size:11px;color:#dc2626;margin-bottom:4px">↓ Lowest scoring dimension — ${da.pct}% avg</div>
+                <div style="font-size:11px;color:var(--t2);font-style:italic;border-left:2px solid #ca8a04;padding-left:7px;line-height:1.5;margin-bottom:5px">"${worstComment}"</div>
+                <div style="font-size:10px;font-weight:700;color:#ca8a04;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">What to fix:</div>
+                <div style="font-size:11px;color:var(--t2);line-height:1.5">${DIM_FIX[d.id]}</div>
+              </div>`;
+            }).join('')}
+            ${topTips.slice(0,3).map((t,i)=>`<div class="three-item"><div style="display:flex;gap:7px;font-size:11px"><div style="width:16px;height:16px;border-radius:50%;background:var(--amb);color:#ca8a04;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div><div style="color:var(--t2);line-height:1.5">${t}</div></div></div>`).join('')}
+          </div>
+
+          <div class="three-box">
+            <div class="three-hd"><div class="three-hd-ic" style="background:#fee2e2">⚠</div><div class="three-hd-lbl" style="color:#dc2626">Risks — recurring SOP violations</div></div>
+            ${riskFlags.length?riskFlags.map(([k,n])=>{
+              const pct=Math.round(n/data.length*100);
+              const sev=pct>=70?'Critical':pct>=40?'High':'Medium';
+              const sevCol=pct>=70?'#dc2626':pct>=40?'#ea580c':'#ca8a04';
+              return`<div class="three-item">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-weight:700;color:#dc2626">${k}</span>
+                  <span style="font-size:9px;padding:1px 7px;border-radius:999px;font-weight:700;background:var(--rdb);color:${sevCol}">${sev} · ${pct}%</span>
+                </div>
+                <div style="height:4px;background:var(--br);border-radius:2px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${pct}%;background:${sevCol};border-radius:2px"></div></div>
+                <div style="font-size:11px;color:var(--t2);margin-bottom:3px">Violated in <strong>${n} of ${data.length} calls</strong> (${pct}%)</div>
+                <div style="font-size:11px;color:var(--t2);line-height:1.5;border-left:2px solid #dc2626;padding-left:7px">${RULE_EXP[k]||'Recurring violation'}</div>
+                <div style="font-size:10px;color:#dc2626;margin-top:4px;font-weight:600">⚠ Risk: Lead conversion drops significantly when this is missed</div>
+              </div>`;
+            }).join(''):`<div class="three-item" style="color:#16a34a;font-weight:500">✓ No systemic rule violations found across ${data.length} calls</div>`}
+            ${topGaps.slice(0,3).map(g=>`<div class="three-item" style="font-size:11px;color:var(--t2)"><span class="dot" style="background:#dc2626"></span>${g}</div>`).join('')}
+          </div>
+        </div>
+
+        ${(()=>{
+          const natMap={};
+          data.forEach(c=>{const n=c.customerProfile?.nationality||'Unknown';if(!natMap[n])natMap[n]=[];natMap[n].push(c.pct);});
+          const natStats=Object.entries(natMap).map(([n,ps])=>({nat:n,count:ps.length,avg:Math.round(ps.reduce((a,b)=>a+b,0)/ps.length)})).sort((a,b)=>b.count-a.count).slice(0,8);
+          if(natStats.length<2)return'';
+          return`<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--br)">
+            <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">📊 Performance by Customer Nationality — ${rm.split(' ')[0]} scores higher with some nationalities than others</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+              ${natStats.map(({nat,count,avg})=>`<div style="padding:10px 12px;background:var(--s2);border-radius:var(--rs);border:1px solid ${avg>=70?'rgba(22,163,74,.2)':avg>=40?'rgba(202,138,4,.2)':'rgba(220,38,38,.2)'}">
+                <div style="font-size:12px;font-weight:600;margin-bottom:3px">${nat}</div>
+                <div style="font-size:20px;font-weight:700;${tc(avg)}">${avg}%</div>
+                <div style="font-size:10px;color:var(--t2);margin-top:2px">${count} call${count>1?'s':''}</div>
+                <div style="height:3px;background:var(--br);border-radius:2px;overflow:hidden;margin-top:6px"><div style="height:100%;width:${avg}%;background:${bc(avg)};border-radius:2px"></div></div>
+              </div>`).join('')}
+            </div>
+          </div>`;
+        })()}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><div><div class="card-ti">Score dimensions — click any row for full SOP checklist</div><div class="card-su">Averaged across all ${data.length} calls — expand each for why/how to fix</div></div></div>
+      <div style="padding:0">${dimsHtml}</div>
+    </div>
+
+    <div class="card" id="call-detail-card">
+      <div class="card-hd"><div><div class="card-ti">Call Analysis — <span style="color:var(--gold)">${data[S.selCallIdx]?.customerProfile?.customer_name||'Unknown'}</span></div><div class="card-su">Call ${S.selCallIdx+1} of ${data.length} · ${fmtDt(data[S.selCallIdx]?.timestamp)} · ${fmtDur(data[S.selCallIdx]?.duration)} · Use dropdown above to switch calls</div></div></div>
+      <div class="card-body" id="call-detail-body">
+        <div class="tabs" id="call-tabs">
+          ${['overview','customer','intelligence','scoring','flags','conversation','timeline'].map(t=>`<div class="tab ${S.selTab===t?'on':''}" onclick="setTab('${t}')">${{overview:'📊 Overview',customer:'👤 Customer',intelligence:'🧠 Call Intelligence',scoring:'📈 SOP Scoring',flags:'🚨 Rule Flags',conversation:'💬 Conversation',timeline:'⏱ Call Timeline'}[t]}</div>`).join('')}
+        </div>
+        <div id="call-tab-content"></div>
+      </div>
+    </div>`;
+
+  renderCallDetail();
+}
+
+// =================== CONVERSATION BUBBLE BUILDER ===================
+function convBubble(speaker, role, text, issue, assessment, correctScript){
+  // speaker: name, role: 'rm'|'cu', text: the actual quote, issue: optional issue text, assessment: 'good'|'bad'|'neutral', correctScript: optional better script
+  const isRM = role === 'rm';
+  const avClass = isRM ? 'conv-av-rm' : 'conv-av-cu';
+  const bubbleClass = isRM ? `conv-bubble-rm ${assessment === 'bad' ? 'bad' : assessment === 'good' ? 'good' : ''}` : 'conv-bubble-cu';
+  const initials = isRM ? 'RM' : 'CU';
+  return `<div class="conv-msg">
+    <div class="conv-av ${avClass}">${initials}</div>
+    <div class="conv-bubble ${bubbleClass}">
+      <div class="conv-speaker">
+        <span style="color:${isRM ? '#b8943a' : '#0ea5e9'}">${isRM ? '🎙 Agent' : '👤 Customer'} — ${speaker}</span>
+        ${assessment === 'bad' ? '<span style="color:#dc2626;font-weight:700">❌ Issue</span>' : assessment === 'good' ? '<span style="color:#16a34a;font-weight:700">✅ Good</span>' : ''}
+      </div>
+      <div class="conv-quote">"${text}"</div>
+      ${issue ? `<div class="conv-issue ${assessment === 'bad' ? 'bad' : assessment === 'good' ? 'good' : ''}">→ ${issue}</div>` : ''}
+      ${correctScript ? `<div class="conv-correct"><div class="conv-correct-lbl">✓ Better script</div>${correctScript}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderCallDetail(){
+  const rm=S.curRM;
+  const allCalls=ALL.filter(r=>r.rm_name===rm).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  const data=S.selMonth?allCalls.filter(c=>c.month===S.selMonth):allCalls;
+  const c=data[S.selCallIdx]||data[0];
+  if(!c)return;
+  // Load full analysis on demand, then re-render this panel
+  if(!c.__detailLoaded){ensureDetail(c).then(()=>renderCallDetail());}
+  const cp=c.customerProfile||{};
+  const ci=c.callIntelligence||{};
+  const sc2=c.scores||{};
+  const flags=c.ruleFlags||[];
+  let html='';
+
+  const tabEl=document.getElementById('call-tabs');
+  if(tabEl)tabEl.innerHTML=['overview','customer','intelligence','scoring','flags','conversation','timeline'].map(t=>`<div class="tab ${S.selTab===t?'on':''}" onclick="setTab('${t}')">${{overview:'📊 Overview',customer:'👤 Customer',intelligence:'🧠 Call Intelligence',scoring:'📈 SOP Scoring',flags:'🚨 Rule Flags',conversation:'💬 Conversation',timeline:'⏱ Call Timeline'}[t]}</div>`).join('');
+  const cardHd=document.querySelector('#call-detail-card .card-hd .card-ti');
+  if(cardHd)cardHd.innerHTML=`Call Analysis — <span style="color:var(--gold)">${cp.customer_name||'Unknown'}</span>`;
+  const cardSu=document.querySelector('#call-detail-card .card-hd .card-su');
+  if(cardSu)cardSu.textContent=`Call ${S.selCallIdx+1} of ${data.length} · ${fmtDt(c.timestamp)} · ${fmtDur(c.duration)} · Use dropdown above to switch calls`;
+
+  if(S.selTab==='overview'){
+    html=` 
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Call Summary</div>
+        <div style="font-size:13px;color:var(--tx);line-height:1.75;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:16px">${c.callSummary||ci.call_summary||'No summary available.'}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+        <div style="background:var(--s2);border-radius:var(--rs);padding:14px;text-align:center"><div style="font-size:28px;font-weight:700;${tc(c.pct)}">${c.pct}%</div><div style="font-size:11px;color:var(--t2);margin-top:4px">SOP Score</div></div>
+        <div style="background:var(--s2);border-radius:var(--rs);padding:14px;text-align:center"><div style="font-size:28px;font-weight:700">${fmtDur(c.duration)}</div><div style="font-size:11px;color:var(--t2);margin-top:4px">Duration</div></div>
+        <div style="background:var(--s2);border-radius:var(--rs);padding:14px;text-align:center"><div style="font-size:16px;font-weight:700;margin-top:6px"><span class="op ${outCls(c.callOutcome)}">${outLbl(c.callOutcome)}</span></div><div style="font-size:11px;color:var(--t2);margin-top:8px">Outcome</div></div>
+        <div style="background:var(--s2);border-radius:var(--rs);padding:14px;text-align:center"><div style="font-size:16px;font-weight:700;color:${cp.lead_quality==='hot'?'#dc2626':cp.lead_quality==='warm'?'#ca8a04':'#6b7280'};margin-top:6px">${cp.lead_quality==='hot'?'🔥 Hot':cp.lead_quality==='warm'?'🌡 Warm':'❄ Cold'}</div><div style="font-size:11px;color:var(--t2);margin-top:4px">Lead Quality</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div style="background:var(--gnb);border:1px solid rgba(22,163,74,.2);border-radius:var(--rs);padding:14px">
+          <div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">✅ Strengths in this call</div>
+          ${(c.strengths||[]).length?c.strengths.map(s=>`<div class="list-item" style="margin-bottom:8px"><span class="dot" style="background:#16a34a;margin-top:5px;flex-shrink:0"></span><div style="font-size:12px;line-height:1.75">${hlQ(s,'good')}</div></div>`).join(''):'<div style="font-size:12px;color:var(--t2)">No strengths identified</div>'}
+        </div>
+        <div style="background:var(--rdb);border:1px solid rgba(220,38,38,.2);border-radius:var(--rs);padding:14px">
+          <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">❌ Gaps in this call</div>
+          ${(c.gaps||[]).length?c.gaps.map(g=>`<div class="list-item" style="margin-bottom:8px"><span class="dot" style="background:#dc2626;margin-top:5px;flex-shrink:0"></span><div style="font-size:12px;line-height:1.75">${hlQ(g,'bad')}</div></div>`).join(''):'<div style="font-size:12px;color:var(--gn)">No gaps identified ✓</div>'}
+        </div>
+      </div>
+      ${c.coachingTips?.length?`<div style="background:var(--amb);border:1px solid rgba(202,138,4,.2);border-radius:var(--rs);padding:14px">
+        <div style="font-size:10px;font-weight:700;color:#ca8a04;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">💡 Coaching tips for this call — what was said vs what should be said</div>
+        ${c.coachingTips.map((t,i)=>`<div class="list-item" style="margin-bottom:10px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:50%;background:rgba(202,138,4,.2);color:#ca8a04;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">${i+1}</div><div style="font-size:12px;line-height:1.75">${hlQ(t,'tip')}</div></div>`).join('')}
+      </div>`:''}`;
+  } else if(S.selTab==='customer'){
+    html=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="info-box">
+          <div class="info-box-ti">👤 Customer Profile</div>
+          <div class="info-row"><span class="info-k">Name</span><span class="info-v">${cp.customer_name||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Nationality</span><span class="info-v">${cp.nationality||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Type</span><span class="info-v">${cp.customer_type==='investor'?'🏦 Investor':cp.customer_type==='end_user'?'🏠 End User':'—'}</span></div>
+          <div class="info-row"><span class="info-k">First time Dubai</span><span class="info-v">${cp.first_time_dubai===true?'✅ Yes':cp.first_time_dubai===false?'No':'—'}</span></div>
+          <div class="info-row"><span class="info-k">Lead Quality</span><span class="info-v" style="font-weight:700;color:${cp.lead_quality==='hot'?'#dc2626':cp.lead_quality==='warm'?'#ca8a04':'#6b7280'}">${cp.lead_quality==='hot'?'🔥 Hot':cp.lead_quality==='warm'?'🌡 Warm':'❄ Cold'}</span></div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-ti">🏠 Property Requirements</div>
+          <div class="info-row"><span class="info-k">Budget</span><span class="info-v" style="color:var(--gold);font-weight:700">${fmtB(cp.budget_aed)}</span></div>
+          <div class="info-row"><span class="info-k">Finance Type</span><span class="info-v">${cp.finance_type||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Property Type</span><span class="info-v">${cp.property_preference||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Bedrooms</span><span class="info-v">${cp.bedrooms_requested||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Location Pref</span><span class="info-v">${cp.location_preference||'—'}</span></div>
+          <div class="info-row"><span class="info-k">Timeline</span><span class="info-v">${cp.timeline||'—'}</span></div>
+        </div>
+      </div>`;
+
+  } else if(S.selTab==='intelligence'){
+    const discussed=ci.what_was_discussed||[];
+    const missing=ci.what_is_missing||[];
+    const objections=ci.objections_raised||[];
+    const projects=ci.projects_mentioned||[];
+    html=`
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Call Summary</div>
+        <div style="font-size:13px;line-height:1.75;background:var(--s2);border-radius:var(--rs);padding:14px;color:var(--tx)">${ci.call_summary||c.callSummary||'—'}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div class="info-box">
+          <div class="info-box-ti">💬 What Was Discussed</div>
+          ${discussed.length?discussed.map(t=>`<div class="list-item"><span class="dot" style="background:#16a34a"></span>${t}</div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Not captured</div>'}
+        </div>
+        <div class="info-box">
+          <div class="info-box-ti">❓ What Is Missing</div>
+          ${missing.length?missing.map(t=>`<div class="list-item"><span class="dot" style="background:#dc2626"></span>${t}</div>`).join(''):'<div style="font-size:12px;color:#16a34a">Nothing critical missing ✓</div>'}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="info-box">
+          <div class="info-box-ti">🏗 Projects Mentioned</div>
+          ${projects.length?projects.map(p=>`<div class="list-item"><span class="dot" style="background:var(--gold)"></span>${p}</div>`).join(''):'<div style="font-size:12px;color:var(--t3)">None mentioned</div>'}
+          ${ci.next_steps?`<div style="margin-top:12px;padding:8px 12px;background:var(--gnb);border-radius:var(--rs);font-size:12px;color:#16a34a">✅ Next step: ${ci.next_steps}</div>`:`<div style="margin-top:12px;padding:8px 12px;background:var(--rdb);border-radius:var(--rs);font-size:12px;color:#dc2626">❌ No next step confirmed</div>`}
+        </div>
+        <div class="info-box">
+          <div class="info-box-ti">⚠ Objections Raised</div>
+          ${objections.length?objections.map(o=>`<div class="list-item"><span class="dot" style="background:#dc2626"></span>${o}</div>`).join(''):'<div style="font-size:12px;color:#16a34a">No objections raised ✓</div>'}
+        </div>
+      </div>`;
+  } else if(S.selTab==='scoring'){
+    html=`
+      <div style="padding:16px 18px;background:${c.pct>=70?'var(--gnb)':c.pct>=40?'var(--amb)':'var(--rdb)'};border:1px solid ${c.pct>=70?'rgba(22,163,74,.2)':c.pct>=40?'rgba(202,138,4,.2)':'rgba(220,38,38,.2)'};border-radius:var(--rs);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:700;${tc(c.pct)}">Total SOP Score: ${c.total}/100 (${c.pct}%)</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px">${c.pct>=80?'Excellent performance — agent followed most SOP stages correctly.':c.pct>=60?'Above average — some strong areas but key stages need improvement.':c.pct>=40?'Average performance — significant SOP gaps that are affecting conversion.':'Below average — multiple SOP stages missed. Immediate coaching needed.'}</div>
+        </div>
+        <div style="font-size:40px;font-weight:700;letter-spacing:-2px;${tc(c.pct)}">${c.pct}%</div>
+      </div>
+
+      ${DIMS.map(d=>{
+        const s2=Number(sc2?.[d.id])||0;
+        const p=Math.round(s2/d.max*100);
+        const comment=c.scoreComments?.[d.id]||'';
+        const cl=DIM_CHECKLIST[d.id]||[];
+        const passCount=cl.filter(item=>p>=item.thr).length;
+        const failCount=cl.length-passCount;
+        const verdict=p>=75?'Performed well':p>=50?'Partially done':'Needs significant improvement';
+        const verdictCol=p>=75?'#16a34a':p>=50?'#ca8a04':'#dc2626';
+        return`<div style="margin-bottom:16px;background:var(--sf);border:1px solid ${p>=70?'rgba(22,163,74,.2)':p>=40?'rgba(202,138,4,.2)':'rgba(220,38,38,.2)'};border-radius:var(--rs);overflow:hidden">
+          <div style="padding:14px 16px;background:${p>=70?'rgba(22,163,74,.04)':p>=40?'rgba(202,138,4,.04)':'rgba(220,38,38,.04)'};border-bottom:1px solid ${p>=70?'rgba(22,163,74,.15)':p>=40?'rgba(202,138,4,.15)':'rgba(220,38,38,.15)'}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div>
+                <div style="font-size:14px;font-weight:700">${d.label}</div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px">${d.desc}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;margin-left:16px">
+                <div style="font-size:28px;font-weight:700;letter-spacing:-1px;color:${bc(p)}">${s2}<span style="font-size:14px;color:var(--t3)">/${d.max}</span></div>
+                <div style="font-size:10px;font-weight:700;color:${verdictCol};margin-top:2px">${verdict}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1;height:8px;background:var(--br);border-radius:4px;overflow:hidden"><div style="height:100%;width:${p}%;background:${bc(p)};border-radius:4px;transition:width .4s"></div></div>
+              <div style="font-size:11px;color:var(--t3);white-space:nowrap">${p}% · ${passCount}/${cl.length} checks passed</div>
+            </div>
+          </div>
+          <div style="padding:14px 16px;border-bottom:1px solid var(--br)">
+            <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">🤖 AI Analysis</div>
+            <div style="font-size:13px;color:var(--tx);line-height:1.85;background:var(--s2);border-radius:var(--rs);padding:14px;border-left:4px solid ${bc(p)}">${comment||'No detailed comment available for this dimension.'}</div>
+          </div>
+          ${p<70?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--br)">
+            <div style="padding:14px 16px;border-right:1px solid var(--br)">
+              <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">❌ Why This Score Is Low</div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.7">${DIM_WHY[d.id]||''}</div>
+            </div>
+            <div style="padding:14px 16px">
+              <div style="font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">✅ How to Fix It — Exact Script</div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.7">${DIM_FIX[d.id]||''}</div>
+            </div>
+          </div>`:''}
+          <div style="padding:14px 16px">
+            <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">SOP Checklist — ${passCount} passed · ${failCount} missed</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              ${cl.map((item,ii)=>{
+                const pass=p>=70||(p>=40&&ii<Math.ceil(cl.length*(p/100)));const sctxt=pass?(item.pass||item.t):(item.fail||item.t);
+                return`<div style="display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border-radius:var(--rs);background:${pass?'rgba(22,163,74,.05)':'rgba(220,38,38,.05)'};border:1px solid ${pass?'rgba(22,163,74,.2)':'rgba(220,38,38,.2)'}">
+                  <span style="font-size:14px;flex-shrink:0;margin-top:1px">${pass?'✓':'✗'}</span>
+                  <span style="font-size:12px;color:${pass?'#16a34a':'#dc2626'};font-weight:${pass?400:500};line-height:1.5">${sctxt}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+
+      <div style="padding:16px 18px;background:var(--s2);border-radius:var(--rs);border:1px solid var(--br);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:700">Total Score for this call</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:3px">${flags.length} rule violation${flags.length!==1?'s':''} · ${outLbl(c.callOutcome)} · ${fmtDur(c.duration)}</div>
+        </div>
+        <div style="font-size:40px;font-weight:700;${tc(c.pct)}">${c.total}<span style="font-size:16px;color:var(--t3)">/100</span></div>
+      </div>`;
+  
+
+  } else if(S.selTab==='flags'){
+    const cleanFlags=flags.map(f=>String(f||'')).filter(Boolean);
+    html=cleanFlags.length?`
+      <div style="margin-bottom:12px;font-size:12px;color:var(--t2)">${cleanFlags.length} rule violation${cleanFlags.length>1?'s':''} found in this call. Every violation represents a missed SOP requirement.</div>
+      ${cleanFlags.map(f=>{const k=(f.split(':')[0]||'').trim();const desc=f.split(':').slice(1).join(':').trim()||RULE_EXP[k]||f;return`<div class="flag" style="background:var(--rdb);border:1px solid rgba(220,38,38,.2)"><div style="font-size:16px;flex-shrink:0">❌</div><div><div style="color:#dc2626;font-weight:700;margin-bottom:2px">${k}</div><div style="color:var(--t2);font-weight:400;font-size:12px">${desc}</div><div style="color:var(--t3);font-size:11px;margin-top:4px">${RULE_EXP[k]||''}</div></div></div>`;}).join('')}
+      <div style="margin-top:16px;padding:12px 14px;background:var(--gnb);border:1px solid rgba(22,163,74,.2);border-radius:var(--rs);font-size:12px;color:#16a34a">
+        ✅ Rules passed (${10-cleanFlags.length}/10): ${Object.keys(RULE_EXP).filter(r=>!cleanFlags.some(f=>f.includes(r))).join(', ')}
+      </div>`
+      :`<div style="padding:20px;text-align:center;color:#16a34a;font-size:14px;font-weight:600">✅ No rule violations in this call — all 10 DAMAC SOP rules followed!</div>`;
+
+  // ====================== CONVERSATION TAB — NEW DEDICATED VIEW ======================
+  } else if(S.selTab==='conversation'){
+    const tl = ci.call_timeline || [];
+    const transcript = ci.transcript_excerpts || ci.full_transcript || [];
+    const agentName = rm.split(' ')[0];
+    const custName = cp.customer_name || 'Customer';
+
+    if(!tl.length && !transcript.length){
+      html = `<div style="padding:40px 20px;text-align:center;color:var(--t2)">
+        <div style="font-size:40px;margin-bottom:12px">💬</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">No conversation transcript available</div>
+        <div style="font-size:12px">The AI analysis didn't capture stage-level dialogue for this call.<br>Update the AI prompt to include <code style="background:var(--s2);padding:2px 6px;border-radius:3px">call_timeline[].what_agent_said</code> and <code style="background:var(--s2);padding:2px 6px;border-radius:3px">what_customer_said</code> fields.</div>
+      </div>`;
+
+    } else {
+      html = `
+        <div style="padding:14px 16px;background:var(--blb);border:1px solid rgba(14,165,233,.2);border-radius:var(--rs);margin-bottom:16px;font-size:12px;color:var(--t2);line-height:1.6">
+          💡 This view shows the <strong>actual words spoken</strong> by ${agentName} and ${custName} at each stage of the call, with AI assessment of what went right or wrong, and the correct script where applicable.
+        </div>
+
+        <div style="display:flex;gap:14px;margin-bottom:16px;padding:12px 14px;background:var(--s2);border-radius:var(--rs);font-size:11px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px"><div class="conv-av conv-av-rm" style="width:24px;height:24px;font-size:9px">RM</div><span><strong>${rm}</strong> (Agent)</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div class="conv-av conv-av-cu" style="width:24px;height:24px;font-size:9px">CU</div><span><strong>${custName}</strong> (Customer, ${cp.nationality||'—'})</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto"><span style="font-size:10px;color:var(--t3)">📞 ${fmtDur(c.duration)} · ${fmtDt(c.timestamp)} · ${outLbl(c.callOutcome)}</span></div>
+        </div>
+
+        ${tl.length ? tl.map((stage, idx) => {
+          const stageNames = {greeting:'Opening & Greeting', profiling:'Client Profiling', probing:'Requirement Identification', presentation:'Project Presentation', objection:'Objection Handling', closing:'Closing & Next Steps'};
+          const stageName = stageNames[stage.stage] || stage.stage || `Stage ${idx+1}`;
+          const stageScore = stage.score;
+          const stageColor = stage.assessment === 'good' ? '#16a34a' : stage.assessment === 'bad' ? '#dc2626' : '#ca8a04';
+          const stageBg = stage.assessment === 'good' ? 'rgba(22,163,74,.06)' : stage.assessment === 'bad' ? 'rgba(220,38,38,.06)' : 'rgba(202,138,4,.06)';
+          const assessmentLabel = stage.assessment === 'good' ? '✅ Done well' : stage.assessment === 'bad' ? '❌ Missed' : '⚠ Partial';
+
+          return `<div style="margin-bottom:18px;background:var(--sf);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden">
+            <div style="padding:12px 16px;background:${stageBg};border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">Stage ${idx+1}</div>
+                <div style="font-size:14px;font-weight:700;color:${stageColor}">${stageName}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:11px;font-weight:700;color:${stageColor}">${assessmentLabel}</div>
+                ${stageScore!==undefined?`<div style="font-size:10px;color:var(--t3);margin-top:2px">${stageScore}</div>`:''}
+              </div>
+            </div>
+            <div style="padding:14px 16px">
+              ${stage.what_customer_said ? convBubble(custName, 'cu', stage.what_customer_said, stage.customer_intent || null, 'neutral', null) : ''}
+              ${stage.what_agent_said ? convBubble(rm, 'rm', stage.what_agent_said, stage.issue || null, stage.assessment === 'good' ? 'good' : stage.assessment === 'bad' ? 'bad' : 'neutral', stage.what_should_be_said || stage.correct_script || null) : ''}
+              ${!stage.what_agent_said && !stage.what_customer_said ? `<div style="font-size:12px;color:var(--t3);font-style:italic;padding:8px 0">No dialogue captured for this stage</div>` : ''}
+            </div>
+          </div>`;
+        }).join('') : ''}
+
+        ${transcript.length ? `
+          <div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--br)">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Full Transcript Excerpts</div>
+            <div style="font-size:11px;color:var(--t2);margin-bottom:14px">Selected exchanges captured by the AI from the call recording</div>
+            ${transcript.map(t => convBubble(t.speaker === 'agent' ? rm : custName, t.speaker === 'agent' ? 'rm' : 'cu', t.text || t.quote, null, 'neutral', null)).join('')}
+          </div>` : ''}
+      `;
+    }
+
+  // ====================== TIMELINE TAB — REWRITTEN WITH PROMINENT QUOTES ======================
+  } else if(S.selTab==='timeline'){
+    const dur=Number(c.duration)||0;
+    const totalMins2=Math.round(dur/60);
+    const discussed2=ci.what_was_discussed||[];
+    const objections2=ci.objections_raised||[];
+    const projects2=ci.projects_mentioned||[];
+    const safeFlags=flags.map(f=>String(f||'')).filter(Boolean);
+    const hasIntro=!safeFlags.some(f=>f.includes('RULE_01'));
+    const hasBudget=!safeFlags.some(f=>f.includes('RULE_03'));
+    const hasSummary=!safeFlags.some(f=>f.includes('RULE_04'));
+    const hasNextStep=!safeFlags.some(f=>f.includes('RULE_08'));
+    const hasFinance=!safeFlags.some(f=>f.includes('RULE_09'));
+    const hasMax2=!safeFlags.some(f=>f.includes('RULE_05'));
+    const score_greeting=Number(c.scores?.greeting)||0;
+    const score_profiling=Number(c.scores?.profiling)||0;
+    const score_probing=Number(c.scores?.probing)||0;
+    const score_presentation=Number(c.scores?.presentation)||0;
+    const score_objections=Number(c.scores?.objections)||0;
+    const score_followup=Number(c.scores?.followup)||0;
+    const custName = cp.customer_name || 'Customer';
+    const tl = ci.call_timeline || [];
+    const findStage = (key) => tl.find(t => t.stage === key);
+
+    const timelineStages=[
+      {sp:'CO',lbl:'Coordinator',col:'#6b7280',bg:'rgba(107,114,128,.1)',time:'0:00',heading:'Call connected',score:null,stageKey:null,text:`Inquiry ${c.inquiry_id||'—'} · ${fmtDt(c.timestamp)} at ${fmtTime(c.timestamp)} · Duration: ${fmtDur(c.duration)}`,detail:`Customer: ${custName} (${cp.nationality||'—'}) · ${cp.customer_type==='investor'?'Investor':'End user'} · Budget context: ${fmtB(cp.budget_aed)||'not yet confirmed'}`,flag:null,correct_script:'Coordinator connects the call. RM must be ready immediately — greet with name, company, and energy within the first 30 seconds.'},
+      {sp:'RM',lbl:'Agent — Opening',col:'#b8943a',bg:'rgba(184,148,58,.1)',time:'0:30',heading:hasIntro?`✅ Opening & Greeting — ${score_greeting}/10`:`❌ Opening & Greeting — ${score_greeting}/10 — FAILED`,score:score_greeting,scoreMax:10,stageKey:'greeting',text:c.scoreComments?.greeting||DIM_WHY.greeting,detail:hasIntro?`Agent introduced with name and DAMAC clearly. Set professional tone before product discussion.`:`Agent did not introduce name and company properly.`,flag:!hasIntro?{type:'bad',text:'RULE_01: No proper introduction — agent must say name + DAMAC before any pitch'}:null,correct_script:`"Good [morning/afternoon], this is [Name] from DAMAC Properties — how are you today, [Customer Name]?"`},
+      {sp:'RM',lbl:'Agent — Profiling',col:'#b8943a',bg:'rgba(184,148,58,.1)',time:'1:30',heading:`Client Profiling — ${score_profiling}/15`,score:score_profiling,scoreMax:15,stageKey:'profiling',text:c.scoreComments?.profiling||DIM_WHY.profiling,detail:`${custName} is a ${cp.customer_type==='investor'?'property investor':'home buyer'} from ${cp.nationality||'unknown'}.`,flag:score_profiling<8?{type:'warn',text:'Profiling incomplete — decision-maker and financial capability not fully confirmed'}:null,correct_script:'"Are you the sole decision-maker on this purchase? Have you bought property in Dubai before?"'},
+      {sp:'CU',lbl:'Customer — Requirements',col:'#0ea5e9',bg:'rgba(14,165,233,.1)',time:`${Math.round(totalMins2*0.2)||2}:00`,heading:`Customer states requirements`,score:null,stageKey:'probing',text:`Budget: ${fmtB(cp.budget_aed)||'NOT CONFIRMED'} · ${cp.bedrooms_requested||'? BR'} · ${cp.property_preference||'?'} · Location: ${cp.location_preference||'not captured'}`,detail:`Finance: ${cp.finance_type||'not confirmed'} · Timeline: ${cp.timeline||'not captured'}`,flag:!hasBudget?{type:'bad',text:'RULE_03: Budget not confirmed before proceeding'}:null,correct_script:null},
+      {sp:'RM',lbl:'Agent — Summary',col:'#b8943a',bg:'rgba(184,148,58,.1)',time:`${Math.round(totalMins2*0.35)||4}:00`,heading:hasSummary?`✅ Requirements Summary — ${score_probing}/20`:`❌ Jumped to presentation WITHOUT summary — ${score_probing}/20`,score:score_probing,scoreMax:20,stageKey:'probing',text:c.scoreComments?.probing||DIM_WHY.probing,detail:hasSummary?`Summarized requirements before presenting.`:`Missing summary before presentation.`,flag:!hasSummary?{type:'bad',text:'RULE_04: No requirement summary — this is the #1 SOP violation at DAMAC'}:null,correct_script:`"So just to confirm — you're looking for a [${cp.bedrooms_requested||'?'}] for [${cp.customer_type||'?'}], budget around [${fmtB(cp.budget_aed)||'?'}], in [${cp.location_preference||'?'}], within [${cp.timeline||'?'}] — is that correct?"`},
+      {sp:'RM',lbl:'Agent — Presentation',col:'#b8943a',bg:'rgba(184,148,58,.1)',time:`${Math.round(totalMins2*0.5)||6}:00`,heading:`Project Presentation — ${score_presentation}/15${!hasMax2?' ❌ MORE THAN 2 PROJECTS':''}`,score:score_presentation,scoreMax:15,stageKey:'presentation',text:c.scoreComments?.presentation||DIM_WHY.presentation,detail:projects2.length?`Projects: ${projects2.join(', ')} (${projects2.length} total)`:'No projects captured.',flag:!hasMax2?{type:'warn',text:`RULE_05: ${projects2.length} projects presented — SOP allows MAX 2`}:null,correct_script:`Present MAX 2 projects. For each: location → why it fits → key features → starting price. Investors: lead with ROI. End users: lead with lifestyle.`},
+      ...(objections2.length?[{sp:'CU',lbl:'Customer — Objection',col:'#0ea5e9',bg:'rgba(14,165,233,.1)',time:`${Math.round(totalMins2*0.7)||8}:00`,heading:`Customer Objections — ${score_objections}/15`,score:score_objections,scoreMax:15,stageKey:'objection',text:c.scoreComments?.objections||DIM_WHY.objections,detail:`Objections raised: ${objections2.join('; ')}`,flag:score_objections<8?{type:'bad',text:'RULE_07: Objection not handled with LAER'}:null,correct_script:`LAER for every objection: Listen fully → Acknowledge ("I understand your concern about X") → Explore ("What specifically worries you?") → Respond with facts.`}]:[]),
+      {sp:'RM',lbl:'Agent — Closing',col:'#b8943a',bg:'rgba(184,148,58,.1)',time:`${totalMins2>0?totalMins2-1:0}:00`,heading:hasNextStep?`✅ Closing — Next step confirmed — ${score_followup}/10`:`❌ Call ended WITHOUT a next step — ${score_followup}/10 — HIGH RISK`,score:score_followup,scoreMax:10,stageKey:'closing',text:c.scoreComments?.followup||DIM_WHY.followup,detail:ci.next_steps?`Next step: ${ci.next_steps}`:`No specific next step agreed.`,flag:!hasNextStep?{type:'bad',text:'RULE_08 + RULE_10: No next step before ending'}:null,correct_script:`"I'll send you [content] on WhatsApp by [time], and we'll speak again on [day] at [time] — does that work?"`}
+    ];
+    
+    html=`
+      <div style="padding:12px 16px;background:${c.pct>=70?'var(--gnb)':c.pct>=40?'var(--amb)':'var(--rdb)'};border:1px solid ${c.pct>=70?'rgba(22,163,74,.2)':c.pct>=40?'rgba(202,138,4,.2)':'rgba(220,38,38,.2)'};border-radius:var(--rs);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+        <div><div style="font-size:12px;font-weight:700;${tc(c.pct)}">Call Score: ${c.total}/100 (${c.pct}%) · ${outLbl(c.callOutcome)}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${flags.length} rule violation${flags.length!==1?'s':''} · ${fmtDur(c.duration)} · ${custName} (${cp.nationality||'—'})</div></div>
+        <div style="font-size:32px;font-weight:700;${tc(c.pct)}">${c.pct}%</div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:var(--s2);border-radius:var(--rs);font-size:11px;color:var(--t2);align-items:center">
+        💬 <strong>Conversation legend:</strong> 
+        <span style="display:inline-flex;align-items:center;gap:5px"><div class="conv-av conv-av-rm" style="width:18px;height:18px;font-size:8px">RM</div>Agent</span>
+        <span style="display:inline-flex;align-items:center;gap:5px"><div class="conv-av conv-av-cu" style="width:18px;height:18px;font-size:8px">CU</div>Customer</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--t3)">Each stage shows actual quotes + AI assessment + correct script</span>
+      </div>
+
+      ${timelineStages.map(stage=>{
+        const tlStage = stage.stageKey ? findStage(stage.stageKey) : null;
+        const agentQuote = tlStage?.what_agent_said;
+        const customerQuote = tlStage?.what_customer_said;
+        const assessmentFromAI = tlStage?.assessment || (stage.flag?.type === 'bad' ? 'bad' : stage.score >= (stage.scoreMax * 0.7) ? 'good' : 'neutral');
+        
+        return `
+        <div class="tl-row">
+          <div class="tl-sp" style="background:${stage.bg};color:${stage.col}">${stage.sp}</div>
+          <div class="tl-body" style="border:1px solid ${stage.flag?.type==='bad'?'rgba(220,38,38,.2)':stage.flag?.type==='warn'?'rgba(202,138,4,.2)':'var(--br)'}">
+            <div class="tl-lbl">${stage.lbl}${stage.score!==null?` <span style="font-size:10px;font-weight:700;color:${bc(Math.round(stage.score/stage.scoreMax*100))}">${stage.score}/${stage.scoreMax}</span>`:''}</div>
+            <div class="tl-hl"><span>${stage.heading}</span><span class="tl-time">~${stage.time}</span></div>
+
+            ${(agentQuote || customerQuote) ? `
+              <div class="conv-block">
+                <div class="conv-block-hd">💬 What was actually said in this stage</div>
+                ${customerQuote ? convBubble(custName, 'cu', customerQuote, tlStage?.customer_intent || null, 'neutral', null) : ''}
+                ${agentQuote ? convBubble(rm, 'rm', agentQuote, tlStage?.issue || null, assessmentFromAI, tlStage?.what_should_be_said || tlStage?.correct_script || null) : ''}
+              </div>
+            ` : `
+              <div style="margin:10px 0;padding:10px 12px;background:rgba(0,0,0,.02);border:1px dashed var(--br2);border-radius:var(--rs);font-size:11px;color:var(--t3);font-style:italic;text-align:center">
+                ⓘ No transcript quotes captured for this stage by the AI
+              </div>
+            `}
+
+            <div style="font-size:11px;color:var(--t2);line-height:1.6;margin:8px 0;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:4px;border-left:3px solid ${stage.flag?.type==='bad'?'#dc2626':stage.flag?.type==='warn'?'#ca8a04':'#16a34a'}"><strong>AI assessment:</strong> ${stage.text}</div>
+
+            <div style="font-size:11px;color:var(--tx);line-height:1.6;margin-bottom:8px">${stage.detail}</div>
+
+            ${stage.correct_script && stage.flag ? `<div class="conv-correct" style="margin-top:0"><div class="conv-correct-lbl">✓ What the agent should say instead</div>${stage.correct_script}</div>` : ''}
+
+            ${stage.flag?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--rs);margin-top:8px;background:${stage.flag.type==='bad'?'var(--rdb)':'var(--amb)'};border:1px solid ${stage.flag.type==='bad'?'rgba(220,38,38,.25)':'rgba(202,138,4,.25)'}"><span style="font-size:14px">${stage.flag.type==='bad'?'❌':'⚠'}</span><span style="font-size:12px;font-weight:600;color:${stage.flag.type==='bad'?'#dc2626':'#ca8a04'}">${stage.flag.text}</span></div>`:''}
+          </div>
+        </div>
+      `}).join('')}
+
+      <div style="padding:16px;background:var(--s2);border-radius:var(--rs);margin-top:8px;border:1px solid var(--br)">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px">SOP Evaluation Summary — This Call</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          ${DIMS.map(d=>{const s2=Number(sc2?.[d.id])||0;const p=Math.round(s2/d.max*100);const comment=c.scoreComments?.[d.id]||'';return`<div style="padding:8px 10px;background:${p>=70?'rgba(22,163,74,.05)':'rgba(220,38,38,.05)'};border:1px solid ${p>=70?'rgba(22,163,74,.15)':'rgba(220,38,38,.15)'};border-radius:4px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;font-weight:600;color:${p>=70?'#16a34a':'#dc2626'}">${p>=70?'✓':'✗'} ${d.label}</span><span style="font-size:11px;font-weight:700;color:${bc(p)}">${s2}/${d.max}</span></div>${comment?`<div style="font-size:10px;color:var(--t2);line-height:1.4">${comment}</div>`:''}</div>`;}).join('')}
+        </div>
+        <div style="padding:10px 14px;background:${c.pct>=70?'var(--gnb)':c.pct>=40?'var(--amb)':'var(--rdb)'};border-radius:var(--rs);display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">Total: ${c.total}/100</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${flags.length} violations · ${c.callOutcome==='meeting_booked'?'Meeting booked ✅':'No meeting booked'}</div></div><div style="font-size:36px;font-weight:700;${tc(c.pct)}">${c.pct}%</div></div>
+      </div>`;
+  }
+  const el=document.getElementById('call-tab-content');
+  if(el)el.innerHTML=html;
+}
+
+function hlQ(text, mode){
+  if(!text)return text;
+  return text
+    .replace(/"([^"]{3,120})"/g,(m,q)=>{
+      const col=mode==='good'?'rgba(22,163,74,.1)':mode==='bad'?'rgba(220,38,38,.1)':mode==='tip'?'rgba(14,165,233,.1)':'rgba(202,138,4,.1)';
+      const border=mode==='good'?'rgba(22,163,74,.25)':mode==='bad'?'rgba(220,38,38,.25)':mode==='tip'?'rgba(14,165,233,.25)':'rgba(202,138,4,.25)';
+      const color=mode==='good'?'#16a34a':mode==='bad'?'#dc2626':mode==='tip'?'#0ea5e9':'#ca8a04';
+      return`<span style="display:inline-block;background:${col};border:1px solid ${border};border-radius:4px;padding:2px 7px;font-style:italic;color:${color};font-size:11px;margin:1px 2px;line-height:1.5">"${q}"</span>`;
+    });
+}
+
+async function init(){
+  document.getElementById('main').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px">
+      <div style="width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#b8943a;border-radius:50%;animation:spin .7s linear infinite"></div>
+      <div style="font-size:13px;color:#6b7280" id="loadMsg">Connecting to DAMAC backend...</div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+  renderSB();
+  const msgs=['Fetching call reviews...','Reading Google Sheets...','Parsing records...','Almost there...'];
+  let mi=0;const ticker=setInterval(()=>{mi++;const el=document.getElementById('loadMsg');if(el&&msgs[mi])el.textContent=msgs[mi];},3000);
+  try{
+    const res=await fetch(WEBHOOK,{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:'{}',
+  signal:AbortSignal.timeout(180000)
+});
+    clearInterval(ticker);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const txt=await res.text();
+    const raw=txt.trim()?JSON.parse(txt.trim().replace(/^=/,'')):{calls:[]};
+    const arr=Array.isArray(raw)?raw:(raw.calls||raw.reviews||raw.data||[]);
+    if(!arr.length)throw new Error('Empty');
+    ALL=arr.map(fixRow);IS_LIVE=true;
+  }catch(e){
+    clearInterval(ticker);console.warn('Webhook:',e.message,'→ demo');
+    IS_LIVE=false;ALL=buildMock();
+  }
+  renderSB();renderMain();
+}
+
+
+function buildMock(){
+  const H={'Abhishek Sarda':{'SYED FARID':['Tithi Singh','Shane Driscoll','Cristian Camilo','Urmila Motaiah'],'Niaz Mohammad':['Haseeb Ahmed','Shoeab Khan','Abdur Rehman','Carlos Castillo'],'Mirsaid Mirsaidov':['Umar Kamil','Nadir Ulanov']},'Pranay Gupta':{'Imad Maalouf':['Sahaj Arora','Neda Bahramimeimandi','Andreea Duta'],'Ahmad Aoun':['Mirette Beshay']},'Gulshan Soni':{'Gaurav Beri':['Ahed Thabateh']},'Samir Arora':{'Mohammad Hassan':['Rohit Katare','Yousef Albarakat'],'Kapil Chopra':['Hassan Zaman']},'Amin Ali':{'Mohamed Elnaggar':['Ravi Mahawal'],'Aisa Goorkani':['Mohammad Pour']}};
+  const records=[];let idx=0;
+  const NAMES=['Ahmed Al Rashid','Priya Sharma','James Wilson','Li Wei','Maria Santos','Omar Khalid','Sarah Johnson','Ravi Kumar','Anna Mueller','Fatima Al Zaabi'];
+  const NATS=['India','UAE','UK','Saudi Arabia','Pakistan','USA','Egypt','Germany'];
+  const PROJ=['DAMAC Islands','Cavalli Tower','DAMAC Lagoons','DAMAC Hills 2','Riverside Views'];
+  const OBJS=['Price above initial budget','Needs to compare options','Wants to visit first','Off-plan concern'];
+  const DISC=['Investment purpose confirmed','Budget range discussed','Property type preference','Payment plan options','Location shortlist','Timeline to buy'];
+  const MISS=['Finance type not confirmed','Exact timeline not captured','Decision-maker not confirmed','Location preference unclear'];
+  function sr(s){let x=s;return function(){x=(x*9301+49297)%233280;return x/233280;};}
+
+  // Sample agent/customer quotes for each stage — varies by performance
+  function buildCallTimeline(scores, custName, nat, bud, projs, custType, objections, rng) {
+    const tl = [];
+    
+
+    // GREETING
+    const grPct = scores.greeting / 10;
+    if (grPct >= 0.7) {
+      tl.push({
+        stage: 'greeting',
+        what_agent_said: `Good morning ${custName}, this is ${['Rohit','Hassan','Sahaj','Mohammad','Ahmed'][Math.floor(rng()*5)]} calling from DAMAC Properties — how are you doing today?`,
+        what_customer_said: `Hi, yes I'm doing well thank you. I had submitted an inquiry on your website yesterday.`,
+        assessment: 'good',
+        issue: null,
+        score: `${scores.greeting}/10`
+      });
+
+  
+    } else {
+      tl.push({
+        stage: 'greeting',
+        what_agent_said: `Hello, am I speaking with ${custName}? So you wanted to know about our properties?`,
+        what_customer_said: `Yes... who is this? Where are you calling from?`,
+        assessment: 'bad',
+        issue: 'Agent did not introduce themselves by name or mention DAMAC. The customer had to ask who was calling — immediately reducing trust.',
+        what_should_be_said: `Good [time of day] ${custName}, this is [Your Name] calling from DAMAC Properties — how are you today? I'm reaching out about the inquiry you submitted yesterday.`,
+        score: `${scores.greeting}/10`
+      });
+    }
+
+    // PROFILING
+    const prPct = scores.profiling / 15;
+    if (prPct >= 0.6) {
+      tl.push({
+        stage: 'profiling',
+        what_agent_said: `Before I share some options, may I ask — is this your first investment in Dubai? And will you be the sole decision-maker on this purchase, or do you discuss with family?`,
+        what_customer_said: `It's my second property actually, the first one was in Downtown. I make the decision but I discuss with my wife.`,
+        customer_intent: 'Customer is an experienced buyer with established Dubai exposure — high-value lead.',
+        assessment: 'good',
+        score: `${scores.profiling}/15`
+      });
+    } else {
+      tl.push({
+        stage: 'profiling',
+        what_agent_said: `So what kind of property are you looking for?`,
+        what_customer_said: `Well, I was thinking apartment but I'm not sure...`,
+        assessment: 'bad',
+        issue: 'Agent jumped directly to product questions without building rapport or understanding the customer\'s background, decision-making process, or financial capability.',
+        what_should_be_said: `Before we discuss properties, may I ask — is this your first time looking at Dubai property? Will you be the sole decision-maker? And what brings you to Dubai right now?`,
+        score: `${scores.profiling}/15`
+      });
+    }
+
+    // PROBING / REQUIREMENT ID
+    const pbPct = scores.probing / 20;
+    if (pbPct >= 0.6) {
+      tl.push({
+        stage: 'probing',
+        what_agent_said: `Great. So to make sure I find you the perfect option — what's your budget range? And are you looking at it as an investment for rental returns, or for your own use? Cash or mortgage?`,
+        what_customer_said: `Budget is around ${(bud/1000000).toFixed(1)} million, mostly for investment but I might use it sometimes. I'll pay cash. Timeline is within 3 months.`,
+        assessment: 'good',
+        score: `${scores.probing}/20`
+      });
+      tl.push({
+        stage: 'probing',
+        what_agent_said: `So just to confirm — you're looking for an investment property around AED ${(bud/1000000).toFixed(1)}M, cash payment, ready to move forward in 3 months, primarily for rental income — is that all correct?`,
+        what_customer_said: `Yes, that's exactly right.`,
+        assessment: 'good',
+        issue: 'Excellent SOP execution — agent summarized requirements and got explicit confirmation before presenting.',
+        score: 'Bonus +5'
+      });
+    } else {
+
+      tl.push({
+        stage: 'probing',
+        what_agent_said: `OK so let me tell you about DAMAC Islands — it's our latest waterfront project, starting from AED 1.8 million...`,
+        what_customer_said: `Wait, but I haven't told you my budget yet...`,
+        assessment: 'bad',
+        issue: 'Agent jumped to project pitch without capturing budget, finance type, timeline, or location preference. This is the #1 SOP violation at DAMAC — presenting blind.',
+        what_should_be_said: `Before I share any options, I need to understand what you're looking for. What's your budget range? Are you buying as an investment or for your own use? Cash or mortgage? Which areas interest you? And how soon are you looking to move forward?`,
+        score: `${scores.probing}/20`
+      });
+    }
+
+    // PRESENTATION
+    const psPct = scores.presentation / 15;
+    if (psPct >= 0.6 && projs.length <= 2) {
+      tl.push({
+        stage: 'presentation',
+        what_agent_said: `Based on what you've told me, I'd recommend ${projs[0]} for you specifically. It's in a prime ${cp_area(rng)} location, generates 7-8% rental yield, and starts at AED ${(bud*0.9/1000000).toFixed(1)}M for a 2BR. The payment plan is 60/40 — 60% during construction, 40% on handover. Given you're cash buyer, you also get an additional 5% discount.`,
+        what_customer_said: `That sounds interesting. What's the expected handover date? And what's the rental potential after handover?`,
+        assessment: 'good',
+        issue: 'Tailored presentation with location → project → financials in correct order, with rental yield emphasized for investor profile.',
+        score: `${scores.presentation}/15`
+      });
+    } else {
+      tl.push({
+        stage: 'presentation',
+        what_agent_said: `So we have ${projs.join(', ')} — also DAMAC Lagoons, Cavalli Tower, Safa One, DAMAC Hills... they all have different features. Cavalli Tower starts at 5 million, Lagoons starts at 1.5 million, Islands has villas from 8 million...`,
+        what_customer_said: `That's a lot of options... I'm getting confused. Can you just tell me which one is best?`,
+        assessment: 'bad',
+        issue: `Agent presented ${projs.length > 2 ? projs.length + ' projects which is far above the SOP maximum of 2' : 'too many options without tailoring to customer profile'}. The customer became overwhelmed — classic decision paralysis. Pricing was also led with rather than value-built first.`,
+        what_should_be_said: `Based on your investment profile and budget of AED ${(bud/1000000).toFixed(1)}M, I'd recommend just two options: ${projs[0] || 'Project A'} for [reason 1] and ${projs[1] || 'Project B'} for [reason 2]. Let me walk you through the first one in detail.`,
+        score: `${scores.presentation}/15`
+      });
+    }
+
+    // OBJECTIONS (if any)
+    if (objections.length > 0) {
+      const objPct = scores.objections / 15;
+      if (objPct >= 0.6) {
+        tl.push({
+          stage: 'objection',
+          what_customer_said: `Honestly, the price feels a bit high compared to what I was expecting. ${objections[0]}.`,
+          what_agent_said: `I completely understand your concern, ${custName}. Can I ask — when you say the price feels high, is it the overall ticket size, or are you comparing it to a specific other project? Because if it's about value, our 7.5% guaranteed rental yield for the first 3 years actually makes the effective cost lower than comparable projects in the area.`,
+          customer_intent: 'Customer raising price-based objection — likely negotiable if value is reframed.',
+          assessment: 'good',
+          issue: 'Strong LAER application — Listened, Acknowledged, Explored root cause, then Responded with hard facts (guaranteed yield).',
+          score: `${scores.objections}/15`
+        });
+      } else {
+        tl.push({
+          stage: 'objection',
+          what_customer_said: `Honestly, the price feels a bit high. ${objections[0]}.`,
+          what_agent_said: `Yeah, I understand. But trust me sir, DAMAC is the best developer in Dubai, you won't find a better deal anywhere. Just take it.`,
+          customer_intent: 'Customer raising price objection — needs proper handling.',
+          assessment: 'bad',
+          issue: 'Agent dismissed objection with generic reassurance ("trust me"). No exploration of WHY customer feels the price is high — could be budget issue, competitor comparison, or value not communicated. Pressure-selling never works on educated buyers.',
+          what_should_be_said: `I completely understand. Can I ask — when you say the price feels high, is it that the total amount exceeds your budget, or are you comparing it to a specific other project you've seen? Understanding that will help me suggest the right option for you.`,
+          score: `${scores.objections}/15`
+        });
+      }
+    }
+
+    // CLOSING
+    const clPct = scores.followup / 10;
+    if (clPct >= 0.6) {
+      tl.push({
+        stage: 'closing',
+        what_agent_said: `So to summarize — I'll send you the full floor plans for the 2BR at ${projs[0] || 'the project'} on WhatsApp by 5 PM today, along with the payment plan and ROI calculations. Then let's schedule a site visit for Saturday at 11 AM — I'll personally show you the show unit. Does Saturday at 11 work for you?`,
+        what_customer_said: `Saturday 11 AM works. Send the details on WhatsApp, my number is the same one you called.`,
+        assessment: 'good',
+        issue: 'Excellent closing — specific deliverable, specific time, specific next meeting confirmed with explicit customer agreement.',
+        score: `${scores.followup}/10`
+      });
+    } else {
+      tl.push({
+        stage: 'closing',
+        what_agent_said: `OK so I will send you some details and we'll be in touch. Have a nice day!`,
+        what_customer_said: `Sure, OK... bye.`,
+        assessment: 'bad',
+        issue: 'No specific next step, no deliverable promised, no follow-up time confirmed. Lead will go cold within 48 hours — customer has no reason to wait for this agent vs talking to a competitor.',
+        what_should_be_said: `Before we end the call — I'll send you the floor plans and payment plan on WhatsApp by [specific time today]. Let's schedule a site visit for [specific day] at [specific time]. Can I confirm that with you now?`,
+        score: `${scores.followup}/10`
+      });
+    }
+
+    return tl;
+  }
+
+  function cp_area(rng) {
+    return ['waterfront','Marina','Business Bay','Hills','beachfront'][Math.floor(rng()*5)];
+  }
+
+  Object.entries(H).forEach(([hos,dosMap])=>{
+    Object.entries(dosMap).forEach(([dos,rms])=>{
+      rms.forEach(rm=>{
+        const rng=sr(rm.charCodeAt(0)*31+rm.length*17+idx*7);
+        const base=25+Math.floor(rng()*60);
+        for(let c=0;c<4+Math.floor(rng()*5);c++){
+          const cr=sr(idx*137+c*53+rm.charCodeAt(0));
+          const scores={greeting:Math.max(0,Math.min(10,Math.round(base/10+cr()*4-2))),profiling:Math.max(0,Math.min(15,Math.round(base/100*15+cr()*6-3))),probing:Math.max(0,Math.min(20,Math.round(base/100*20+cr()*8-4))),presentation:Math.max(0,Math.min(15,Math.round(base/100*15+cr()*6-3))),objections:Math.max(0,Math.min(15,Math.round(base/100*15+cr()*6-3))),communication:Math.max(0,Math.min(10,Math.round(base/10+cr()*4-2))),followup:Math.max(0,Math.min(10,Math.round(base/10+cr()*4-2))),overall_prof:Math.max(0,Math.min(5,Math.round(base/100*5+cr()*2-1)))};
+          const total=Object.values(scores).reduce((a,b)=>a+b,0);
+          const nat=NATS[Math.floor(cr()*NATS.length)];
+          const bud=Math.round((1+cr()*4)*500000);
+          const outcome=['meeting_booked','interested_not_committed','not_interested','meeting_booked','interested_not_committed'][Math.floor(cr()*5)];
+          const lq=cr()>0.7?'hot':cr()>0.4?'warm':'cold';
+          const date=new Date(2026,4,1+Math.floor(cr()*27));
+          const dur=600+Math.floor(cr()*1800);
+          const projs=PROJ.slice(0,1+Math.floor(cr()*3));
+          const custName=NAMES[Math.floor(cr()*NAMES.length)];
+          const custType=cr()>0.5?'investor':'end_user';
+          const callObjections = cr()>0.4 ? [OBJS[Math.floor(cr()*OBJS.length)]] : [];
+          const flags=[];
+          if(scores.greeting<4)flags.push('RULE_01: No proper introduction at call start');
+          if(scores.probing<8)flags.push('RULE_04: Requirements not summarized before presenting');
+          if(scores.followup<4)flags.push('RULE_08: No specific next step confirmed');
+          if(scores.objections<5)flags.push('RULE_07: Objection not handled properly');
+          if(projs.length>2 && scores.presentation<10)flags.push('RULE_05: More than 2 projects presented');
+          
+          const callTimeline = buildCallTimeline(scores, custName, nat, bud, projs, custType, callObjections, cr);
+          
+          records.push({
+            id:'DEMO-'+String(idx).padStart(4,'0'),
+            rm_name:rm,agentName:rm,dos_name:dos,hos_name:hos,
+            month:'June 2026',timestamp:date.toISOString(),duration:dur,
+            total,maxTotal:100,pct:total,callOutcome:outcome,
+            inquiry_id:'IQ-'+Math.floor(8000000+cr()*2000000),
+            scores,
+            scoreComments:{greeting:scores.greeting<5?'Agent did not open with a proper greeting or self-introduction.':'Warm, energetic opening with name and role clearly stated.',profiling:scores.profiling<8?'Financial capability and decision-maker status not fully confirmed.':'Good financial profiling. Decision-maker confirmed.',probing:scores.probing<10?'Budget confirmed but finance type and timeline not captured before presenting.':'Strong requirement identification with summary before presenting.',presentation:scores.presentation<8?'Presentation was generic. Not tailored to client profile.':'Clear, tailored presentation based on requirements.',objections:scores.objections<8?'Objection raised but root cause not fully explored.':'LAER used effectively.',communication:scores.communication<5?'Pacing was too fast at times.':'Clear, professional communication throughout.',followup:scores.followup<5?'No specific next step confirmed before ending.':'Specific next step confirmed before call ended.',overall_prof:scores.overall_prof<3?'Needs improvement in product knowledge depth.':'Professional conduct throughout.'},
+            callSummary:`Agent spoke with ${custName} (${nat}). Budget ${fmtB(bud)}. ${projs.join(', ')} discussed. Outcome: ${outLbl(outcome)}. ${outcome==='meeting_booked'?'Site visit confirmed.':'Follow-up required.'}`,
+            strengths:scores.presentation>=10?['Strong project presentation skills','Good product knowledge']:scores.communication>=7?['Clear communication throughout','Professional tone maintained']:['Attempted client profiling','Reasonable rapport building'],
+            gaps:scores.followup<5?['No specific next step confirmed before ending','Weak call closing']:scores.probing<10?['Incomplete requirement capture','No summary before presenting']:['Could improve objection handling','LAER not consistently applied'],
+            coachingTips:['Always confirm a specific next step before ending — a date and time, not "I\'ll send something".','Summarize requirements out loud before presenting any project.','Use LAER for every objection raised by the client.'],
+            ruleFlags:flags,
+            customerProfile:{customer_name:custName,nationality:nat,customer_type:custType,budget_aed:bud,finance_type:cr()>0.5?'self_finance':'mortgage',property_preference:['apartment','villa','townhouse'][Math.floor(cr()*3)],bedrooms_requested:['1BR','2BR','3BR','4BR'][Math.floor(cr()*4)],location_preference:['Dubai Marina','Business Bay','Downtown','DAMAC Hills','JVC'][Math.floor(cr()*5)],timeline:['immediate','3_months','6_months','1_year'][Math.floor(cr()*4)],lead_quality:lq,first_time_dubai:cr()>0.5},
+            callIntelligence:{
+              call_summary:`${custName} (${nat}) contacted DAMAC. Budget ${fmtB(bud)}. Interested in ${projs.join(' and ')} for ${custType==='investor'?'investment':'personal use'}. Call lasted ${Math.round(dur/60)} minutes. ${outcome==='meeting_booked'?'Site visit confirmed.':'No firm commitment made.'}`,
+              what_was_discussed:DISC.slice(0,2+Math.floor(cr()*4)),
+              what_is_missing:MISS.slice(0,1+Math.floor(cr()*3)),
+              projects_mentioned:projs,
+              objections_raised:callObjections.length?callObjections:['No major objections'],
+              next_steps:outcome==='meeting_booked'?'Site visit confirmed for next available slot':scores.followup>=5?'WhatsApp follow-up scheduled':null,
+              call_outcome:outcome,
+              call_timeline: callTimeline
+            }
+          });
+          idx++;
+          
+        }
+      });
+    });
+  });
+  return records;
+}
+
+init();
+</script>
+</body>
+</html>
